@@ -74,7 +74,7 @@ module.exports = {
 
 		const formattedDate = `${day}/${month}/${year} ${hours}:${minutes} ${timeZone}`;
     	
-		console.log(`${formattedDate} :: ${macacoAleatorio}`);
+		console.log(`${formattedDate} :: ${macacoAleatorio} (${interaction.user.username})`);
 
 		const file = new AttachmentBuilder(imageUrl);
 
