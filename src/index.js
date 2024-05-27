@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, Events, GatewayIntentBits, formatEmoji } = require('discord.js');
 
 const client = new Client({
     intents: [
@@ -34,7 +34,20 @@ for (const folder of commandFolders) {
 }
 
 client.once('ready', async () => {
-    console.log(`${client.user.tag} está online.`);
+	const now = new Date();
+	const day = String(now.getDate()).padStart(2, '0');
+	const month = String(now.getMonth() + 1).padStart(2, '0'); // Mês é zero-indexado, então adicionamos 1
+	const year = now.getFullYear();
+	const hours = String(now.getHours()).padStart(2, '0');
+	const minutes = String(now.getMinutes()).padStart(2, '0');
+
+	const timeZoneOffset = now.getTimezoneOffset() / 60; // Converte minutos para horas
+	// Construa a string do fuso horário
+	const timeZone = `(GMT${timeZoneOffset > 0 ? '-' : '+'}${Math.abs(timeZoneOffset)})`;
+
+	const formattedDate = `${day}/${month}/${year} ${hours}:${minutes} ${timeZone}`;
+
+    console.log(`${formattedDate} :: ${client.user.tag} está online.`);
 
 	client.user.setActivity({
 		name: '/macaco',
