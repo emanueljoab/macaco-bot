@@ -54,7 +54,8 @@ module.exports = {
 			'Gorila-do-ocidente': 'https://upload.wikimedia.org/wikipedia/commons/c/c0/Western_Lowland_Gorilla_at_Bronx_Zoo_2_cropped.jpg',
 			'Chimpanzé-comum': 'https://upload.wikimedia.org/wikipedia/commons/f/fc/Gombe_Stream_NP_Jungtier_fressend.jpg',
 			'Gelada': 'https://upload.wikimedia.org/wikipedia/commons/1/13/Gelada-Pavian.jpg',
-			'Gibão-de-müller-de-bornéu': 'https://upload.wikimedia.org/wikipedia/commons/a/a0/MuellersGibbon.jpg'
+			'Gibão-de-müller-de-bornéu': 'https://upload.wikimedia.org/wikipedia/commons/a/a0/MuellersGibbon.jpg',
+			'Mico-ladrão-safado': './images/foto-micoladraosafado.jpg'
 		};
 
 		const macacoAleatorio = Object.keys(imagensMacacos)[Math.floor(Math.random() * Object.keys(imagensMacacos).length)];
