@@ -34,20 +34,7 @@ for (const folder of commandFolders) {
 }
 
 client.once('ready', async () => {
-	const now = new Date();
-	const day = String(now.getDate()).padStart(2, '0');
-	const month = String(now.getMonth() + 1).padStart(2, '0'); // Mês é zero-indexado, então adicionamos 1
-	const year = now.getFullYear();
-	const hours = String(now.getHours()).padStart(2, '0');
-	const minutes = String(now.getMinutes()).padStart(2, '0');
-
-	const timeZoneOffset = now.getTimezoneOffset() / 60; // Converte minutos para horas
-	// Construa a string do fuso horário
-	const timeZone = `(GMT${timeZoneOffset > 0 ? '-' : '+'}${Math.abs(timeZoneOffset)})`;
-
-	const formattedDate = `${day}/${month}/${year} ${hours}:${minutes} ${timeZone}`;
-
-    console.log(`${formattedDate} :: ${client.user.tag} está online.`);
+    console.log(`${new Date().toLocaleString()} | ${client.user.tag} está online.`);
 
 	client.user.setActivity({
 		name: '/macaco',

@@ -60,19 +60,7 @@ module.exports = {
 		const macacoAleatorio = Object.keys(imagensMacacos)[Math.floor(Math.random() * Object.keys(imagensMacacos).length)];
 		const imageUrl = imagensMacacos[macacoAleatorio];
 
-		const now = new Date();
-		const day = String(now.getDate()).padStart(2, '0');
-		const month = String(now.getMonth() + 1).padStart(2, '0'); // Mês é zero-indexado, então adicionamos 1
-		const year = now.getFullYear();
-		const hours = String(now.getHours()).padStart(2, '0');
-		const minutes = String(now.getMinutes()).padStart(2, '0');
-
-		const timeZoneOffset = now.getTimezoneOffset() / 60; // Converte minutos para horas
-		const timeZone = `(GMT${timeZoneOffset > 0 ? '-' : '+'}${Math.abs(timeZoneOffset)})`;
-
-		const formattedDate = `${day}/${month}/${year} ${hours}:${minutes} ${timeZone}`;
-		
-		console.log(`${formattedDate} :: ${macacoAleatorio} (${interaction.user.username})`);
+		console.log(`${new Date().toLocaleString()} | ${macacoAleatorio} (${interaction.user.username})`);
 
 		const file = imageUrl.startsWith('http')
 			? null
