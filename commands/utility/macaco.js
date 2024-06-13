@@ -1,6 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder } = require('discord.js');
-
-const client = require('../../src/index');
+const path = require('node:path');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -59,8 +58,7 @@ module.exports = {
 		};
 
 		const macacoAleatorio = Object.keys(imagensMacacos)[Math.floor(Math.random() * Object.keys(imagensMacacos).length)];
-        const imageUrl = imagensMacacos[macacoAleatorio];
-
+		const imageUrl = imagensMacacos[macacoAleatorio];
 
 		const now = new Date();
 		const day = String(now.getDate()).padStart(2, '0');
@@ -70,22 +68,24 @@ module.exports = {
 		const minutes = String(now.getMinutes()).padStart(2, '0');
 
 		const timeZoneOffset = now.getTimezoneOffset() / 60; // Converte minutos para horas
-		// Construa a string do fuso horário
 		const timeZone = `(GMT${timeZoneOffset > 0 ? '-' : '+'}${Math.abs(timeZoneOffset)})`;
 
 		const formattedDate = `${day}/${month}/${year} ${hours}:${minutes} ${timeZone}`;
-    	
+		
 		console.log(`${formattedDate} :: ${macacoAleatorio} (${interaction.user.username})`);
 
-		const file = new AttachmentBuilder(imageUrl);
+		const file = imageUrl.startsWith('http')
+			? null
+			: new AttachmentBuilder(path.join(__dirname, '../../', imageUrl));
 
 		const embed = new EmbedBuilder()
-		.setTitle(`${macacoAleatorio}`)
-		.setColor(0x0099FF)
-		.setImage('attachment://' + imageUrl.split('/').pop())
-		await interaction.reply({
+			.setTitle(`${macacoAleatorio}`)
+			.setColor(0x0099FF)
+			.setImage(imageUrl.startsWith('http') ? imageUrl : `attachment://${path.basename(imageUrl)}`);
+
+		await interaction.editReply({
 			embeds: [embed],
-			files: [file]
+			files: file ? [file] : [],
 		});
 	},
 };
