@@ -48,13 +48,14 @@ client.on('messageCreate', (message) => {
 
     if (message.content.toLowerCase() === 'oi') {
         message.reply('vai tomar no cu');
+		console.log('vai tomar no cu');
     };
 })
 
 client.on('messageCreate', message => {
     // Verifica se a mensagem é "pls pp"
     if (message.content.toLowerCase() === 'pls pp') {
-        const tamanho = Math.floor(Math.random() * 19) + 1;
+        const tamanho = Math.floor(Math.random() * 14) + 1;
         const pp = '8' + '='.repeat(tamanho) + 'D';
 
 		const embed = new EmbedBuilder()
@@ -62,6 +63,7 @@ client.on('messageCreate', message => {
             .setDescription(`pipi de ${message.author.username}\n${pp}`)
 
         message.channel.send({ embeds: [embed] });
+		console.log(`${new Date().toLocaleString('pt-BR')} | ${pp} (${message.author.username})`)
     }
 });
 

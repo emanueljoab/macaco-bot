@@ -60,8 +60,6 @@ module.exports = {
 		const macacoAleatorio = Object.keys(imagensMacacos)[Math.floor(Math.random() * Object.keys(imagensMacacos).length)];
 		const imageUrl = imagensMacacos[macacoAleatorio];
 
-		console.log(`${new Date().toLocaleString('pt-BR')} | ${macacoAleatorio} (${interaction.user.username})`);
-
 		const file = imageUrl.startsWith('http')
 			? null
 			: new AttachmentBuilder(path.join(__dirname, '../../', imageUrl));
@@ -75,5 +73,7 @@ module.exports = {
 			embeds: [embed],
 			files: file ? [file] : [],
 		});
+
+		console.log(`${new Date().toLocaleString('pt-BR')} | ${macacoAleatorio} (${interaction.user.username})`);
 	},
 };
