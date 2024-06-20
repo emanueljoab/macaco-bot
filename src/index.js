@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, Collection, Events, GatewayIntentBits, formatEmoji } = require('discord.js');
+const { Client, Collection, Events, GatewayIntentBits, EmbedBuilder, formatEmoji } = require('discord.js');
 
 const client = new Client({
     intents: [
@@ -50,6 +50,20 @@ client.on('messageCreate', (message) => {
         message.reply('vai tomar no cu');
     };
 })
+
+client.on('messageCreate', message => {
+    // Verifica se a mensagem é "pls pp"
+    if (message.content.toLowerCase() === 'pls pp') {
+        const tamanho = Math.floor(Math.random() * 20) + 1;
+        const pp = '8' + '='.repeat(tamanho) + 'D';
+
+		const embed = new EmbedBuilder()
+            .setTitle('Medidor de pp')
+            .setDescription(`pipi de ${message.author.username}\n${pp}`)
+
+        message.channel.send({ embeds: [embed] });
+    }
+});
 
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
