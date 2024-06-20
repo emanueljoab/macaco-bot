@@ -12,6 +12,6 @@ module.exports = {
             // Responda pela primeira vez
             await interaction.reply(`Este é o servidor **${interaction.guild.name}** e tem ${interaction.guild.memberCount} membros.`);
         }
-        console.log(`${new Date().toLocaleString()} | Comando /server executado (${interaction.user.tag})`);
+        console.log(`${new Date().toLocaleString('pt-BR')} | Comando /server executado (${interaction.user.tag})`);
     },
 };

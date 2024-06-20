@@ -34,7 +34,7 @@ for (const folder of commandFolders) {
 }
 
 client.once('ready', async () => {
-    console.log(`${new Date().toLocaleString()} | ${client.user.tag} está online.`);
+    console.log(`${new Date().toLocaleString('pt-BR')} | ${client.user.tag} está online.`);
 
 	client.user.setActivity({
 		name: '/macaco',
@@ -54,7 +54,7 @@ client.on('messageCreate', (message) => {
 client.on('messageCreate', message => {
     // Verifica se a mensagem é "pls pp"
     if (message.content.toLowerCase() === 'pls pp') {
-        const tamanho = Math.floor(Math.random() * 20) + 1;
+        const tamanho = Math.floor(Math.random() * 19) + 1;
         const pp = '8' + '='.repeat(tamanho) + 'D';
 
 		const embed = new EmbedBuilder()

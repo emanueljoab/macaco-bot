@@ -26,6 +26,6 @@ module.exports = {
             await interaction.editFollowUp(`Pong! Latência: ${latency}ms`);
         }
 
-        console.log(`${new Date().toLocaleString()} | Pong! Latência ${latency}ms (${interaction.user.tag})`);
+        console.log(`${new Date().toLocaleString('pt-BR')} | Pong! Latência ${latency}ms (${interaction.user.tag})`);
     },
 };
