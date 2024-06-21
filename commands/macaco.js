@@ -62,11 +62,10 @@ module.exports = {
 
 		const file = imageUrl.startsWith('http')
 			? null
-			: new AttachmentBuilder(path.join(__dirname, '../../', imageUrl));
+			: new AttachmentBuilder(path.join(__dirname, '..', imageUrl));
 
 		const embed = new EmbedBuilder()
 			.setTitle(`${macacoAleatorio}`)
-			.setColor(0x0099FF)
 			.setImage(imageUrl.startsWith('http') ? imageUrl : `attachment://${path.basename(imageUrl)}`);
 
 		await interaction.editReply({
