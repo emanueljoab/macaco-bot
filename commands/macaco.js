@@ -2,6 +2,12 @@ require('dotenv').config();
 
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
+const familiasSimiiformes = [
+    'Cebidae', 'Cercopithecidae', 'Hominidae', 
+    'Hylobatidae', 'Pitheciidae', 'Aotidae', 
+    'Atelidae', 'Callitrichidae'
+];
+
 let fetch;
 async function loadFetch() {
     if (!fetch) {
@@ -90,6 +96,9 @@ async function fetchMacacos(offset) {
     try {
         const speciesData = await fetchSpecies(offset);
         const promises = speciesData.results.map(async species => {
+            if (!familiasSimiiformes.includes(species.family)) {
+                return;
+            }
             try {
                 const vernacularData = await fetchVernacularNames(species.key);
                 let vernacularName = null;
