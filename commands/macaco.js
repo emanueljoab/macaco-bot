@@ -12,21 +12,30 @@ async function loadFetch() {
 // Função para traduzir texto usando a API da DeepL
 async function translateText(text) {
     const apiKey = process.env.DEEPL_API_KEY;
-    const response = await fetch('https://api-free.deepl.com/v2/translate', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `auth_key=${apiKey}&text=${encodeURIComponent(text)}&source_lang=EN&target_lang=PT`,
-    });
-    if (!response.ok) {
-        throw new Error(`Erro na requisição de tradução: ${response.statusText}`);
+    try {
+        const response = await fetch('https://api-free.deepl.com/v2/translate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `auth_key=${apiKey}&text=${encodeURIComponent(text)}&source_lang=EN&target_lang=PT`,
+        });
+        
+        if (!response.ok) {
+            const responseBody = await response.text();
+            throw new Error(`Erro na requisição de tradução: ${response.statusText}. Detalhes: ${responseBody}`);
+        }
+        
+        const data = await response.json();
+        if (data.translations && data.translations.length > 0) {
+            return data.translations[0].text;
+        }
+        
+        throw new Error('Nenhuma tradução disponível');
+    } catch (error) {
+        console.error('Erro ao traduzir texto:', error);
+        throw error;
     }
-    const data = await response.json();
-    if (data.translations && data.translations.length > 0) {
-        return data.translations[0].text;
-    }
-    throw new Error('Nenhuma tradução disponível');
 }
 
 const macacos = {};
@@ -97,28 +106,14 @@ async function fetchMacacos(offset) {
                     }
                 }
 
-                // Traduzir para português se necessário
-                if (!portugueseVernacular && vernacularName) {
-                    try {
-                        vernacularName = await translateText(vernacularName);
-                    } catch (translationError) {
-                        console.error('Erro ao traduzir nome para português:', translationError);
-                    }
-                }
-
-                // Obter uma descrição aleatória e limitar a 200 caracteres
+                // Obter uma descrição aleatória e limitar a 100 caracteres
                 let description = "";
                 if (species.descriptions && species.descriptions.length > 0) {
                     const randomIndex = Math.floor(Math.random() * species.descriptions.length);
                     description = species.descriptions[randomIndex].description;
-                    try {
-                        description = await translateText(description);
-                        description = description.slice(0, 200); // Limita a 200 caracteres
-                        if (description.length === 200) {
-                            description += '...'; // Adiciona reticências se cortou no meio da palavra
-                        }
-                    } catch (translationError) {
-                        console.error('Erro ao traduzir descrição para português:', translationError);
+                    description = description.slice(0, 100); // Limita a 100 caracteres
+                    if (description.length === 100) {
+                        description += '...'; // Adiciona reticências se cortou no meio da palavra
                     }
                 }
 
@@ -177,11 +172,28 @@ module.exports = {
                 .setImage(imagem)
                 .setDescription(descricao)
 
-            await interaction.editReply({
+            const reply = await interaction.editReply({
                 embeds: [embed],
             });
 
-            console.log(`${new Date().toLocaleString('pt-BR')} | ${nome} (${interaction.user.username})`);
+            // Traduzir o nome e a descrição após enviar a resposta
+            try {
+                const translatedNome = await translateText(nome);
+                const translatedDescricao = await translateText(descricao);
+                const translatedEmbed = new EmbedBuilder()
+                    .setTitle(translatedNome)
+                    .setImage(imagem)
+                    .setDescription(translatedDescricao)
+
+                await reply.edit({
+                    embeds: [translatedEmbed],
+                });
+
+                console.log(`${new Date().toLocaleString('pt-BR')} | ${translatedNome} (${interaction.user.username})`);
+            } catch (translationError) {
+                console.error('Erro ao traduzir nome e descrição:', translationError);
+            }
+
         } catch (error) {
             console.error('Erro ao gerar macaco:', error);
             await interaction.editReply('Não foi possível encontrar um macaco com imagem e descrição.');
