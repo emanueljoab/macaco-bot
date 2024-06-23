@@ -1,7 +1,5 @@
 require('dotenv').config();
-
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-
+const { EmbedBuilder } = require('discord.js');
 const familiasSimiiformes = [
     'Cebidae', 'Cercopithecidae', 'Hominidae', 
     'Hylobatidae', 'Pitheciidae', 'Aotidae', 
@@ -146,7 +144,7 @@ async function fetchMacacos(offset) {
 async function getRandomMonkey() {
     try {
         // Gera um offset aleatório para a página a ser buscada
-        const offset = Math.floor(Math.random() * 2000);
+        const offset = Math.floor(Math.random() * 1000);
         if (Object.keys(macacos).length === 0) {
             await fetchMacacos(offset);
         }
@@ -164,48 +162,47 @@ async function getRandomMonkey() {
     }
 }
 
-module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('macaco')
-        .setDescription('Retorna um macaco aleatório!'),
-    async execute(interaction) {
+async function execute(message) {
+    try {
+        const { nome, imagem, descricao } = await getRandomMonkey();
+
+        if (!nome || !imagem || !descricao) {
+            throw new Error('Não foi possível encontrar um macaco com imagem e descrição.');
+        }
+
+        const embed = new EmbedBuilder()
+            .setTitle(nome)
+            .setImage(imagem)
+            .setDescription(descricao);
+
+        const reply = await message.channel.send({
+            embeds: [embed],
+        });
+
+        // Traduzir o nome e a descrição após enviar a resposta
         try {
-            const { nome, imagem, descricao } = await getRandomMonkey();
-
-            if (!nome || !imagem || !descricao) {
-                throw new Error('Não foi possível encontrar um macaco com imagem e descrição.');
-            }
-
-            const embed = new EmbedBuilder()
-                .setTitle(nome)
+            const translatedNome = await translateText(nome);
+            const translatedDescricao = await translateText(descricao);
+            const translatedEmbed = new EmbedBuilder()
+                .setTitle(translatedNome)
                 .setImage(imagem)
-                .setDescription(descricao)
+                .setDescription(translatedDescricao);
 
-            const reply = await interaction.editReply({
-                embeds: [embed],
+            await reply.edit({
+                embeds: [translatedEmbed],
             });
 
-            // Traduzir o nome e a descrição após enviar a resposta
-            try {
-                const translatedNome = await translateText(nome);
-                const translatedDescricao = await translateText(descricao);
-                const translatedEmbed = new EmbedBuilder()
-                    .setTitle(translatedNome)
-                    .setImage(imagem)
-                    .setDescription(translatedDescricao)
-
-                await reply.edit({
-                    embeds: [translatedEmbed],
-                });
-
-                console.log(`${new Date().toLocaleString('pt-BR')} | ${translatedNome} (${interaction.user.username})`);
-            } catch (translationError) {
-                console.error('Erro ao traduzir nome e descrição:', translationError);
-            }
-
-        } catch (error) {
-            console.error('Erro ao gerar macaco:', error);
-            await interaction.editReply('Não foi possível encontrar um macaco com imagem e descrição.');
+            console.log(`${new Date().toLocaleString('pt-BR')} | ${translatedNome} (${message.author.username})`);
+        } catch (translationError) {
+            console.error('Erro ao traduzir nome e descrição:', translationError);
         }
-    },
+
+    } catch (error) {
+        console.error('Erro ao gerar macaco:', error);
+        await message.channel.send('Não foi possível encontrar um macaco com imagem e descrição.');
+    }
+}
+
+module.exports = {
+    execute,
 };
