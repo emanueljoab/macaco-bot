@@ -175,7 +175,7 @@ async function execute(message) {
             .setImage(imagem)
             .setDescription(descricao);
 
-        const reply = await message.channel.send({
+        const reply = await message.reply({
             embeds: [embed],
         });
 
@@ -199,7 +199,7 @@ async function execute(message) {
 
     } catch (error) {
         console.error('Erro ao gerar macaco:', error);
-        await message.channel.send('Não foi possível encontrar um macaco com imagem e descrição.');
+        await message.reply('Não foi possível encontrar um macaco com imagem e descrição.');
     }
 }
 

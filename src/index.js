@@ -3,6 +3,10 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 const macaco = require('../commands/macaco');  // Certifique-se de que o caminho está correto
+const pp = require('../commands/pp');
+const ping = require('../commands/ping');
+const server = require('../commands/server');
+const user = require('../commands/user');
 
 const client = new Client({
     intents: [
@@ -11,26 +15,6 @@ const client = new Client({
         GatewayIntentBits.MessageContent,
     ],
 });
-
-module.exports = client;
-
-client.commands = new Collection();
-const commandsPath = path.join(__dirname, '..', 'commands'); // Atualize o caminho conforme necessário
-
-try {
-    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-    for (const file of commandFiles) {
-        const filePath = path.join(commandsPath, file);
-        const command = require(filePath);
-        if ('data' in command && 'execute' in command) {
-            client.commands.set(command.data.name, command);
-        } else {
-            console.log(`[AVISO] O comando em ${filePath} está faltando uma propriedade "data" ou "execute" necessária.`);
-        }
-    }
-} catch (err) {
-    console.error('Erro ao carregar comandos:', err);
-}
 
 client.once('ready', async () => {
     console.log(`${new Date().toLocaleString('pt-BR')} | ${client.user.tag} está online.`);
@@ -47,25 +31,32 @@ client.on('messageCreate', (message) => {
     // Comando oi
     if (message.content.toLowerCase() === 'oi') {
         message.reply('vai tomar no cu');
-        console.log('vai tomar no cu');
+        console.log(`${new Date().toLocaleString('pt-BR')} | vai tomar no cu`);
     }
 
     // Comando pls pp
     if (message.content.toLowerCase() === 'pls pp') {
-        const tamanho = Math.floor(Math.random() * 14) + 1;
-        const pp = '8' + '='.repeat(tamanho) + 'D';
-
-        const embed = new EmbedBuilder()
-            .setTitle('Medidor de pp')
-            .setDescription(`pipi de ${message.author.username}\n${pp}`);
-
-        message.channel.send({ embeds: [embed] });
-        console.log(`${new Date().toLocaleString('pt-BR')} | ${pp} (${message.author.username})`);
+        pp.execute(message);
     }
 
     // Comando pls macaco
     if (message.content.toLowerCase() === 'pls macaco') {
         macaco.execute(message);
+    }
+
+    // Comando ping
+    if (message.content.toLowerCase() === 'pls ping') {
+        ping.execute(message);
+    }
+
+    // Comando server
+    if (message.content.toLowerCase() === 'pls server') {
+        server.execute(message);
+    }
+
+    // Comando user 
+    if (message.content.toLowerCase() === 'pls user') {
+        user.execute(message);
     }
 });
 
