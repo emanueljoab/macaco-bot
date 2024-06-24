@@ -27,16 +27,16 @@ client.once('ready', async () => {
 
 // Comandos
 client.on('messageCreate', (message) => {
+    const content = message.content.toLowerCase();
 
-    if (message.content === 'oi') {
+    if (content === 'oi') {
         message.reply('vai tomar no cu');
         console.log(`${new Date().toLocaleString('pt-BR')} | vai tomar no cu`);
-        return;
     }
 
-    if (!message.content.startsWith(prefix) || message.author.bot) return;
+    if (!content.startsWith(prefix) || message.author.bot) return;
 
-    const args = message.content.slice(prefix.length).trim().split(/ +/);
+    const args = content.slice(prefix.length).trim().split(/ +/);
     const command = args.shift().toLowerCase();
 
     const commands = {
@@ -64,7 +64,6 @@ if (commands[command]) {
         }
     }
 
-    // Executar o comando se não for 'pp' e passar nos testes
     commands[command](message, args);
 }
 });
