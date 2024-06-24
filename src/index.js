@@ -2,6 +2,7 @@ require('dotenv').config();
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, GatewayIntentBits, EmbedBuilder } = require('discord.js');
+const prefix = 'pls';
 const macaco = require('../commands/macaco');  // Certifique-se de que o caminho está correto
 const pp = require('../commands/pp');
 const ping = require('../commands/ping');
@@ -26,38 +27,46 @@ client.once('ready', async () => {
 
 // Comandos
 client.on('messageCreate', (message) => {
-    if (message.author.bot) return;
 
-    // Comando oi
-    if (message.content.toLowerCase() === 'oi') {
+    if (message.content === 'oi') {
         message.reply('vai tomar no cu');
         console.log(`${new Date().toLocaleString('pt-BR')} | vai tomar no cu`);
+        return;
     }
 
-    // Comando pls pp
-    if (message.content.toLowerCase() === 'pls pp') {
-        pp.execute(message);
+    if (!message.content.startsWith(prefix) || message.author.bot) return;
+
+    const args = message.content.slice(prefix.length).trim().split(/ +/);
+    const command = args.shift().toLowerCase();
+
+    const commands = {
+        pp: pp.execute,
+        macaco: macaco.execute,
+        ping: ping.execute,
+        server: server.execute,
+        user: user.execute
     }
 
-    // Comando pls macaco
-    if (message.content.toLowerCase() === 'pls macaco') {
-        macaco.execute(message);
+// Verificar e executar comandos
+if (commands[command]) {
+    // Comandos que não aceitam argumentos
+    const noArgsCommands = ['macaco', 'ping', 'server', 'user'];
+    if (noArgsCommands.includes(command) && args.length > 0) return;
+    
+    // Verificação especial para o comando 'pp'
+    if (command === 'pp') {
+        // Verificar se a mensagem é exatamente "pls pp" ou se há um usuário mencionado
+        if (args.length === 0 || message.mentions.users.size > 0) {
+            commands[command](message, args);
+            return;
+        } else {
+            return;
+        }
     }
 
-    // Comando ping
-    if (message.content.toLowerCase() === 'pls ping') {
-        ping.execute(message);
-    }
-
-    // Comando server
-    if (message.content.toLowerCase() === 'pls server') {
-        server.execute(message);
-    }
-
-    // Comando user 
-    if (message.content.toLowerCase() === 'pls user') {
-        user.execute(message);
-    }
+    // Executar o comando se não for 'pp' e passar nos testes
+    commands[command](message, args);
+}
 });
 
 client.login(process.env.TOKEN);
