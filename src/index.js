@@ -6,9 +6,10 @@ const { Client, GatewayIntentBits } = require('discord.js');
 
 const prefix = 'pls';
 
+const howgay = require('../commands/howgay');
 const macaco = require('../commands/macaco');
-const pp = require('../commands/pp');
 const ping = require('../commands/ping');
+const pp = require('../commands/pp');
 const server = require('../commands/server');
 const user = require('../commands/user');
 
@@ -39,9 +40,10 @@ client.on('messageCreate', (message) => { // Evento para mensagens
     const command = args.shift().toLowerCase();
 
     const commands = {
-        pp: pp.execute,
+        howgay: howgay.execute,
         macaco: macaco.execute,
         ping: ping.execute,
+        pp: pp.execute,
         server: server.execute,
         user: user.execute
     }
@@ -49,10 +51,10 @@ client.on('messageCreate', (message) => { // Evento para mensagens
     if (commands[command]) { // Verificar e executar comandos
         try {
             const noArgsCommands = ['macaco', 'ping', 'server', 'user'];
-            if (noArgsCommands.includes(command) && args.length > 0) return; // Retorna se a mensagem for um dos noArgsCommands com algum outro argumento
+            if (noArgsCommands.includes(command) && args.length > 0) return; // Retorna se um dos noArgsCommands tiver algo escrito além do prefixo e comando
             
-            if (command === 'pp') { 
-                if (args.length === 0 || message.mentions.users.size > 0) { // Verifica se a mensagem é 'pls pp' OU se menciona um usuário
+            if (command === 'pp' || command === 'howgay') { 
+                if (args.length === 0 || message.mentions.users.size > 0) { // Verifica se não tem args OU se menciona um usuário
                     commands[command](message, args);
                 } else {
                     return;

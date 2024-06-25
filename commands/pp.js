@@ -2,7 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 
 function execute(message) {
     let user = message.mentions.users.first() || message.author;
-    const tamanho = Math.floor(Math.random() * 20);
+    const tamanho = Math.floor(Math.random() * 21);
     const pp = '8' + '='.repeat(tamanho) + 'D';
 
     const embed = new EmbedBuilder()
