@@ -1,9 +1,12 @@
 require('dotenv').config();
+
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, Collection, GatewayIntentBits, EmbedBuilder } = require('discord.js');
+const { Client, GatewayIntentBits } = require('discord.js');
+
 const prefix = 'pls';
-const macaco = require('../commands/macaco');  // Certifique-se de que o caminho está correto
+
+const macaco = require('../commands/macaco');
 const pp = require('../commands/pp');
 const ping = require('../commands/ping');
 const server = require('../commands/server');
@@ -19,14 +22,10 @@ const client = new Client({
 
 client.once('ready', async () => {
     console.log(`${new Date().toLocaleString('pt-BR')} | ${client.user.tag} está online.`);
-
-    client.user.setActivity({
-        name: 'pls macaco',
-    });
+    client.user.setActivity({ name: 'pls macaco' });
 });
 
-// Comandos
-client.on('messageCreate', (message) => {
+client.on('messageCreate', (message) => { // Evento para mensagens
     const content = message.content.toLowerCase();
 
     if (content === 'oi') {
@@ -47,25 +46,25 @@ client.on('messageCreate', (message) => {
         user: user.execute
     }
 
-// Verificar e executar comandos
-if (commands[command]) {
-    // Comandos que não aceitam argumentos
-    const noArgsCommands = ['macaco', 'ping', 'server', 'user'];
-    if (noArgsCommands.includes(command) && args.length > 0) return;
-    
-    // Verificação especial para o comando 'pp'
-    if (command === 'pp') {
-        // Verificar se a mensagem é exatamente "pls pp" ou se há um usuário mencionado
-        if (args.length === 0 || message.mentions.users.size > 0) {
-            commands[command](message, args);
-            return;
-        } else {
-            return;
+    if (commands[command]) { // Verificar e executar comandos
+        try {
+            const noArgsCommands = ['macaco', 'ping', 'server', 'user'];
+            if (noArgsCommands.includes(command) && args.length > 0) return; // Retorna se a mensagem for um dos noArgsCommands com algum outro argumento
+            
+            if (command === 'pp') { 
+                if (args.length === 0 || message.mentions.users.size > 0) { // Verifica se a mensagem é 'pls pp' OU se menciona um usuário
+                    commands[command](message, args);
+                } else {
+                    return;
+                }
+            } else {
+                commands[command](message, args);
+            }
+        } catch (error) {
+            console.error(`Erro ao executar o comando ${command}:`, error);
+            message.reply('Ocorreu um erro ao tentar executar esse comando.')
         }
     }
-
-    commands[command](message, args);
-}
 });
 
 client.login(process.env.TOKEN);
