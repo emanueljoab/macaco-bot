@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 
-function execute(message) {
+async function execute(message) {
     let user = message.mentions.users.first() || message.author;
     const tamanho = Math.floor(Math.random() * 21);
     const pp = '8' + '='.repeat(tamanho) + 'D';
@@ -9,8 +9,7 @@ function execute(message) {
         .setTitle('Medidor de pp')
         .setDescription(`pipi de ${user}\n${pp}`)
         .setFooter( {text: `${tamanho} cm`})
-
-    message.reply({ embeds: [embed] });
+    await message.reply({ embeds: [embed] });
     console.log(`${new Date().toLocaleString('pt-BR')} | Pipi de ${user.username} ${pp} ${tamanho} cm (${message.author.username})`);
 }
 

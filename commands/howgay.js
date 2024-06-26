@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 
-function execute(message) {
+async function execute(message) {
     let user = message.mentions.users.first() || message.author;
     let howgay = Math.floor(Math.random() * 101);
 
@@ -19,7 +19,7 @@ function execute(message) {
         .setTitle('Medidor de gay')
         .setDescription(description)
         .setFooter({ text: footer })
-    message.reply({ embeds: [embed] });
+    await message.reply({ embeds: [embed] });
     console.log(`${new Date().toLocaleString('pt-BR')} | ${user.username} é ${howgay}% gay (${message.author.username})`)
 }
 
