@@ -18,7 +18,7 @@ function execute(message) {
     const embed = new EmbedBuilder()
         .setTitle('Medidor de gay')
         .setDescription(description)
-        .setFooter({ text: footer})
+        .setFooter({ text: footer })
     message.reply({ embeds: [embed] });
     console.log(`${new Date().toLocaleString('pt-BR')} | ${user.username} é ${howgay}% gay (${message.author.username})`)
 }

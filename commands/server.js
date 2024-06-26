@@ -19,7 +19,7 @@ async function execute(message) {
         await message.reply({ embeds: [serverEmbed] });
     }
 
-    console.log(`${new Date().toLocaleString('pt-BR')} | Comando /server executado (${message.author.tag})`);
+    console.log(`${new Date().toLocaleString('pt-BR')} | Comando 'server' executado (${message.author.tag})`);
 }
 
 module.exports = {

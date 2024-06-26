@@ -6,6 +6,7 @@ const { Client, GatewayIntentBits } = require('discord.js');
 
 const prefix = 'pls';
 
+const help = require('../commands/help')
 const howgay = require('../commands/howgay');
 const macaco = require('../commands/macaco');
 const ping = require('../commands/ping');
@@ -40,6 +41,7 @@ client.on('messageCreate', (message) => { // Evento para mensagens
     const command = args.shift().toLowerCase();
 
     const commands = {
+        help: help.execute,
         howgay: howgay.execute,
         macaco: macaco.execute,
         ping: ping.execute,
@@ -50,7 +52,7 @@ client.on('messageCreate', (message) => { // Evento para mensagens
 
     if (commands[command]) { // Verificar e executar comandos
         try {
-            const noArgsCommands = ['macaco', 'ping', 'server', 'user'];
+            const noArgsCommands = ['help', 'macaco', 'ping', 'server', 'user'];
             if (noArgsCommands.includes(command) && args.length > 0) return; // Retorna se um dos noArgsCommands tiver algo escrito além do prefixo e comando
             
             if (command === 'pp' || command === 'howgay') { 

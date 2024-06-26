@@ -30,7 +30,7 @@ async function execute(message) {
         await message.reply({ embeds: [userEmbed] });
     }
 
-    console.log(`${new Date().toLocaleString('pt-BR')} | Comando /user executado (${message.author.tag})`);
+    console.log(`${new Date().toLocaleString('pt-BR')} | Comando 'user' executado (${message.author.tag})`);
 }
 
 module.exports = {
