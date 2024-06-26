@@ -52,11 +52,12 @@ client.on('messageCreate', (message) => { // Evento para mensagens
 
     if (commands[command]) { // Verificar e executar comandos
         try {
-            const noArgsCommands = ['help', 'macaco', 'ping', 'server', 'user'];
+            const noArgsCommands = ['help', 'macaco', 'ping', 'server'];
             if (noArgsCommands.includes(command) && args.length > 0) return; // Retorna se um dos noArgsCommands tiver algo escrito além do prefixo e comando
             
-            if (command === 'pp' || command === 'howgay') { 
-                if (args.length === 0 || message.mentions.users.size > 0) { // Verifica se não tem args OU se menciona um usuário
+            const argsCommands = ['pp', 'howgay', 'user'];
+            if (argsCommands.includes(command)) { 
+                if (args.length === 0 || args.length === 1 && message.mentions.users.size > 0) { // Verifica se não tem args OU se menciona um usuário
                     commands[command](message, args);
                 } else {
                     return;
