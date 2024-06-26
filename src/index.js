@@ -6,7 +6,8 @@ const { Client, GatewayIntentBits } = require('discord.js');
 
 const prefix = 'pls';
 
-const help = require('../commands/help')
+const ball8 = require('../commands/8ball'); 
+const help = require('../commands/help');
 const howgay = require('../commands/howgay');
 const macaco = require('../commands/macaco');
 const ping = require('../commands/ping');
@@ -41,6 +42,7 @@ client.on('messageCreate', (message) => { // Evento para mensagens
     const command = args.shift().toLowerCase();
 
     const commands = {
+        '8ball': ball8.execute,
         help: help.execute,
         howgay: howgay.execute,
         macaco: macaco.execute,
