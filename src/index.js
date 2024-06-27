@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Client, GatewayIntentBits } = require('discord.js');
 
-const prefix = 'pls';
+const prefix = 'pls ';
 
 const ball8 = require('../commands/8ball'); 
 const help = require('../commands/help');
