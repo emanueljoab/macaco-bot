@@ -12,7 +12,7 @@ async function execute(message, args) {
         '\u{1F7E2} Perspectiva boa',
         '\u{1F7E2} Sim',
         '\u{1F7E2} Os sinais apontam que sim',
-        '\u{1F7E1} Resposta vaga, tente novamente',
+        '\u{1F7E1} Resposta confusa, tente novamente',
         '\u{1F7E1} Pergunte novamente mais tarde',
         '\u{1F7E1} Melhor não te contar agora',
         '\u{1F7E1} Não é possível prever agora',
@@ -26,7 +26,14 @@ async function execute(message, args) {
 
     const indiceAleatorio = Math.floor(Math.random() * respostas.length);
     const resposta = respostas[indiceAleatorio];
-    const pergunta = args.join(' ');
+    let pergunta = args.join(' ');
+
+    message.mentions.users.forEach(user => {
+        const mention = `<@${user.id}>`;
+        const username = `${user.username}`;
+        pergunta = pergunta.replace(mention, username);
+    });
+
     let perguntaCapitalizada = pergunta.charAt(0).toUpperCase() + pergunta.slice(1);
 
     if (args.length > 0) {
@@ -35,7 +42,7 @@ async function execute(message, args) {
 
     const embed = new EmbedBuilder()
         .setTitle('Bola 8 Mágica')
-        .setDescription(`${message.author} perguntou\n${perguntaCapitalizada}\nMinha resposta é...\n**${resposta}**`)
+        .setDescription(`${message.author.username} perguntou\n${perguntaCapitalizada}\nMinha resposta é...\n**${resposta}**`)
         .setThumbnail('https://www.horoscope.com/images-US/games/game-magic-8-ball-no-text.png')
     await message.reply( {embeds: [embed] } );
     console.log(`${new Date().toLocaleString('pt-BR')} | ${resposta} (${message.author.username})`)

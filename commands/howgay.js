@@ -7,12 +7,12 @@ async function execute(message) {
     let description;
     let footer = null;
     if (howgay === 100) {
-        description = `${user} é ${howgay}% gay \u{1F3F3}\u{FE0F}\u{200D}\u{1F308}`
+        description = `${user.username} é ${howgay}% gay \u{1F3F3}\u{FE0F}\u{200D}\u{1F308}`
         footer = 'Que bichona! \u{1F984}'
     } else if (howgay > 0 && howgay < 100) {
-        description = `${user} é ${howgay}% gay \u{1F3F3}\u{FE0F}\u{200D}\u{1F308}`;
+        description = `${user.username} é ${howgay}% gay \u{1F3F3}\u{FE0F}\u{200D}\u{1F308}`;
     } else {
-        description = `${user} é ${howgay}% gay \u{26A5}`;
+        description = `${user.username} é ${howgay}% gay \u{26A5}`;
     }
 
     const embed = new EmbedBuilder()

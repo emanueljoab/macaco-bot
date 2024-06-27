@@ -7,7 +7,7 @@ async function execute(message) {
 
     const embed = new EmbedBuilder()
         .setTitle('Medidor de pp')
-        .setDescription(`pipi de ${user}\n${pp}`)
+        .setDescription(`pipi de ${user.username}\n${pp}`)
         .setFooter( {text: `${tamanho} cm`})
     await message.reply({ embeds: [embed] });
     console.log(`${new Date().toLocaleString('pt-BR')} | Pipi de ${user.username} ${pp} ${tamanho} cm (${message.author.username})`);
