@@ -13,6 +13,7 @@ const macaco = require('../commands/macaco');
 const ping = require('../commands/ping');
 const pp = require('../commands/pp');
 const server = require('../commands/server');
+const stank = require('../commands/stank');
 const user = require('../commands/user');
 
 const client = new Client({
@@ -49,6 +50,7 @@ client.on('messageCreate', (message) => { // Evento para mensagens
         ping: ping.execute,
         pp: pp.execute,
         server: server.execute,
+        stank: stank.execute,
         user: user.execute
     }
 
@@ -57,7 +59,7 @@ client.on('messageCreate', (message) => { // Evento para mensagens
             const noArgsCommands = ['help', 'macaco', 'ping', 'server'];
             if (noArgsCommands.includes(command) && args.length > 0) return; // Retorna se um dos noArgsCommands tiver algo escrito além do prefixo e comando
             
-            const argsCommands = ['pp', 'howgay', 'user'];
+            const argsCommands = ['pp', 'howgay', 'stank', 'user'];
             if (argsCommands.includes(command)) { 
                 if (args.length === 0 || args.length === 1 && message.mentions.users.size > 0) { // Verifica se não tem args OU se menciona um usuário
                     commands[command](message, args);

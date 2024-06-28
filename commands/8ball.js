@@ -42,8 +42,8 @@ async function execute(message, args) {
 
     const embed = new EmbedBuilder()
         .setTitle('Bola 8 Mágica')
-        .setDescription(`${message.author.username} perguntou\n${perguntaCapitalizada}\nMinha resposta é...\n**${resposta}**`)
-        .setThumbnail('https://www.horoscope.com/images-US/games/game-magic-8-ball-no-text.png')
+        .setDescription(`${message.author.username} perguntou\n${perguntaCapitalizada}\nMinha resposta:\n**${resposta}**`)
+        .setThumbnail('https://i.imgur.com/z2Qu5QQ.png')
     await message.reply( {embeds: [embed] } );
     console.log(`${new Date().toLocaleString('pt-BR')} | ${resposta} (${message.author.username})`)
 }
