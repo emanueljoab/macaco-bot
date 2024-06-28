@@ -44,7 +44,7 @@ client.on('messageCreate', (message) => { // Evento para mensagens
 
     const commands = {
         '8ball': ball8.execute,
-        help: help.execute,
+        help: help.execute.bind(null, client),
         howgay: howgay.execute,
         macaco: macaco.execute,
         ping: ping.execute,
@@ -62,12 +62,12 @@ client.on('messageCreate', (message) => { // Evento para mensagens
             const argsCommands = ['pp', 'howgay', 'stank', 'user'];
             if (argsCommands.includes(command)) { 
                 if (args.length === 0 || args.length === 1 && message.mentions.users.size > 0) { // Verifica se não tem args OU se menciona um usuário
-                    commands[command](client, message, args);
+                    commands[command](message, args);
                 } else {
                     return;
                 }
             } else {
-                commands[command](client, message, args);
+                commands[command](message, args);
             }
         } catch (error) {
             console.error(`Erro ao executar o comando ${command}:`, error);

@@ -28,7 +28,7 @@ async function execute(message) {
 // Função para gerar a barra de porcentagem
 function generateProgressBar(percent) {
     const progressChars = 10; // Número de caracteres da barra de progresso
-    const filledBlocks = Math.round((percent / 100) * progressChars);
+    const filledBlocks = Math.floor((percent / 100) * progressChars);
     const emptyBlocks = progressChars - filledBlocks;
 
     const progressBar = '▰'.repeat(filledBlocks) + '▱'.repeat(emptyBlocks); // Usando caracteres Unicode
