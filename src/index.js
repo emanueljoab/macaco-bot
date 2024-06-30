@@ -1,51 +1,79 @@
-const { EmbedBuilder } = require('discord.js');
+require('dotenv').config();
 
-async function execute(message, args) {
-    if (!args.length) {
-        return message.reply('Você precisa fornecer o nome de uma cidade!');
+const fs = require('node:fs');
+const path = require('node:path');
+const { Client, GatewayIntentBits } = require('discord.js');
+
+const prefix = 'pls ';
+
+const ball8 = require('../commands/8ball'); 
+const help = require('../commands/help');
+const howgay = require('../commands/howgay');
+const macaco = require('../commands/macaco');
+const ping = require('../commands/ping');
+const pp = require('../commands/pp');
+const server = require('../commands/server');
+const stank = require('../commands/stank');
+const user = require('../commands/user');
+
+const client = new Client({
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
+    ],
+});
+
+client.once('ready', async () => {
+    console.log(`${new Date().toLocaleString('pt-BR')} | ${client.user.tag} está online.`);
+    client.user.setActivity({ name: 'pls macaco' });
+});
+
+client.on('messageCreate', (message) => { // Evento para mensagens
+    const content = message.content.toLowerCase();
+
+    if (content === 'oi') {
+        message.reply('vai tomar no cu');
+        console.log(`${new Date().toLocaleString('pt-BR')} | vai tomar no cu`);
     }
 
-    const apiKey = process.env.OPENWEATHERMAP_API_KEY;
-    const city = args.join(' ');
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric&lang=pt`;
+    if (!content.startsWith(prefix) || message.author.bot) return;
 
-    try {
-        const fetch = await import('node-fetch').then(mod => mod.default);
-        const response = await fetch(url);
-        const data = await response.json();
+    const args = content.slice(prefix.length).trim().split(/ +/);
+    const command = args.shift().toLowerCase();
 
-        // Verificação do código de status
-        if (data.cod !== 200) {
-            return message.reply(`Não consegui obter o clima para a cidade: ${city}`);
+    const commands = {
+        '8ball': ball8.execute,
+        help: help.execute.bind(null, client),
+        howgay: howgay.execute,
+        macaco: macaco.execute,
+        ping: ping.execute,
+        pp: pp.execute,
+        server: server.execute,
+        stank: stank.execute,
+        user: user.execute
+    }
+
+    if (commands[command]) { // Verificar e executar comandos
+        try {
+            const noArgsCommands = ['help', 'macaco', 'ping', 'server'];
+            if (noArgsCommands.includes(command) && args.length > 0) return; // Retorna se um dos noArgsCommands tiver algo escrito além do prefixo e comando
+            
+            const argsCommands = ['pp', 'howgay', 'stank', 'user'];
+            if (argsCommands.includes(command)) { 
+                if (args.length === 0 || args.length === 1 && message.mentions.users.size > 0) { // Verifica se não tem args OU se menciona um usuário
+                    commands[command](message, args);
+                } else {
+                    return;
+                }
+            } else {
+                commands[command](message, args);
+            }
+        } catch (error) {
+            console.error(`Erro ao executar o comando ${command}:`, error);
+            message.reply('Ocorreu um erro ao tentar executar esse comando.')
         }
-
-        const weather = data.weather[0].description;
-        const temperature = data.main.temp;
-        const feelsLike = data.main.feels_like;
-        const humidity = data.main.humidity;
-        const windSpeed = data.wind.speed;
-        const country = data.sys.country; // Obtém o código do país da resposta da API
-
-        const weatherInfo = new EmbedBuilder()
-            .setColor('#0099ff')
-            .setTitle(`Clima em ${data.name}, ${country}`) // Inclui o nome da cidade e o país
-            .setDescription(`Aqui estão as condições climáticas atuais para ${data.name}, ${country}`) // Inclui o nome da cidade e o país
-            .addFields(
-                { name: 'Condição', value: weather, inline: true },
-                { name: 'Temperatura', value: `${temperature}°C`, inline: true },
-                { name: 'Sensação térmica', value: `${feelsLike}°C`, inline: true },
-                { name: 'Umidade', value: `${humidity}%`, inline: true },
-                { name: 'Velocidade do vento', value: `${windSpeed} m/s`, inline: true }
-            )
-            .setTimestamp()
-            .setFooter({ text: 'Dados fornecidos por OpenWeatherMap' });
-
-        message.channel.send({ embeds: [weatherInfo] });
-    } catch (error) {
-        console.error(`Erro ao obter o clima:`, error);
-        message.reply('Ocorreu um erro ao tentar obter o clima.');
     }
-}
+});
 
-module.exports = { execute };
-
+client.login(process.env.TOKEN);
