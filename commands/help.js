@@ -5,6 +5,7 @@ function execute(client, message) {
         .setTitle('Ajuda')
         .setDescription(`**Lista de comandos:**\n
             **\`8ball\`**: Faça uma pergunta e obtenha uma resposta.
+            **\`clima\`**: Mostra as condições climáticas de uma cidade.
             **\`help\`**: Exibe todos os comandos.
             **\`howgay\`**: Mede o quão gay uma pessoa é.
             **\`macaco\`**: Gera um macaco aleatório.
