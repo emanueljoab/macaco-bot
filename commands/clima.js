@@ -24,12 +24,11 @@ async function execute(message, args) {
         const feelsLike = data.main.feels_like;
         const humidity = data.main.humidity;
         const windSpeed = data.wind.speed;
-        const country = data.sys.country; // Obtém o código do país da resposta da API
 
         const weatherInfo = new EmbedBuilder()
             .setColor('#0099ff')
-            .setTitle(`Clima em ${data.name}, ${country}`) // Inclui o nome da cidade e o país
-            .setDescription(`Aqui estão as condições climáticas atuais para ${data.name}, ${country}`) // Inclui o nome da cidade e o país
+            .setTitle(`Clima em ${data.name}`) // Usar o nome exato da cidade fornecido pela API
+            .setDescription(`Aqui estão as condições climáticas atuais para ${data.name}`) // Usar o nome exato da cidade fornecido pela API
             .addFields(
                 { name: 'Condição', value: weather, inline: true },
                 { name: 'Temperatura', value: `${temperature}°C`, inline: true },
@@ -48,4 +47,3 @@ async function execute(message, args) {
 }
 
 module.exports = { execute };
-
