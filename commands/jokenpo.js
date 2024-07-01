@@ -65,12 +65,12 @@ module.exports = {
             (choices[player1.id] === "papel \u{270B}" && choices[player2.id] === "pedra \u{1F44A}") ||
             (choices[player1.id] === "tesoura \u{270C}" && choices[player2.id] === "papel \u{270B}")
             ) {
-            resultado = `${player1.username} venceu!`;
+            resultado = `**${player1.username} venceu!**`;
             } else {
-            resultado = `${player2.username} venceu!`;
+            resultado = `**${player2.username} venceu!**`;
             }
 
-            embed.setDescription(`${player1.username} escolheu ${choices[player1.id]}\n${player2.username} escolheu ${choices[player2.id]}\n\n**${resultado}**`);
+            embed.setDescription(`${player1.username} escolheu ${choices[player1.id]}\n${player2.username} escolheu ${choices[player2.id]}\n\n${resultado}`);
             await reply.edit({ embeds: [embed], components: [] }); 
             }
         });
