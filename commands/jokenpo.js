@@ -48,6 +48,11 @@ module.exports = {
         collector.on('collect', async (interaction) => {
             choices[interaction.user.id] = interaction.customId;
             await interaction.deferUpdate();
+            
+            // Edita o embed para mostrar que está aguardando o outro jogador
+            const jogadorEsperando = Object.keys(choices).length === 1 ? player2 : player1;
+            embed.setDescription(`${player1.username} desafiou ${player2.username} para um jogo de Jokenpo!\n*Aguardando a resposta de ${jogadorEsperando.username}...*`);
+            await reply.edit({ embeds: [embed] });
 
             if (player2.id === 'Gerador de Macaco Aleatório') {
                 const opcoes = ['pedra \u{1F44A}', 'papel \u{270B}', 'tesoura \u{270C}'];
@@ -59,7 +64,7 @@ module.exports = {
 
             let resultado = "";
             if (choices[player1.id] === choices[player2.id]) {
-            resultado = "Empate!";
+            resultado = "**Empate!**";
             } else if (
             (choices[player1.id] === "pedra \u{1F44A}" && choices[player2.id] === "tesoura \u{270C}") ||
             (choices[player1.id] === "papel \u{270B}" && choices[player2.id] === "pedra \u{1F44A}") ||
