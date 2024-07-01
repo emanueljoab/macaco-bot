@@ -8,6 +8,7 @@ function execute(client, message) {
             **\`clima\`**: Mostra as condições climáticas de uma cidade.
             **\`help\`**: Exibe todos os comandos.
             **\`howgay\`**: Mede o quão gay uma pessoa é.
+            **\`jokenpo\`**: Joga um jogo de pedra, papel e tesoura.
             **\`macaco\`**: Gera um macaco aleatório.
             **\`ping\`**: Calcula o ping.
             **\`pp\`**: Mede o pipi.

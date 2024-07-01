@@ -10,6 +10,7 @@ const ball8 = require('../commands/8ball');
 const clima = require('../commands/clima')
 const help = require('../commands/help');
 const howgay = require('../commands/howgay');
+const jokenpo = require('../commands/jokenpo');
 const macaco = require('../commands/macaco');
 const ping = require('../commands/ping');
 const pp = require('../commands/pp');
@@ -48,6 +49,7 @@ client.on('messageCreate', (message) => { // Evento para mensagens
         clima: clima.execute,
         help: help.execute.bind(null, client),
         howgay: howgay.execute,
+        jokenpo: jokenpo.execute,
         macaco: macaco.execute,
         ping: ping.execute,
         pp: pp.execute,
