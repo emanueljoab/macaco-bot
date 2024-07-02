@@ -29,62 +29,68 @@ async function execute(message, args) {
 
   const apiKey = process.env.OPENWEATHERMAP_API_KEY;
   const city = args.join(' ');
-  const url = `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric&lang=pt`;
+  const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric&lang=pt`;
+  const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric&lang=pt`;
 
   try {
-    const response = await fetch(url);
-    const data = await response.json();
+    // Obter dados do clima atual
+    const currentWeatherResponse = await fetch(currentWeatherUrl);
+    const currentWeatherData = await currentWeatherResponse.json();
 
-    if (data.cod !== "200") {
-      return message.reply(`Não consegui obter o clima para a cidade: ${city}`);
+    if (currentWeatherData.cod !== 200) {
+      return message.reply(`Não consegui obter o clima atual para a cidade: ${city}`);
     }
 
+    // Obter dados da previsão
+    const forecastResponse = await fetch(forecastUrl);
+    const forecastData = await forecastResponse.json();
+
+    if (forecastData.cod !== "200") {
+      return message.reply(`Não consegui obter a previsão do tempo para a cidade: ${city}`);
+    }
+
+    // Processar dados do clima atual
+    const weatherIconCode = currentWeatherData.weather[0].icon;
+    const weatherIcon = weatherIcons[weatherIconCode] || '❓';
+    const cityName = currentWeatherData.name;
+    const country = currentWeatherData.sys.country;
+    const temperature = currentWeatherData.main.temp;
+    const feelsLike = currentWeatherData.main.feels_like;
+    const windSpeed = currentWeatherData.wind.speed;
+    const humidity = currentWeatherData.main.humidity;
+
+    // Processar dados da previsão (24 horas)
     let tempMin = Infinity;
     let tempMax = -Infinity;
-    let currentTemp = null;
-    let feelsLike = null;
-    let windSpeed = null;
-    let humidity = null; // Para armazenar a umidade
     const now = new Date();
     const oneDayLater = new Date(now);
     oneDayLater.setDate(oneDayLater.getDate() + 1);
 
-    for (const forecast of data.list) {
+    for (const forecast of forecastData.list) {
       const forecastDate = new Date(forecast.dt * 1000);
       if (forecastDate >= now && forecastDate < oneDayLater) {
         tempMin = Math.min(tempMin, forecast.main.temp_min);
         tempMax = Math.max(tempMax, forecast.main.temp_max);
-
-        if (!currentTemp || Math.abs(forecastDate - now) < Math.abs(new Date(currentTemp.dt * 1000) - now)) {
-          currentTemp = forecast;
-          feelsLike = forecast.main.feels_like;
-          windSpeed = forecast.wind.speed;
-          humidity = forecast.main.humidity; // Obter a umidade da previsão atual
-        }
       }
     }
 
-    const weatherIconCode = currentTemp.weather[0].icon;
-    const weatherIcon = weatherIcons[weatherIconCode] || '❓';
-    const cityName = data.city.name;
-    const country = data.city.country;
-
+    // Construir a mensagem do Embed
     const weatherInfo = new EmbedBuilder()
-      .setTitle(`Clima de ${cityName}, ${country}`)
-      .setDescription(`Condições climáticas para ${cityName}, ${country}`)
+      .setTitle(`Clima em ${cityName}, ${country}`)
+      .setDescription(`Condições climáticas atuais em ${cityName}, ${country}`)
       .setThumbnail(`https://openweathermap.org/img/wn/${weatherIconCode}.png`)
       .addFields(
-        { name: 'Condição', value: `${weatherIcon} ${currentTemp.weather[0].description}`, inline: true },
-        { name: 'Temperatura', value: `${currentTemp.main.temp} °C`, inline: true },
+        { name: 'Condição', value: `${weatherIcon} ${currentWeatherData.weather[0].description}`, inline: true },
+        { name: 'Temperatura', value: `${temperature} °C`, inline: true },
         { name: 'Sensação Térmica', value: `${feelsLike} °C`, inline: true },
-        { name: 'Mín / Máx', value: `${tempMin} °C / ${tempMax} °C`, inline: true },
-        { name: 'Umidade', value: `${humidity}%`, inline: true },        
         { name: 'Velocidade do Vento', value: `${windSpeed} m/s`, inline: true },
+        { name: 'Umidade', value: `${humidity}%`, inline: true },
+        { name: 'Mín / Máx (24 horas)', value: `${tempMin} °C / ${tempMax} °C`, inline: true },
       )
       .setFooter({ text: 'Dados fornecidos por OpenWeatherMap' });
 
     message.channel.send({ embeds: [weatherInfo] });
-    console.log(`${new Date().toLocaleString('pt-BR')} | ${cityName}: ${tempMin} °C / ${tempMax} °C (${message.author.username})`)
+    console.log(`${new Date().toLocaleString('pt-BR')} | ${cityName}: ${temperature} °C e ${currentWeatherData.weather[0].description}. (${message.author.username})`)
   } catch (error) {
     console.error(`Erro ao obter o clima:`, error);
     message.reply('Ocorreu um erro ao tentar obter o clima.');
