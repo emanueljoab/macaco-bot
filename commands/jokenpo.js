@@ -48,7 +48,7 @@ module.exports = {
         collector.on('collect', async (interaction) => {
             choices[interaction.user.id] = interaction.customId;
             await interaction.deferUpdate();
-            
+         
             // Edita o embed para mostrar que está aguardando o outro jogador
             const jogadorEsperando = Object.keys(choices).length === 1 ? player2 : player1;
             embed.setDescription(`${player1.username} desafiou ${player2.username} para um jogo de Jokenpo!\n*Aguardando a resposta de ${jogadorEsperando.username}...*`);
