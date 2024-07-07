@@ -17,6 +17,7 @@ const pp = require("../commands/pp");
 const server = require("../commands/server");
 const stank = require("../commands/stank");
 const user = require("../commands/user");
+const rank = require("../commands/rank");
 const { Sequelize } = require("sequelize");
 const { Rank } = require("../database/models");
 
@@ -62,12 +63,13 @@ client.on("messageCreate", (message) => {
     server: server.execute,
     stank: stank.execute,
     user: user.execute,
+    rank: rank.execute,
   };
 
   if (commands[command]) {
     // Verificar e executar comandos
     try {
-      const noArgsCommands = ["help", "macaco", "ping", "server"];
+      const noArgsCommands = ["help", "macaco", "ping", "server", "rank"];
       if (noArgsCommands.includes(command) && args.length > 0) return; // Retorna se um dos noArgsCommands tiver algo escrito além do prefixo e comando
 
       const argsCommands = ["pp", "howgay", "stank", "user"];

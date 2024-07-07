@@ -6,7 +6,6 @@ async function addPoints(victory, user) {
       where: { id: user.id },
     });
     const newWins = userRank.wins + 1;
-    console.log(userRank);
 
     await Rank.update({ wins: newWins }, { where: { id: user.id } });
 
@@ -17,8 +16,6 @@ async function addPoints(victory, user) {
       where: { id: user.id },
     });
     const newLosses = userRank.losses + 1;
-
-    console.log(userRank);
 
     await Rank.update({ losses: newLosses }, { where: { id: user.id } });
     console.log(`${user.username} perdeu um ponto.`);
