@@ -17,6 +17,8 @@ const pp = require("../commands/pp");
 const server = require("../commands/server");
 const stank = require("../commands/stank");
 const user = require("../commands/user");
+const { Sequelize } = require("sequelize");
+const { Rank } = require("../database/models");
 
 const client = new Client({
   intents: [
@@ -30,6 +32,7 @@ client.once("ready", async () => {
   console.log(
     `${new Date().toLocaleString("pt-BR")} | ${client.user.tag} está online.`
   );
+  Rank.sync();
   client.user.setActivity({ name: "pls macaco" });
 });
 
@@ -79,7 +82,7 @@ client.on("messageCreate", (message) => {
           return;
         }
       } else {
-        commands[command](message, args);
+        commands[command](message, args, client);
       }
     } catch (error) {
       console.error(`Erro ao executar o comando ${command}:`, error);

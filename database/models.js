@@ -1,6 +1,6 @@
 const { DataTypes, Sequelize } = require("sequelize");
 
-const sequelize = new Sequelize("rank", {
+const sequelize = new Sequelize({
   host: "localhost",
   dialect: "sqlite",
   logging: false,
@@ -20,4 +20,4 @@ const Rank = sequelize.define("rank", {
   losses: DataTypes.INTEGER,
 });
 
-module.exports = Rank;
+module.exports = { Rank };
