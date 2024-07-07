@@ -73,10 +73,10 @@ client.on("messageCreate", (message) => {
             const argsCommands = ["pp", "howgay", "stank", "user"];
             if (argsCommands.includes(command)) {
                 if (
+                    // Verifica se não tem args OU se menciona um usuário
                     args.length === 0 ||
                     (args.length === 1 && message.mentions.users.size > 0)
                 ) {
-                    // Verifica se não tem args OU se menciona um usuário
                     commands[command](message, args, db);
                 } else {
                     return;
