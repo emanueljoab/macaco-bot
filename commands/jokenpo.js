@@ -172,7 +172,7 @@ module.exports = {
 
                         const guildId = message.guild.id;
 
-                        let historyMessage;
+                        let historyMessage = "Histórico não disponível.";
                         if (resultado.includes(sortedPlayer1.username)) {
                             historyMessage = await atualizarHistorico(
                                 sortedPlayer1.id,
@@ -225,7 +225,12 @@ module.exports = {
                             }
                         }
 
-                        embed.setFooter({ text: historyMessage });
+                        if (historyMessage) {
+                            embed.setFooter({ text: historyMessage });
+                        } else {
+                            embed.setFooter({ text: "Histórico não disponível." });
+                        }
+                        
                         await reply.edit({ embeds: [embed], components: [] });
                     }
                 });
