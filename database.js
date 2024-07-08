@@ -40,7 +40,7 @@ db.serialize(() => {
                 console.log("Tabela jokenpo_history criada ou já existente.");
             }
         }
-    );
+    );   
 });
 
 module.exports = db;

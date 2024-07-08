@@ -277,7 +277,7 @@ module.exports = {
                         function (err) {
                             if (err) {
                                 console.error(
-                                    "Erro ao atualizar pontuação:",
+                                    "Erro ao atualizar a pontuação:",
                                     err
                                 );
                             } else {
@@ -289,69 +289,52 @@ module.exports = {
                     );
                 }
 
-                function atualizarHistorico(
-                    player1Id,
-                    player2Id,
-                    player1Username,
-                    player2Username,
-                    player1WinsToAdd,
-                    player2WinsToAdd
-                ) {
+                function atualizarHistorico(player1Id, player2Id, player1Username, player2Username, player1WinsToAdd, player2WinsToAdd) {
                     return new Promise((resolve, reject) => {
-                        const sortedPlayers = [player1Id, player2Id, player1Username, player2Username].sort();
-
+                        // Garante que "Gerador de Macaco Aleatório" esteja sempre em player2
+                        if (player1Id === "1243673463902834809") {
+                            [player1Id, player2Id] = [player2Id, player1Id];
+                            [player1Username, player2Username] = [player2Username, player1Username];
+                        }
+                
                         db.run(
                             `INSERT OR IGNORE INTO jokenpo_history (player1_id, player2_id, player1_username, player2_username, player1_wins, player2_wins) 
-                            VALUES (?, ?, ?, ?, 0, 0)`,
-                            sortedPlayers,
-                            function (err) {
+                             VALUES (?, ?, ?, ?, 0, 0)`,
+                            [player1Id, player2Id, player1Username, player2Username], 
+                            function (err) { 
                                 if (err) {
-                                    console.error(
-                                        "Erro ao inserir no histórico:",
-                                        err
-                                    );
+                                    console.error("Erro ao inserir no histórico:", err);
                                     reject(err);
                                 } else {
-                                    console.log(
-                                        "Histórico de partida inserido com sucesso!"
-                                    );
+                                    console.log("Histórico de partida inserido com sucesso!");
                                 }
                             }
                         );
-
+                
                         db.run(
                             `UPDATE jokenpo_history 
-                            SET player1_wins = player1_wins + ?, player2_wins = player2_wins + ? 
-                            WHERE player1_id = ? AND player2_id = ?`,
-                            [
-                                player1WinsToAdd,
-                                player2WinsToAdd,
-                                player1Id,
-                                player2Id,
-                            ],
+                             SET player1_wins = player1_wins + ?, player2_wins = player2_wins + ? 
+                             WHERE player1_id = ? AND player2_id = ?`,
+                            [player1WinsToAdd, player2WinsToAdd, player1Id, player2Id], 
                             function (err) {
                                 if (err) {
-                                    console.error(
-                                        "Erro ao atualizar o histórico:",
-                                        err
-                                    );
+                                    console.error("Erro ao atualizar o histórico:", err);
                                     reject(err);
                                 } else {
                                     db.get(
                                         `SELECT player1_wins, player2_wins 
-                                        FROM jokenpo_history 
-                                        WHERE player1_id = ? AND player2_id = ?`,
-                                        [player1Id, player2Id],
+                                         FROM jokenpo_history 
+                                         WHERE player1_id = ? AND player2_id = ?`,
+                                        [player1Id, player2Id], 
                                         (err, row) => {
                                             if (err) {
-                                                console.error(
-                                                    "Erro ao obter o histórico atualizado:",
-                                                    err
-                                                );
+                                                console.error("Erro ao obter o histórico atualizado:", err);
                                                 reject(err);
-                                            } else {
+                                            } else if (row) {
                                                 const historyMessage = `Placar: ${player1Username} ${row.player1_wins} — ${row.player2_wins} ${player2Username}`;
                                                 resolve(historyMessage);
+                                            } else {
+                                                resolve("Histórico não disponível.");
                                             }
                                         }
                                     );
@@ -360,6 +343,8 @@ module.exports = {
                         );
                     });
                 }
+                
+                
             }
         } catch (error) {
             console.error(
