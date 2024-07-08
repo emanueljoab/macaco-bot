@@ -1,7 +1,9 @@
+// database.js
+
 const sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("./jokenpo.db");
 
-// Criação da tabela se não existir
+// Criação das tabelas se não existirem
 db.serialize(() => {
     db.run(
         `CREATE TABLE IF NOT EXISTS jokenpo_rank (
@@ -16,7 +18,26 @@ db.serialize(() => {
             if (err) {
                 console.error("Erro ao criar a tabela:", err);
             } else {
-                console.log("Tabela criada ou já existente.");
+                console.log("Tabela jokenpo_rank criada ou já existente.");
+            }
+        }
+    );
+
+    db.run(
+        `CREATE TABLE IF NOT EXISTS jokenpo_history (
+        player1_id TEXT,
+        player2_id TEXT,
+        player1_username TEXT,
+        player2_username TEXT,
+        player1_wins INTEGER,
+        player2_wins INTEGER,
+        PRIMARY KEY (player1_id, player2_id)
+    )`,
+        (err) => {
+            if (err) {
+                console.error("Erro ao criar a tabela jokenpo_history:", err);
+            } else {
+                console.log("Tabela jokenpo_history criada ou já existente.");
             }
         }
     );

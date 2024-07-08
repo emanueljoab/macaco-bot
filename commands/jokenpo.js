@@ -1,3 +1,5 @@
+// jokenpo.js
+
 const {
     EmbedBuilder,
     ActionRowBuilder,
@@ -8,7 +10,6 @@ const {
 module.exports = {
     async execute(message, args, db) {
         try {
-            // Verificar se há argumentos extras além de menções ou "rank"
             if (
                 args.length > 1 ||
                 (args.length === 1 &&
@@ -19,7 +20,6 @@ module.exports = {
                 return;
             }
             if (args.length > 0 && args[0].toLowerCase() === "rank") {
-                // Lógica para exibir o ranking
                 const guildId = message.guild.id;
 
                 db.all(
@@ -72,10 +72,17 @@ module.exports = {
                     };
                 }
 
+                const isBotGame = player2.id === "1243673463902834809";
+                const [sortedPlayer1, sortedPlayer2] = isBotGame
+                    ? [player1, player2]
+                    : player1.id < player2.id
+                    ? [player1, player2]
+                    : [player2, player1];
+
                 const embed = new EmbedBuilder()
                     .setTitle("Jokenpo")
                     .setDescription(
-                        `${player1.username} desafiou ${player2.username} para um jogo de Jokenpo!`
+                        `${sortedPlayer1.username} desafiou ${sortedPlayer2.username} para um jogo de Jokenpo!`
                     );
 
                 const row = new ActionRowBuilder().addComponents(
@@ -100,7 +107,7 @@ module.exports = {
 
                 const filter = (interaction) =>
                     interaction.isButton() &&
-                    [player1.id, player2.id].includes(interaction.user.id);
+                    [sortedPlayer1.id, sortedPlayer2.id].includes(interaction.user.id);
 
                 const collector = reply.createMessageComponentCollector({
                     filter,
@@ -114,98 +121,112 @@ module.exports = {
                     choices[interaction.user.id] = interaction.customId;
                     await interaction.deferUpdate();
 
-                    // Edita o embed para mostrar que está aguardando o outro jogador
                     const jogadorEsperando =
-                        Object.keys(choices).length === 1 ? player2 : player1;
+                        Object.keys(choices).length === 1 ? sortedPlayer2 : sortedPlayer1;
                     embed.setDescription(
-                        `${player1.username} desafiou ${player2.username} para um jogo de Jokenpo!\n*Aguardando a resposta de ${jogadorEsperando.username}...*`
+                        `${sortedPlayer1.username} desafiou ${sortedPlayer2.username} para um jogo de Jokenpo!\n*Aguardando a resposta de ${jogadorEsperando.username}...*`
                     );
                     await reply.edit({ embeds: [embed] });
 
-                    if (player2.id === "1243673463902834809") {
+                    if (sortedPlayer2.id === "1243673463902834809") {
                         const opcoes = [
                             "pedra \u{1F44A}",
                             "papel \u{270B}",
                             "tesoura \u{270C}",
                         ];
-                        choices[player2.id] =
+                        choices[sortedPlayer2.id] =
                             opcoes[Math.floor(Math.random() * 3)];
                     }
 
                     if (Object.keys(choices).length === 2) {
                         collector.stop();
 
-                        if (choices[player1.id] === choices[player2.id]) {
+                        if (choices[sortedPlayer1.id] === choices[sortedPlayer2.id]) {
                             resultado = "**Empate!**";
                         } else if (
-                            (choices[player1.id] === "pedra \u{1F44A}" &&
-                                choices[player2.id] === "tesoura \u{270C}") ||
-                            (choices[player1.id] === "papel \u{270B}" &&
-                                choices[player2.id] === "pedra \u{1F44A}") ||
-                            (choices[player1.id] === "tesoura \u{270C}" &&
-                                choices[player2.id] === "papel \u{270B}")
+                            (choices[sortedPlayer1.id] === "pedra \u{1F44A}" &&
+                                choices[sortedPlayer2.id] === "tesoura \u{270C}") ||
+                            (choices[sortedPlayer1.id] === "papel \u{270B}" &&
+                                choices[sortedPlayer2.id] === "pedra \u{1F44A}") ||
+                            (choices[sortedPlayer1.id] === "tesoura \u{270C}" &&
+                                choices[sortedPlayer2.id] === "papel \u{270B}")
                         ) {
-                            resultado = `**${player1.username.replace(
+                            resultado = `**${sortedPlayer1.username.replace(
                                 /_/g,
                                 "\\_"
                             )} venceu!**`;
                         } else {
-                            resultado = `**${player2.username.replace(
+                            resultado = `**${sortedPlayer2.username.replace(
                                 /_/g,
                                 "\\_"
                             )} venceu!**`;
                         }
 
-                        // Editar o Embed com o resultado (movido para dentro do if)
                         embed.setDescription(
-                            `${player1.username} escolheu ${
-                                choices[player1.id]
-                            }\n${player2.username} escolheu ${
-                                choices[player2.id]
+                            `${sortedPlayer1.username} escolheu ${
+                                choices[sortedPlayer1.id]
+                            }\n${sortedPlayer2.username} escolheu ${
+                                choices[sortedPlayer2.id]
                             }\n\n${resultado}`
                         );
-                        await reply.edit({ embeds: [embed], components: [] });
 
-                        // Atualizar o ranking no banco de dados (agora com db disponível)
                         const guildId = message.guild.id;
 
-                        if (resultado.includes(player1.username)) {
-                            // Player 1 venceu
-                            atualizarPontuacao(
-                                guildId,
-                                player1.id,
-                                player1.username,
+                        let historyMessage;
+                        if (resultado.includes(sortedPlayer1.username)) {
+                            historyMessage = await atualizarHistorico(
+                                sortedPlayer1.id,
+                                sortedPlayer2.id,
+                                sortedPlayer1.username,
+                                sortedPlayer2.username,
                                 1,
                                 0
                             );
-                            if (player2.id !== "Gerador de Macaco Aleatório") {
+                            atualizarPontuacao(
+                                guildId,
+                                sortedPlayer1.id,
+                                sortedPlayer1.username,
+                                1,
+                                0
+                            );
+                            if (sortedPlayer2.id !== "Gerador de Macaco Aleatório") {
                                 atualizarPontuacao(
                                     guildId,
-                                    player2.id,
-                                    player2.username,
+                                    sortedPlayer2.id,
+                                    sortedPlayer2.username,
                                     0,
                                     1
                                 );
                             }
-                        } else if (resultado.includes(player2.username)) {
-                            // Player 2 venceu
+                        } else if (resultado.includes(sortedPlayer2.username)) {
+                            historyMessage = await atualizarHistorico(
+                                sortedPlayer1.id,
+                                sortedPlayer2.id,
+                                sortedPlayer1.username,
+                                sortedPlayer2.username,
+                                0,
+                                1
+                            );
                             atualizarPontuacao(
                                 guildId,
-                                player2.id,
-                                player2.username,
+                                sortedPlayer2.id,
+                                sortedPlayer2.username,
                                 1,
                                 0
                             );
-                            if (player2.id !== "Gerador de Macaco Aleatório") {
+                            if (sortedPlayer2.id !== "Gerador de Macaco Aleatório") {
                                 atualizarPontuacao(
                                     guildId,
-                                    player1.id,
-                                    player1.username,
+                                    sortedPlayer1.id,
+                                    sortedPlayer1.username,
                                     0,
                                     1
                                 );
                             }
                         }
+
+                        embed.setFooter({ text: historyMessage });
+                        await reply.edit({ embeds: [embed], components: [] });
                     }
                 });
 
@@ -248,6 +269,78 @@ module.exports = {
                             }
                         }
                     );
+                }
+
+                function atualizarHistorico(
+                    player1Id,
+                    player2Id,
+                    player1Username,
+                    player2Username,
+                    player1WinsToAdd,
+                    player2WinsToAdd
+                ) {
+                    return new Promise((resolve, reject) => {
+                        const sortedPlayers = [player1Id, player2Id, player1Username, player2Username];
+
+                        db.run(
+                            `INSERT OR IGNORE INTO jokenpo_history (player1_id, player2_id, player1_username, player2_username, player1_wins, player2_wins) 
+                            VALUES (?, ?, ?, ?, 0, 0)`,
+                            sortedPlayers,
+                            function (err) {
+                                if (err) {
+                                    console.error(
+                                        "Erro ao inserir no histórico:",
+                                        err
+                                    );
+                                    reject(err);
+                                } else {
+                                    console.log(
+                                        "Histórico de partida inserido com sucesso!"
+                                    );
+                                }
+                            }
+                        );
+
+                        db.run(
+                            `UPDATE jokenpo_history 
+                            SET player1_wins = player1_wins + ?, player2_wins = player2_wins + ? 
+                            WHERE player1_id = ? AND player2_id = ?`,
+                            [
+                                player1WinsToAdd,
+                                player2WinsToAdd,
+                                player1Id,
+                                player2Id,
+                            ],
+                            function (err) {
+                                if (err) {
+                                    console.error(
+                                        "Erro ao atualizar o histórico:",
+                                        err
+                                    );
+                                    reject(err);
+                                } else {
+                                    db.get(
+                                        `SELECT player1_wins, player2_wins 
+                                        FROM jokenpo_history 
+                                        WHERE player1_id = ? AND player2_id = ?`,
+                                        [player1Id, player2Id],
+                                        (err, row) => {
+                                            if (err) {
+                                                console.error(
+                                                    "Erro ao obter o histórico atualizado:",
+                                                    err
+                                                );
+                                                reject(err);
+                                            } else {
+                                                const historyMessage = `${player1Username} ${row.player1_wins} — ${row.player2_wins} ${player2Username}`;
+                                                resolve(historyMessage);
+                                            }
+                                        }
+                                    );
+                                }
+                            }
+                        );
+                    });
                 }
             }
         } catch (error) {
