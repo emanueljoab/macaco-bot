@@ -121,12 +121,16 @@ module.exports = {
                     choices[interaction.user.id] = interaction.customId;
                     await interaction.deferUpdate();
 
-                    const jogadorEsperando =
-                        Object.keys(choices).length === 1 ? sortedPlayer2 : sortedPlayer1;
-                    embed.setDescription(
-                        `${sortedPlayer1.username} desafiou ${sortedPlayer2.username} para um jogo de Jokenpo!\n*Aguardando a resposta de ${jogadorEsperando.username}...*`
-                    );
-                    await reply.edit({ embeds: [embed] });
+                    if (Object.keys(choices).length < 2) {
+                        const jogadorEsperando = [sortedPlayer1, sortedPlayer2].find(
+                            (player) => !choices[player.id]
+                        );
+
+                        embed.setDescription(
+                            `${sortedPlayer1.username} desafiou ${sortedPlayer2.username} para um jogo de Jokenpo!\n*Aguardando a resposta de ${jogadorEsperando.username}...*`
+                        );
+                        await reply.edit({ embeds: [embed] });
+                    }
 
                     if (sortedPlayer2.id === "1243673463902834809") {
                         const opcoes = [
@@ -223,6 +227,15 @@ module.exports = {
                                     1
                                 );
                             }
+                        } else {
+                            historyMessage = await atualizarHistorico(
+                                sortedPlayer1.id,
+                                sortedPlayer2.id,
+                                sortedPlayer1.username,
+                                sortedPlayer2.username,
+                                0,
+                                0
+                            );
                         }
 
                         if (historyMessage) {
@@ -285,7 +298,7 @@ module.exports = {
                     player2WinsToAdd
                 ) {
                     return new Promise((resolve, reject) => {
-                        const sortedPlayers = [player1Id, player2Id, player1Username, player2Username];
+                        const sortedPlayers = [player1Id, player2Id, player1Username, player2Username].sort();
 
                         db.run(
                             `INSERT OR IGNORE INTO jokenpo_history (player1_id, player2_id, player1_username, player2_username, player1_wins, player2_wins) 
@@ -337,7 +350,7 @@ module.exports = {
                                                 );
                                                 reject(err);
                                             } else {
-                                                const historyMessage = `${player1Username} ${row.player1_wins} — ${row.player2_wins} ${player2Username}`;
+                                                const historyMessage = `Placar: ${player1Username} ${row.player1_wins} — ${row.player2_wins} ${player2Username}`;
                                                 resolve(historyMessage);
                                             }
                                         }
