@@ -1,11 +1,4 @@
-// jokenpo.js
-
-const {
-    EmbedBuilder,
-    ActionRowBuilder,
-    ButtonBuilder,
-    ButtonStyle,
-} = require("discord.js");
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 
 module.exports = {
     async execute(message, args, db) {
@@ -27,13 +20,8 @@ module.exports = {
                     [guildId],
                     (err, rows) => {
                         if (err) {
-                            console.error(
-                                "Erro ao obter o ranking do banco de dados:",
-                                err
-                            );
-                            return message.reply(
-                                "Ocorreu um erro ao obter o ranking."
-                            );
+                            console.error("Erro ao obter o ranking do banco de dados:", err);
+                            return message.reply("Ocorreu um erro ao obter o ranking.");
                         }
 
                         const embed = new EmbedBuilder()
@@ -41,21 +29,13 @@ module.exports = {
                             .setDescription(
                                 rows
                                     .map((row, index) => {
-                                        const user =
-                                            message.guild.members.cache.get(
-                                                row.user_id
-                                            );
+                                        const user = message.guild.members.cache.get(row.user_id);
                                         const username =
                                             row.username ||
-                                            (user
-                                                ? user.displayName
-                                                : "Usuário Desconhecido");
-                                        return `${index + 1}. ${username}: ${
-                                            row.wins
-                                        } vitórias, ${row.losses} derrotas`;
+                                            (user ? escapeMarkdown(user.displayName) : "Usuário Desconhecido");
+                                        return `${index + 1}. ${username}: ${row.wins} vitórias, ${row.losses} derrotas`;
                                     })
-                                    .join("\n") ||
-                                    "Nenhum dado de ranking encontrado."
+                                    .join("\n") || "Nenhum dado de ranking encontrado."
                             );
 
                         message.reply({ embeds: [embed] });
@@ -82,7 +62,7 @@ module.exports = {
                 const embed = new EmbedBuilder()
                     .setTitle("Jokenpo")
                     .setDescription(
-                        `${sortedPlayer1.username} desafiou ${sortedPlayer2.username} para um jogo de Jokenpo!`
+                        `${escapeMarkdown(sortedPlayer1.username)} desafiou ${escapeMarkdown(sortedPlayer2.username)} para um jogo de Jokenpo!`
                     );
 
                 const row = new ActionRowBuilder().addComponents(
@@ -127,19 +107,15 @@ module.exports = {
                         );
 
                         embed.setDescription(
-                            `${sortedPlayer1.username} desafiou ${sortedPlayer2.username} para um jogo de Jokenpo!\n*Aguardando a resposta de ${jogadorEsperando.username}...*`
+                            `${escapeMarkdown(sortedPlayer1.username)} desafiou ${escapeMarkdown(sortedPlayer2.username)} para um jogo de Jokenpo!\n*Aguardando a resposta de ${escapeMarkdown(jogadorEsperando.username)}...*`
                         );
+
                         await reply.edit({ embeds: [embed] });
                     }
 
                     if (sortedPlayer2.id === "1243673463902834809") {
-                        const opcoes = [
-                            "pedra \u{1F44A}",
-                            "papel \u{270B}",
-                            "tesoura \u{270C}",
-                        ];
-                        choices[sortedPlayer2.id] =
-                            opcoes[Math.floor(Math.random() * 3)];
+                        const opcoes = ["pedra \u{1F44A}", "papel \u{270B}", "tesoura \u{270C}"];
+                        choices[sortedPlayer2.id] = opcoes[Math.floor(Math.random() * 3)];
                     }
 
                     if (Object.keys(choices).length === 2) {
@@ -155,29 +131,22 @@ module.exports = {
                             (choices[sortedPlayer1.id] === "tesoura \u{270C}" &&
                                 choices[sortedPlayer2.id] === "papel \u{270B}")
                         ) {
-                            resultado = `**${sortedPlayer1.username.replace(
-                                /_/g,
-                                "\\_"
-                            )} venceu!**`;
+                            resultado = `**${escapeMarkdown(sortedPlayer1.username)} venceu!**`;
                         } else {
-                            resultado = `**${sortedPlayer2.username.replace(
-                                /_/g,
-                                "\\_"
-                            )} venceu!**`;
+                            resultado = `**${escapeMarkdown(sortedPlayer2.username)} venceu!**`;
                         }
 
+                        console.log(`Resultado: ${resultado}`);
+                        console.log(`Escolhas: ${JSON.stringify(choices)}`);
+
                         embed.setDescription(
-                            `${sortedPlayer1.username} escolheu ${
-                                choices[sortedPlayer1.id]
-                            }\n${sortedPlayer2.username} escolheu ${
-                                choices[sortedPlayer2.id]
-                            }\n\n${resultado}`
+                            `${escapeMarkdown(sortedPlayer1.username)} escolheu ${choices[sortedPlayer1.id]}\n${escapeMarkdown(sortedPlayer2.username)} escolheu ${choices[sortedPlayer2.id]}\n\n${resultado}`
                         );
 
                         const guildId = message.guild.id;
 
                         let historyMessage = "Histórico não disponível.";
-                        if (resultado.includes(sortedPlayer1.username)) {
+                        if (resultado.includes(escapeMarkdown(sortedPlayer1.username))) {
                             historyMessage = await atualizarHistorico(
                                 sortedPlayer1.id,
                                 sortedPlayer2.id,
@@ -202,7 +171,7 @@ module.exports = {
                                     1
                                 );
                             }
-                        } else if (resultado.includes(sortedPlayer2.username)) {
+                        } else if (resultado.includes(escapeMarkdown(sortedPlayer2.username))) {
                             historyMessage = await atualizarHistorico(
                                 sortedPlayer1.id,
                                 sortedPlayer2.id,
@@ -243,7 +212,7 @@ module.exports = {
                         } else {
                             embed.setFooter({ text: "Histórico não disponível." });
                         }
-                        
+
                         await reply.edit({ embeds: [embed], components: [] });
                     }
                 });
@@ -257,13 +226,7 @@ module.exports = {
                     }
                 });
 
-                function atualizarPontuacao(
-                    guildId,
-                    userId,
-                    username,
-                    winsToAdd,
-                    lossesToAdd
-                ) {
+                function atualizarPontuacao(guildId, userId, username, winsToAdd, lossesToAdd) {
                     console.log(
                         `Atualizando pontuação para guildId: ${guildId}, userId: ${userId}, wins: ${winsToAdd}, losses: ${lossesToAdd}`
                     );
@@ -276,14 +239,9 @@ module.exports = {
                         [winsToAdd, lossesToAdd, guildId, userId],
                         function (err) {
                             if (err) {
-                                console.error(
-                                    "Erro ao atualizar a pontuação:",
-                                    err
-                                );
+                                console.error("Erro ao atualizar a pontuação:", err);
                             } else {
-                                console.log(
-                                    "Pontuação atualizada com sucesso!"
-                                );
+                                console.log("Pontuação atualizada com sucesso!");
                             }
                         }
                     );
@@ -291,67 +249,62 @@ module.exports = {
 
                 function atualizarHistorico(player1Id, player2Id, player1Username, player2Username, player1WinsToAdd, player2WinsToAdd) {
                     return new Promise((resolve, reject) => {
-                        // Garante que "Gerador de Macaco Aleatório" esteja sempre em player2
-                        if (player1Id === "1243673463902834809") {
-                            [player1Id, player2Id] = [player2Id, player1Id];
-                            [player1Username, player2Username] = [player2Username, player1Username];
-                        }
-                
-                        db.run(
-                            `INSERT OR IGNORE INTO jokenpo_history (player1_id, player2_id, player1_username, player2_username, player1_wins, player2_wins) 
-                             VALUES (?, ?, ?, ?, 0, 0)`,
-                            [player1Id, player2Id, player1Username, player2Username], 
-                            function (err) { 
-                                if (err) {
-                                    console.error("Erro ao inserir no histórico:", err);
-                                    reject(err);
-                                } else {
-                                    console.log("Histórico de partida inserido com sucesso!");
+                        db.serialize(() => {
+                            db.run(
+                                `INSERT OR IGNORE INTO jokenpo_history (player1_id, player2_id, player1_username, player2_username, player1_wins, player2_wins)
+                                 VALUES (?, ?, ?, ?, 0, 0)`,
+                                [player1Id, player2Id, player1Username, player2Username],
+                                function (err) {
+                                    if (err) {
+                                        console.error("Erro ao inserir no histórico:", err);
+                                        reject(err);
+                                    } else {
+                                        console.log("Histórico de partida inserido com sucesso!");
+                                    }
                                 }
-                            }
-                        );
-                
-                        db.run(
-                            `UPDATE jokenpo_history 
-                             SET player1_wins = player1_wins + ?, player2_wins = player2_wins + ? 
-                             WHERE player1_id = ? AND player2_id = ?`,
-                            [player1WinsToAdd, player2WinsToAdd, player1Id, player2Id], 
-                            function (err) {
-                                if (err) {
-                                    console.error("Erro ao atualizar o histórico:", err);
-                                    reject(err);
-                                } else {
-                                    db.get(
-                                        `SELECT player1_wins, player2_wins 
-                                         FROM jokenpo_history 
-                                         WHERE player1_id = ? AND player2_id = ?`,
-                                        [player1Id, player2Id], 
-                                        (err, row) => {
-                                            if (err) {
-                                                console.error("Erro ao obter o histórico atualizado:", err);
-                                                reject(err);
-                                            } else if (row) {
-                                                const historyMessage = `Placar: ${player1Username} ${row.player1_wins} — ${row.player2_wins} ${player2Username}`;
-                                                resolve(historyMessage);
-                                            } else {
-                                                resolve("Histórico não disponível.");
+                            );
+
+                            db.run(
+                                `UPDATE jokenpo_history
+                                 SET player1_wins = player1_wins + ?, player2_wins = player2_wins + ?
+                                 WHERE player1_id = ? AND player2_id = ?`,
+                                [player1WinsToAdd, player2WinsToAdd, player1Id, player2Id],
+                                function (err) {
+                                    if (err) {
+                                        console.error("Erro ao atualizar o histórico:", err);
+                                        reject(err);
+                                    } else {
+                                        db.get(
+                                            `SELECT player1_wins, player2_wins
+                                             FROM jokenpo_history
+                                             WHERE player1_id = ? AND player2_id = ?`,
+                                            [player1Id, player2Id],
+                                            (err, row) => {
+                                                if (err) {
+                                                    console.error("Erro ao obter o histórico atualizado:", err);
+                                                    reject(err);
+                                                } else if (row) {
+                                                    const historyMessage = `Placar: ${player1Username} ${row.player1_wins} — ${row.player2_wins} ${player2Username}`;
+                                                    resolve(historyMessage);
+                                                } else {
+                                                    resolve("Histórico não disponível.");
+                                                }
                                             }
-                                        }
-                                    );
+                                        );
+                                    }
                                 }
-                            }
-                        );
+                            );
+                        });
                     });
                 }
-                
-                
             }
         } catch (error) {
-            console.error(
-                "Ocorreu um erro ao executar o comando jokenpo:",
-                error
-            );
+            console.error("Ocorreu um erro ao executar o comando jokenpo:", error);
             message.reply("Ocorreu um erro ao executar o comando jokenpo");
         }
     },
 };
+
+function escapeMarkdown(text) {
+    return text.replace(/([\\*_`~])/g, '\\$1');
+}
