@@ -123,6 +123,7 @@ module.exports = {
 
                         if (choices[sortedPlayer1.id] === choices[sortedPlayer2.id]) {
                             resultado = "**Empate!**";
+                            console.log(`${new Date().toLocaleString("pt-BR")} | Jokenpo: Empate entre ${sortedPlayer1.username} e ${sortedPlayer2.username}`);
                         } else if (
                             (choices[sortedPlayer1.id] === "pedra \u{1F44A}" &&
                                 choices[sortedPlayer2.id] === "tesoura \u{270C}") ||
@@ -132,12 +133,11 @@ module.exports = {
                                 choices[sortedPlayer2.id] === "papel \u{270B}")
                         ) {
                             resultado = `**${escapeMarkdown(sortedPlayer1.username)} venceu!**`;
+                            console.log(`${new Date().toLocaleString("pt-BR")} | Jokenpo: ${sortedPlayer1.username} venceu ${sortedPlayer2.username}`);
                         } else {
                             resultado = `**${escapeMarkdown(sortedPlayer2.username)} venceu!**`;
+                            console.log(`${new Date().toLocaleString("pt-BR")} | Jokenpo: ${sortedPlayer2.username} venceu ${sortedPlayer1.username}`);
                         }
-
-                        console.log(`Resultado: ${resultado}`);
-                        console.log(`Escolhas: ${JSON.stringify(choices)}`);
 
                         embed.setDescription(
                             `${escapeMarkdown(sortedPlayer1.username)} escolheu ${choices[sortedPlayer1.id]}\n${escapeMarkdown(sortedPlayer2.username)} escolheu ${choices[sortedPlayer2.id]}\n\n${resultado}`
@@ -227,9 +227,6 @@ module.exports = {
                 });
 
                 function atualizarPontuacao(guildId, userId, username, winsToAdd, lossesToAdd) {
-                    console.log(
-                        `Atualizando pontuação para guildId: ${guildId}, userId: ${userId}, wins: ${winsToAdd}, losses: ${lossesToAdd}`
-                    );
                     db.run(
                         "INSERT OR IGNORE INTO jokenpo_rank (guild_id, user_id, username, wins, losses) VALUES (?, ?, ?, 0, 0)",
                         [guildId, userId, username]
@@ -240,8 +237,6 @@ module.exports = {
                         function (err) {
                             if (err) {
                                 console.error("Erro ao atualizar a pontuação:", err);
-                            } else {
-                                console.log("Pontuação atualizada com sucesso!");
                             }
                         }
                     );
@@ -258,8 +253,6 @@ module.exports = {
                                     if (err) {
                                         console.error("Erro ao inserir no histórico:", err);
                                         reject(err);
-                                    } else {
-                                        console.log("Histórico de partida inserido com sucesso!");
                                     }
                                 }
                             );

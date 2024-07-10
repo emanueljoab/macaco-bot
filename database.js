@@ -18,7 +18,7 @@ db.serialize(() => {
             if (err) {
                 console.error("Erro ao criar a tabela:", err);
             } else {
-                console.log("Tabela jokenpo_rank criada ou já existente.");
+                console.log(`${new Date().toLocaleString("pt-BR")} | Tabela jokenpo_rank criada ou já existente.`);
             }
         }
     );
@@ -37,7 +37,7 @@ db.serialize(() => {
             if (err) {
                 console.error("Erro ao criar a tabela jokenpo_history:", err);
             } else {
-                console.log("Tabela jokenpo_history criada ou já existente.");
+                console.log(`${new Date().toLocaleString("pt-BR")} | Tabela jokenpo_history criada ou já existente.`);
             }
         }
     );   
