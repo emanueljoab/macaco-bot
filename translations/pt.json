@@ -1,0 +1,7 @@
+{
+    "config": {
+        "select": "Selecione o idioma:",
+        "changed": "Idioma alterado para %lang%.",
+        "timeout": "Tempo esgotado para selecionar o idioma."
+    }
+}

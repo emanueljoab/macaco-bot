@@ -40,7 +40,20 @@ db.serialize(() => {
                 console.log(`${new Date().toLocaleString("pt-BR")} | Tabela jokenpo_history criada ou já existente.`);
             }
         }
-    );   
+    );  
+    db.run(
+        `CREATE TABLE IF NOT EXISTS server_language (
+        guild_id TEXT PRIMARY KEY,
+        language TEXT
+    )`,
+        (err) => {
+            if (err) {
+                console.error("Erro ao criar a tabela server_language:", err);
+            } else {
+                console.log(`${new Date().toLocaleString("pt-BR")} | Tabela server_language criada ou já existente.`);
+            }
+        }
+    );
 });
 
 module.exports = db;

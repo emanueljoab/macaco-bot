@@ -6,6 +6,7 @@ function execute(client, message) {
         .setDescription(`**Lista de comandos:**\n
             **\`8ball\`**: Faça uma pergunta e obtenha uma resposta.
             **\`clima\`**: Mostra as condições climáticas de uma cidade.
+            **\`config\`**: Configura o idioma do bot.
             **\`help\`**: Exibe todos os comandos.
             **\`howgay\`**: Mede o quão gay uma pessoa é.
             **\`jokenpo\`**: Joga um jogo de pedra, papel e tesoura.
