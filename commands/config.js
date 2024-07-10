@@ -3,8 +3,6 @@ const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, ComponentType }
 const db = require("../database");
 
 module.exports = {
-    name: 'config',
-    description: 'Configurações do bot para mudar o idioma',
     execute(message) {
         // Verifica se o usuário tem permissão de administrador
         if (!message.member.permissions.has('ADMINISTRATOR')) {
@@ -46,7 +44,7 @@ module.exports = {
         // Listener para interações com o menu de seleção
         const filter = (interaction) => interaction.customId === 'select-language' && interaction.user.id === message.author.id;
 
-        const collector = message.channel.createMessageComponentCollector({ filter, componentType: ComponentType.StringSelect, time: 60000 });
+        const collector = message.channel.createMessageComponentCollector({ filter, componentType: ComponentType.StringSelect });
 
         collector.on('collect', (interaction) => {
             const selectedLanguage = interaction.values[0];
@@ -63,12 +61,6 @@ module.exports = {
                 }
                 collector.stop();
             });
-        });
-
-        collector.on('end', collected => {
-            if (!collected.size) {
-                message.channel.send('Tempo esgotado para seleção de idioma.');
-            }
         });
     },
 };
