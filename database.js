@@ -1,5 +1,3 @@
-// database.js
-
 const sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("./jokenpo.db");
 
@@ -56,4 +54,33 @@ db.serialize(() => {
     );
 });
 
-module.exports = db;
+// Função para obter a preferência de idioma
+function getLanguagePreference(guildId) {
+    return new Promise((resolve, reject) => {
+        db.get("SELECT language FROM server_language WHERE guild_id = ?", [guildId], (err, row) => {
+            if (err) {
+                reject(err);
+            } else if (!row) {
+                // Define o idioma padrão como 'english' se não estiver definido
+                db.run(
+                    "INSERT INTO server_language (guild_id, language) VALUES (?, ?)",
+                    [guildId, 'english'],
+                    (err) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve('english');
+                        }
+                    }
+                );
+            } else {
+                resolve(row.language);
+            }
+        });
+    });
+}
+
+module.exports = {
+    db,
+    getLanguagePreference
+};

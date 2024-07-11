@@ -1,6 +1,6 @@
 // config.js
 const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, ComponentType } = require('discord.js');
-const db = require("../database");
+const { db } = require("../database");
 
 module.exports = {
     execute(message) {

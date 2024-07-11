@@ -4,6 +4,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { Client, GatewayIntentBits } = require("discord.js");
 const db = require("../database"); // Importe a instância do banco de dados
+const { loadTranslations, translate, setContext } = require("../translate");
 
 const prefix = "pls ";
 
@@ -35,9 +36,11 @@ client.once("ready", async () => {
         } está online.`
     );
     client.user.setActivity({ name: "pls macaco" });
+    loadTranslations(); // Carrega traduções ao iniciar o bot
 });
 
 client.on("messageCreate", (message) => {
+    setContext(message.guild.id);
     // Evento para mensagens
     const content = message.content.toLowerCase();
 
@@ -79,12 +82,12 @@ client.on("messageCreate", (message) => {
                     args.length === 0 ||
                     (args.length === 1 && message.mentions.users.size > 0)
                 ) {
-                    commands[command](message, args, db);
+                    commands[command](message, args, db, translate);
                 } else {
                     return;
                 }
             } else {
-                commands[command](message, args, db);
+                commands[command](message, args, db, translate);
             }
         } catch (error) {
             console.error(`Erro ao executar o comando ${command}:`, error);
