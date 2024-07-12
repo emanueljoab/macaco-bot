@@ -29,7 +29,17 @@
         "no args": "You need to provide a city name!",
         "error 200": "I couldn't get the current weather for the city: {0}",
         "error not 200": "I couldn't get the weather forecast for the city: {0}",
-        "setTitle": "Weather in {0}, {1}"
+        "setTitle": "Weather in {0}, {1}",
+        "setDescription": "Current weather conditions in {0}, {1}",
+        "condition": "Condition",
+        "temperature": "Temperature",
+        "feels like": "Feels like",
+        "wind speed": "Wind speed",
+        "humidity": "Humidity",
+        "minmax": "Min / Max (24 hours)",
+        "setFooter": "Data provided by OpenWeatherMap",
+        "catch error": "Error getting weather: ",
+        "message reply error": "An error occurred while trying to get the weather."
     },
     "config": {
         "permission": "You do not have permission to use this command.",
@@ -46,5 +56,41 @@
     "help": {
         "setTitle": "Help",
         "setDescription": "**Command list**\n\n**`8ball`**: Ask a question and get an answer.\n**`clima`**: Shows the weather conditions of a city.\n**`config`**: Set the bot language.\n**`help`**: Displays all commands.\n**`howgay`**: Measures how gay a person is.\n**`jokenpo`**: Play a game of rock, paper, scissors.\n**`macaco`**: Generates a random monkey.\n**`ping`**: Calculates ping.\n**`pp`**: Measure peepee.\n**`server`**: Displays information about the server.\n**`stank`**: Measure someone's stench.\n**`user`**: Show information about the user."
+    },
+    "howgay": {
+        "description1": "{0} is {1}% gay 🏳️‍🌈",
+        "footer": "What a faggot! 🦄",
+        "description2": "{0} is {1}% gay 🏳️‍🌈",
+        "description3": "{0} is {1}% gay 🏳️‍🌈",
+        "setTitle": "Gay meter"
+    },
+    "jokenpo": {
+        "reply rank error": "An error occurred while retrieving the ranking",
+        "jokenpo ranking": "Rock Paper Scissors Ranking",
+        "unknown user": "Unknown user",
+        "users rank": "{0}. {1}: {2} wins, {3} loses",
+        "no rank data": "No ranking data found.",
+        "jokenpo": "Rock Paper Scissors",
+        "challenge": "{0} has challenged {1} to a game of Rock Paper Scissors!",
+        "id rock": "rock 👊",
+        "label rock": "👊 Rock",
+        "id paper": "paper ✋",
+        "label paper": "✋ Paper",
+        "id scissors": "scissors ✌",
+        "label scissors": "✌ Scissors",
+        "waiting": "{0} has challenged {1} to a game of Rock Paper Scissors!\n*Waiting for {2} to respond...*",
+        "options": [
+            "rock 👊",
+            "paper ✋",
+            "scissors ✌"
+        ],
+        "tie": "**Draw!**",
+        "player 1 win": "**{0} wins!**",
+        "player 2 win": "**{0} venceu!**",
+        "choices": "{0} chose {1}\n{2} chose {3}\n\n{4}",
+        "no history": "History not available",
+        "time up": "Time's up! One or more players didn't choose in time.",
+        "score": "Score: {0} {1} — {2} {3}",
+        "error jokenpo": "An error occurred while executing the Rock Paper Scissors command"
     }
 }

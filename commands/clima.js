@@ -83,23 +83,23 @@ async function execute(message, args, __, translate) {
     // Construir a mensagem do Embed
     const weatherInfo = new EmbedBuilder()
       .setTitle(await translate('clima', 'setTitle', cityName, country))
-      .setDescription(`Condições climáticas atuais em ${cityName}, ${country}`)
+      .setDescription(await translate('clima', 'setDescription', cityName, country))
       .setThumbnail(`https://openweathermap.org/img/wn/${weatherIconCode}.png`)
       .addFields(
-        { name: 'Condição', value: `${weatherIcon} ${currentWeatherData.weather[0].description}`, inline: true },
-        { name: 'Temperatura', value: `${temperature} °C`, inline: true },
-        { name: 'Sensação Térmica', value: `${feelsLike} °C`, inline: true },
-        { name: 'Velocidade do Vento', value: `${windSpeed} m/s`, inline: true },
-        { name: 'Umidade', value: `${humidity}%`, inline: true },
-        { name: 'Mín / Máx (24 horas)', value: `${tempMin} °C / ${tempMax} °C`, inline: true },
+        { name: await translate('clima', 'condition'), value: `${weatherIcon} ${currentWeatherData.weather[0].description}`, inline: true },
+        { name: await translate('clima', 'temperature'), value: `${temperature} °C`, inline: true },
+        { name: await translate('clima', 'feels like'), value: `${feelsLike} °C`, inline: true },
+        { name: await translate('clima', 'wind speed'), value: `${windSpeed} m/s`, inline: true },
+        { name: await translate('clima', 'humidity'), value: `${humidity}%`, inline: true },
+        { name: await translate('clima', 'minmax'), value: `${tempMin} °C / ${tempMax} °C`, inline: true },
       )
-      .setFooter({ text: 'Dados fornecidos por OpenWeatherMap' });
+      .setFooter({ text: await translate('clima', 'setFooter') });
 
     message.channel.send({ embeds: [weatherInfo] });
     console.log(`${new Date().toLocaleString('pt-BR')} | ${cityName}: ${temperature} °C e ${currentWeatherData.weather[0].description}. (${message.author.username})`)
   } catch (error) {
-    console.error(`Erro ao obter o clima:`, error);
-    message.reply('Ocorreu um erro ao tentar obter o clima.');
+    console.error(await translate('clima', 'catch error'), error);
+    message.reply(await translate('clima', 'message reply error'));
   }
 }
 
