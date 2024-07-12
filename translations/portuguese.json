@@ -21,6 +21,30 @@
             "🔴 Minhas fontes dizem que não",
             "🔴 Perspectiva não muito boa",
             "🔴 Duvido muito"
-        ]
+        ],
+        "setTitle": "Bola 8 Mágica",
+        "setDescription": "{0} perguntou\n{1}\nMinha resposta:\n**{2}**"
+    },
+    "clima": {
+        "no args": "Você precisa fornecer o nome de uma cidade!",
+        "error 200": "Não consegui obter o clima atual para a cidade: {0}",
+        "error not 200": "Não consegui obter a previsão do tempo para a cidade: {0}",
+        "setTitle": "Clima em {0}, {1}"
+    },
+    "config": {
+        "permission": "Você não tem permissão para usar este comando.",
+        "setTitle": "Configurações de Idioma",
+        "addFields": "Selecione o idioma que você deseja que o bot utilize.",
+        "setPlaceholder": "Selecione o idioma",
+        "label-en": "Inglês",
+        "description-en": "Muda o idioma do bot para inglês",
+        "label-pt": "Português",
+        "description-pt": "Muda o idioma do bot para português",
+        "error": "Houve um erro ao tentar atualizar o idioma.",
+        "success": "Idioma alterado para {0}."
+    },
+    "help": {
+        "setTitle": "Ajuda",
+        "setDescription": "**Lista de comandos**\n\n**`8ball`**: Faça uma pergunta e obtenha uma resposta.\n**`clima`**: Mostra as condições climáticas de uma cidade.\n**`config`**: Configura o idioma do bot.\n**`help`**: Exibe todos os comandos.\n**`howgay`**: Mede o quão gay uma pessoa é.\n**`jokenpo`**: Joga um jogo de pedra, papel e tesoura.\n**`macaco`**: Gera um macaco aleatório.\n**`ping`**: Calcula o ping.\n**`pp`**: Mede o pipi.\n**`server`**: Exibe informações acerca do servidor.\n**`stank`**: Mede o fedor de alguém.\n**`user`**: Mostra informações sobre o usuário."
     }
 }

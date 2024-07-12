@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
+const { getLanguagePreference } = require('../database');
 
 // Mapeamento de códigos de condições climáticas para emojis
 const weatherIcons = {
@@ -22,15 +23,20 @@ const weatherIcons = {
   '50n': '🌫️',
 };
 
-async function execute(message, args) {
+async function execute(message, args, __, translate) {
   if (!args.length) {
-    return message.reply('Você precisa fornecer o nome de uma cidade!');
+    return message.reply(await translate('clima', 'no args'));
   }
 
   const apiKey = process.env.OPENWEATHERMAP_API_KEY;
   const city = args.join(' ');
-  const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric&lang=pt`;
-  const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric&lang=pt`;
+
+  const guildId = message.guild.id;
+  const language = await getLanguagePreference(guildId);
+  const langCode = language === 'english' ? 'en' : 'pt';
+
+  const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric&lang=${langCode}`;
+  const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric&lang=${langCode}`;
 
   try {
     // Obter dados do clima atual
@@ -38,7 +44,7 @@ async function execute(message, args) {
     const currentWeatherData = await currentWeatherResponse.json();
 
     if (currentWeatherData.cod !== 200) {
-      return message.reply(`Não consegui obter o clima atual para a cidade: ${city}`);
+      return message.reply(await translate('clima', 'error 200', city));
     }
 
     // Obter dados da previsão
@@ -46,7 +52,7 @@ async function execute(message, args) {
     const forecastData = await forecastResponse.json();
 
     if (forecastData.cod !== "200") {
-      return message.reply(`Não consegui obter a previsão do tempo para a cidade: ${city}`);
+      return message.reply(await translate('clima', 'error not 200', city));
     }
 
     // Processar dados do clima atual
@@ -76,7 +82,7 @@ async function execute(message, args) {
 
     // Construir a mensagem do Embed
     const weatherInfo = new EmbedBuilder()
-      .setTitle(`Clima em ${cityName}, ${country}`)
+      .setTitle(await translate('clima', 'setTitle', cityName, country))
       .setDescription(`Condições climáticas atuais em ${cityName}, ${country}`)
       .setThumbnail(`https://openweathermap.org/img/wn/${weatherIconCode}.png`)
       .addFields(

@@ -19,8 +19,8 @@ async function execute(message, args, __, translate) {
     }
 
     const embed = new EmbedBuilder()
-        .setTitle('Bola 8 Mágica')
-        .setDescription(`${message.author.username} perguntou\n${perguntaCapitalizada}\nMinha resposta:\n**${resposta}**`)
+        .setTitle(await translate('8ball', 'setTitle'))
+        .setDescription(await translate('8ball', 'setDescription', message.author.username, perguntaCapitalizada, resposta))
         .setThumbnail('https://i.imgur.com/z2Qu5QQ.png')
     await message.reply( {embeds: [embed] } );
     console.log(`${new Date().toLocaleString('pt-BR')} | ${resposta} (${message.author.username})`)

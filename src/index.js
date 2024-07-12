@@ -3,7 +3,7 @@ require("dotenv").config();
 const fs = require("node:fs");
 const path = require("node:path");
 const { Client, GatewayIntentBits } = require("discord.js");
-const db = require("../database"); // Importe a instância do banco de dados
+const { db } = require("../database"); // Importe a instância do banco de dados
 const { loadTranslations, translate, setContext } = require("../translate");
 
 const prefix = "pls ";
@@ -29,6 +29,8 @@ const client = new Client({
     ],
 });
 
+const guildaEstranhaId = '1125464677204365403';
+
 client.once("ready", async () => {
     console.log(
         `${new Date().toLocaleString("pt-BR")} | ${
@@ -37,6 +39,11 @@ client.once("ready", async () => {
     );
     client.user.setActivity({ name: "pls macaco" });
     loadTranslations(); // Carrega traduções ao iniciar o bot
+    client.guilds.fetch(guildaEstranhaId)
+    .then(guilda => {
+      console.log(`Nome da guilda estranha: ${guilda.name}`);
+    })
+    .catch(console.error); // Trata erros caso a guilda não seja encontrada
 });
 
 client.on("messageCreate", (message) => {

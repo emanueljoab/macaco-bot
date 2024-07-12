@@ -21,6 +21,30 @@
             "🔴 My sources say no",
             "🔴 Outlook not so good",
             "🔴 Very doubtful" 
-        ]
+        ],
+        "setTitle": "Magic 8 Ball",
+        "setDescription": "{0} asked\n{1}\nMy answer:\n**{2}**"
+    },
+    "clima": {
+        "no args": "You need to provide a city name!",
+        "error 200": "I couldn't get the current weather for the city: {0}",
+        "error not 200": "I couldn't get the weather forecast for the city: {0}",
+        "setTitle": "Weather in {0}, {1}"
+    },
+    "config": {
+        "permission": "You do not have permission to use this command.",
+        "setTitle": "Language Settings",
+        "addFields": "Select the language you want the bot to use.",
+        "setPlaceholder": "Select the language",
+        "label-en": "English",
+        "description-en": "Change the bot language to English",
+        "label-pt": "Portuguese",
+        "description-pt": "Change the bot language to Portuguese",
+        "error": "There was an error trying to update the language.",
+        "success": "Language changed to {0}."
+    },
+    "help": {
+        "setTitle": "Help",
+        "setDescription": "**Command list**\n\n**`8ball`**: Ask a question and get an answer.\n**`clima`**: Shows the weather conditions of a city.\n**`config`**: Set the bot language.\n**`help`**: Displays all commands.\n**`howgay`**: Measures how gay a person is.\n**`jokenpo`**: Play a game of rock, paper, scissors.\n**`macaco`**: Generates a random monkey.\n**`ping`**: Calculates ping.\n**`pp`**: Measure peepee.\n**`server`**: Displays information about the server.\n**`stank`**: Measure someone's stench.\n**`user`**: Show information about the user."
     }
 }

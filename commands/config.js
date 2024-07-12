@@ -2,34 +2,33 @@
 const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, ComponentType } = require('discord.js');
 const { db } = require("../database");
 
-module.exports = {
-    execute(message) {
-        // Verifica se o usuário tem permissão de administrador
+async function execute(message, __, __, translate) {
+// Verifica se o usuário tem permissão de administrador
         if (!message.member.permissions.has('ADMINISTRATOR')) {
-            return message.reply('Você não tem permissão para usar este comando.');
+            return message.reply(await translate('config', 'permission'));
         }
 
         // Cria um embed com informações sobre a configuração
         const embed = new EmbedBuilder()
-            .setTitle('Configurações de Idioma (ainda não funciona)')
+            .setTitle(await translate('config', 'setTitle'))
             .setDescription(' ')
 
-        embed.addFields({ name: '\u200B', value: 'Selecione o idioma que você deseja que o bot utilize.' });
+        embed.addFields({ name: '\u200B', value: await translate('config', 'addFields') });
 
         // Cria um menu de seleção para os idiomas com bandeiras
         const languageMenu = new StringSelectMenuBuilder()
             .setCustomId('select-language')
-            .setPlaceholder('Selecione um idioma')
+            .setPlaceholder(await translate('config', 'setPlaceholder'))
             .addOptions([
                 {
-                    label: 'Inglês',
-                    description: 'Muda o idioma do bot para inglês',
+                    label: await translate('config', 'label-en'),
+                    description: await translate('config', 'description-en'),
                     value: 'english',
                     emoji: '🇺🇸',
                 },
                 {
-                    label: 'Português',
-                    description: 'Muda o idioma do bot para português',
+                    label: await translate('config', 'label-pt'),
+                    description: await translate('config', 'description-pt'),
                     value: 'portuguese',
                     emoji: '🇧🇷',
                 }
@@ -53,14 +52,18 @@ module.exports = {
             db.run(`INSERT INTO server_language (guild_id, language) VALUES (?, ?) ON CONFLICT(guild_id) DO UPDATE SET language = ?`, [message.guild.id, selectedLanguage, selectedLanguage], async (err) => {
                 if (err) {
                     console.error("Erro ao atualizar o idioma:", err);
-                    embed.setFields({ name: '\u200B', value: 'Houve um erro ao tentar atualizar o idioma.' });
+                    embed.setFields({ name: '\u200B', value: await translate('config', 'error') });
                     await interaction.update({ embeds: [embed], components: [] });
                 } else {
-                    embed.setFields({ name: '\u200B', value: `Idioma alterado para ${selectedLanguage}.` });
+                    embed.setFields({ name: '\u200B', value: await translate('config', 'success', selectedLanguage) });
                     await interaction.update({ embeds: [embed], components: [] });
                 }
                 collector.stop();
             });
         });
-    },
+}
+
+
+module.exports = {
+    execute,
 };
