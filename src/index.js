@@ -29,21 +29,10 @@ const client = new Client({
     ],
 });
 
-const guildaEstranhaId = '1125464677204365403';
-
 client.once("ready", async () => {
-    console.log(
-        `${new Date().toLocaleString("pt-BR")} | ${
-            client.user.tag
-        } está online.`
-    );
-    client.user.setActivity({ name: "pls macaco" });
+    console.log(`${new Date().toLocaleString("pt-BR")} | ${client.user.tag} está online.`);
+    client.user.setActivity({ name: "Mim dá um bêjo" });
     loadTranslations(); // Carrega traduções ao iniciar o bot
-    client.guilds.fetch(guildaEstranhaId)
-    .then(guilda => {
-      console.log(`Nome da guilda estranha: ${guilda.name}`);
-    })
-    .catch(console.error); // Trata erros caso a guilda não seja encontrada
 });
 
 client.on("messageCreate", (message) => {
@@ -69,11 +58,13 @@ client.on("messageCreate", (message) => {
         howgay: howgay.execute,
         jokenpo: jokenpo.execute,
         macaco: macaco.execute,
+        "monkey": macaco.execute,
         ping: ping.execute,
         pp: pp.execute,
         server: server.execute,
         stank: stank.execute,
         user: user.execute,
+        "weather": clima.execute
     };
 
     if (commands[command]) {

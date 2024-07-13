@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 
-async function execute(message) {
+async function execute(message, __, __, translate) {
     let user = message.mentions.users.first() || message.author;
     let stank = Math.floor(Math.random() * 101);
     let thumbnails = [
@@ -17,8 +17,8 @@ async function execute(message) {
     const barraPorcentagem = generateProgressBar(stank);
 
     const embed = new EmbedBuilder()
-        .setTitle('Medidor de fedor')
-        .setDescription(`${user.username} é ${stank}% fedido(a)\n\nFedômetro: ${barraPorcentagem}`)
+        .setTitle(await translate('stank', 'setTitle'))
+        .setDescription(await translate('stank', 'setDescription', user.username, stank, barraPorcentagem))
         .setThumbnail(thumbnailAleatorio);
 
     await message.reply({ embeds: [embed] });

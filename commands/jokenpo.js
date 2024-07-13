@@ -140,64 +140,13 @@ async function execute(message, args, db, translate) {
 
                     let historyMessage = await translate('jokenpo', 'no history');
                     if (resultado.includes(escapeMarkdown(sortedPlayer1.username))) {
-                        historyMessage = await atualizarHistorico(
-                            sortedPlayer1.id,
-                            sortedPlayer2.id,
-                            sortedPlayer1.username,
-                            sortedPlayer2.username,
-                            1,
-                            0
-                        );
-                        atualizarPontuacao(
-                            guildId,
-                            sortedPlayer1.id,
-                            sortedPlayer1.username,
-                            1,
-                            0
-                        );
-                        if (sortedPlayer2.id !== "Gerador de Macaco Aleatório") {
-                            atualizarPontuacao(
-                                guildId,
-                                sortedPlayer2.id,
-                                sortedPlayer2.username,
-                                0,
-                                1
-                            );
-                        }
+                        historyMessage = await atualizarHistorico(sortedPlayer1.id, sortedPlayer2.id, sortedPlayer1.username, sortedPlayer2.username, 1, 0);
+                        atualizarPontuacao(guildId, sortedPlayer1.id, sortedPlayer1.username, 1, 0);
                     } else if (resultado.includes(escapeMarkdown(sortedPlayer2.username))) {
-                        historyMessage = await atualizarHistorico(
-                            sortedPlayer1.id,
-                            sortedPlayer2.id,
-                            sortedPlayer1.username,
-                            sortedPlayer2.username,
-                            0,
-                            1
-                        );
-                        atualizarPontuacao(
-                            guildId,
-                            sortedPlayer2.id,
-                            sortedPlayer2.username,
-                            1,
-                            0
-                        );
-                        if (sortedPlayer2.id !== "Gerador de Macaco Aleatório") {
-                            atualizarPontuacao(
-                                guildId,
-                                sortedPlayer1.id,
-                                sortedPlayer1.username,
-                                0,
-                                1
-                            );
-                        }
+                        historyMessage = await atualizarHistorico(sortedPlayer1.id, sortedPlayer2.id, sortedPlayer1.username, sortedPlayer2.username, 0, 1);
+                        atualizarPontuacao(guildId, sortedPlayer2.id, sortedPlayer2.username, 1, 0);
                     } else {
-                        historyMessage = await atualizarHistorico(
-                            sortedPlayer1.id,
-                            sortedPlayer2.id,
-                            sortedPlayer1.username,
-                            sortedPlayer2.username,
-                            0,
-                            0
-                        );
+                        historyMessage = await atualizarHistorico(sortedPlayer1.id, sortedPlayer2.id, sortedPlayer1.username, sortedPlayer2.username, 0, 0);
                     }
 
                     if (historyMessage) {

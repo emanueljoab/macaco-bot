@@ -55,7 +55,7 @@
     },
     "help": {
         "setTitle": "Help",
-        "setDescription": "**Command list**\n\n**`8ball`**: Ask a question and get an answer.\n**`clima`**: Shows the weather conditions of a city.\n**`config`**: Set the bot language.\n**`help`**: Displays all commands.\n**`howgay`**: Measures how gay a person is.\n**`jokenpo`**: Play a game of rock, paper, scissors.\n**`macaco`**: Generates a random monkey.\n**`ping`**: Calculates ping.\n**`pp`**: Measure peepee.\n**`server`**: Displays information about the server.\n**`stank`**: Measure someone's stench.\n**`user`**: Show information about the user."
+        "setDescription": "**Command list**\n\n**`8ball`**: Ask a question and get an answer.\n**`weather`**: Shows the weather conditions of a city.\n**`config`**: Set the bot language.\n**`help`**: Displays all commands.\n**`howgay`**: Measures how gay a person is.\n**`jokenpo`**: Play a game of rock, paper, scissors.\n**`monkey`**: Generates a random monkey.\n**`ping`**: Calculates ping.\n**`pp`**: Measure peepee.\n**`server`**: Displays information about the server.\n**`stank`**: Measure someone's stench.\n**`user`**: Show information about the user."
     },
     "howgay": {
         "description1": "{0} is {1}% gay 🏳️‍🌈",
@@ -92,5 +92,28 @@
         "time up": "Time's up! One or more players didn't choose in time.",
         "score": "Score: {0} {1} — {2} {3}",
         "error jokenpo": "An error occurred while executing the Rock Paper Scissors command"
+    },
+    "macaco": {
+        "no monkey found": "Unable to find a monkey with image and description."
+    },
+    "ping": {
+        "calculating": "Calculating...",
+        "latency": "Latency: {0}ms"
+    },
+    "pp": {
+        "setTitle": "Peepee meter",
+        "setDescription": "{0}'s peepee\n{1}"
+    },
+    "server": {
+        "setDescription": "{0} members",
+        "addFields": "Creation date",
+        "toLocaleString": "en-US"
+    },
+    "stank": {
+        "setTitle": "Stank meter",
+        "setDescription": "{0} is {1}% stanky\n\nStank-o-meter: {2}"
+    },
+    "user": {
+        "setDescription": "Joined server at {0}."
     }
 }

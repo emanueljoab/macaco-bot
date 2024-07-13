@@ -92,5 +92,28 @@
         "time up": "Tempo esgotado! Um ou mais jogadores não escolheram a tempo.",
         "score": "Placar: {0} {1} — {2} {3}",
         "error jokenpo": "Ocorreu um erro ao executar o comando jokenpo."
+    },
+    "macaco": {
+        "no monkey found": "Não foi possível encontrar um macaco com imagem e descrição."
+    },
+    "ping": {
+        "calculating": "Calculando...",
+        "latency": "Latência: {0}ms"
+    },
+    "pp": {
+        "setTitle": "Medidor de pipi",
+        "setDescription": "pipi de {0}\n{1}"
+    },
+    "server": {
+        "setDescription": "{0} membros",
+        "addFields": "Data de criação",
+        "toLocaleString": "pt-BR"
+    },
+    "stank": {
+        "setTitle": "Medidor de fedor",
+        "setDescription": "{0} é {1}% fedido(a)\n\nFedômetro: {2}"
+    },
+    "user": {
+        "setDescription": "Juntou-se ao servidor em {0}."
     }
 }
