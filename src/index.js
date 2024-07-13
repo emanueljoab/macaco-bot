@@ -34,7 +34,7 @@ client.once("ready", async () => {
     loadTranslations(); // Carrega traduções ao iniciar o bot
     console.log('Servidores em que estou:');
     client.guilds.cache.forEach(guild => {
-        console.log(`${guild.name} (ID: ${guild.id})`);
+        console.log(`${guild.name}`);
     });
     console.log(`${new Date().toLocaleString("pt-BR")} | ${client.user.tag} está online.`);
 });
