@@ -30,11 +30,13 @@ const client = new Client({
 });
 
 client.once("ready", async () => {
-    console.log(`${new Date().toLocaleString("pt-BR")} | ${client.user.tag} está online.`);
-    client.user.setActivity({ name: "Mim dá um bêjo" });
+    client.user.setActivity({ name: "pls macaco" });
     loadTranslations(); // Carrega traduções ao iniciar o bot
-    const guildId = await client.guilds.fetch('1030528638304649227');
-    console.log('Nome do servidor:', guildId.name);
+    console.log('Servidores em que estou:');
+    client.guilds.cache.forEach(guild => {
+        console.log(`${guild.name} (ID: ${guild.id})`);
+    });
+    console.log(`${new Date().toLocaleString("pt-BR")} | ${client.user.tag} está online.`);
 });
 
 client.on("messageCreate", (message) => {

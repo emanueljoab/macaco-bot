@@ -1,10 +1,10 @@
 // config.js
-const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, ComponentType } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, ComponentType, PermissionsBitField } = require('discord.js');
 const { db } = require("../database");
 
 async function execute(message, __, __, translate) {
 // Verifica se o usuário tem permissão de administrador
-        if (!message.member.permissions.has('ADMINISTRATOR')) {
+        if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
             return message.reply(await translate('config', 'permission'));
         }
 
@@ -47,6 +47,7 @@ async function execute(message, __, __, translate) {
 
         collector.on('collect', (interaction) => {
             const selectedLanguage = interaction.values[0];
+            const guild = interaction.guild;
             
             // Atualiza o idioma no banco de dados
             db.run(`INSERT INTO server_language (guild_id, language) VALUES (?, ?) ON CONFLICT(guild_id) DO UPDATE SET language = ?`, [message.guild.id, selectedLanguage, selectedLanguage], async (err) => {
@@ -57,6 +58,7 @@ async function execute(message, __, __, translate) {
                 } else {
                     embed.setFields({ name: '\u200B', value: await translate('config', 'success', selectedLanguage) });
                     await interaction.update({ embeds: [embed], components: [] });
+                    console.log(new Date().toLocaleString("pt-BR"), '| Idioma alterado para', selectedLanguage, 'em', guild.name);
                 }
                 collector.stop();
             });
@@ -67,3 +69,4 @@ async function execute(message, __, __, translate) {
 module.exports = {
     execute,
 };
+ 
