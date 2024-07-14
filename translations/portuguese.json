@@ -30,7 +30,7 @@
         "error 200": "Não consegui obter o clima atual para a cidade: {0}",
         "error not 200": "Não consegui obter a previsão do tempo para a cidade: {0}",
         "setTitle": "Clima em {0}, {1}",
-        "setDescription": "Condições climáticas atuais em {0}, ${1}",
+        "setDescription": "Condições climáticas atuais em {0}, {1}",
         "condition": "Condição",
         "temperature": "Temperatura",
         "feels like": "Sensação térmica",
