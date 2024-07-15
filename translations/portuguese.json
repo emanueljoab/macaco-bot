@@ -78,7 +78,7 @@
         "label paper": "✋ Papel",
         "id scissors": "tesoura ✌",
         "label scissors": "✌ Tesoura",
-        "waiting": "{0} desafiou {1} para um jogo de Jokenpo!\n*Aguardando a resposta de ${2}...*",
+        "waiting": "{0} desafiou {1} para um jogo de Jokenpo!\n*Aguardando a resposta de {2}...*",
         "options": [
             "pedra 👊",
             "papel ✋",

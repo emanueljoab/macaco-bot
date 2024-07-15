@@ -97,25 +97,25 @@ async function execute(message, args, db, translate) {
             collector.on("collect", async (interaction) => {
                 choices[interaction.user.id] = interaction.customId;
                 await interaction.deferUpdate();
-
+            
                 if (Object.keys(choices).length < 2) {
                     const jogadorEsperando = [sortedPlayer1, sortedPlayer2].find(
                         (player) => !choices[player.id]
                     );
-
+            
                     embed.setDescription(await translate('jokenpo', 'waiting', escapeMarkdown(sortedPlayer1.username), escapeMarkdown(sortedPlayer2.username), escapeMarkdown(jogadorEsperando.username)));
-
+            
                     await reply.edit({ embeds: [embed] });
                 }
-
+            
                 if (sortedPlayer2.id === "1243673463902834809") {
                     const opcoes = await translate('jokenpo', 'options');
                     choices[sortedPlayer2.id] = opcoes[Math.floor(Math.random() * 3)];
                 }
-
+            
                 if (Object.keys(choices).length === 2) {
                     collector.stop();
-
+            
                     if (choices[sortedPlayer1.id] === choices[sortedPlayer2.id]) {
                         resultado = await translate('jokenpo', 'tie');
                         console.log(`${new Date().toLocaleString("pt-BR")} | Jokenpo: Empate entre ${sortedPlayer1.username} e ${sortedPlayer2.username}`);
@@ -133,31 +133,33 @@ async function execute(message, args, db, translate) {
                         resultado = await translate('jokenpo', 'player 2 win', escapeMarkdown(sortedPlayer2.username));
                         console.log(`${new Date().toLocaleString("pt-BR")} | Jokenpo: ${sortedPlayer2.username} venceu ${sortedPlayer1.username}`);
                     }
-
+            
                     embed.setDescription(await translate('jokenpo', 'choices', escapeMarkdown(sortedPlayer1.username), choices[sortedPlayer1.id], escapeMarkdown(sortedPlayer2.username), choices[sortedPlayer2.id], resultado));
-
+            
                     const guildId = message.guild.id;
-
+            
                     let historyMessage = await translate('jokenpo', 'no history');
                     if (resultado.includes(escapeMarkdown(sortedPlayer1.username))) {
                         historyMessage = await atualizarHistorico(sortedPlayer1.id, sortedPlayer2.id, sortedPlayer1.username, sortedPlayer2.username, 1, 0);
                         atualizarPontuacao(guildId, sortedPlayer1.id, sortedPlayer1.username, 1, 0);
+                        console.log(`Vitória registrada para ${sortedPlayer1.username}`);
                     } else if (resultado.includes(escapeMarkdown(sortedPlayer2.username))) {
                         historyMessage = await atualizarHistorico(sortedPlayer1.id, sortedPlayer2.id, sortedPlayer1.username, sortedPlayer2.username, 0, 1);
                         atualizarPontuacao(guildId, sortedPlayer2.id, sortedPlayer2.username, 1, 0);
+                        console.log(`Vitória registrada para ${sortedPlayer2.username}`);
                     } else {
                         historyMessage = await atualizarHistorico(sortedPlayer1.id, sortedPlayer2.id, sortedPlayer1.username, sortedPlayer2.username, 0, 0);
                     }
-
+            
                     if (historyMessage) {
                         embed.setFooter({ text: historyMessage });
                     } else {
                         embed.setFooter({ text: await translate('jokenpo', 'no history') });
                     }
-
+            
                     await reply.edit({ embeds: [embed], components: [] });
                 }
-            });
+            });            
 
             collector.on("end", async (collected, reason) => {
                 if (reason === "time") {
