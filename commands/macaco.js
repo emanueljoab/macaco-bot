@@ -223,6 +223,28 @@ async function execute(message, __, __, translate) {
     }
 }
 
+async function executeMacacoCommandOnStartup() {
+    console.log(`${new Date().toLocaleString("pt-BR")} | Executando comando 'macaco' para pré-carregar dados...`);
+    
+    const fakeMessage = {
+        reply: () => Promise.resolve(),
+        guild: {
+            id: 'default_guild_id'
+        },
+        author: {
+            username: 'System'
+        }
+    };
+
+    try {
+        await execute(fakeMessage, null, null);
+        console.log(`${new Date().toLocaleString("pt-BR")} | Comando 'macaco' executado com sucesso para pré-carregamento.`);
+    } catch (error) {
+        console.error(`${new Date().toLocaleString("pt-BR")} | Erro ao executar comando 'macaco' para pré-carregamento:`, error);
+    }
+}
+
 module.exports = {
     execute,
+    executeMacacoCommandOnStartup
 };

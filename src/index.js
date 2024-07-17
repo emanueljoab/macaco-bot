@@ -5,6 +5,7 @@ const path = require("node:path");
 const { Client, GatewayIntentBits } = require("discord.js");
 const { db } = require("../database"); // Importe a instância do banco de dados
 const { loadTranslations, translate, setContext } = require("../translate");
+const { executeMacacoCommandOnStartup } = require('../commands/macaco.js');
 
 const prefix = "pls ";
 
@@ -32,10 +33,11 @@ const client = new Client({
 client.once("ready", async () => {
     client.user.setActivity({ name: "pls macaco" });
     loadTranslations(); // Carrega traduções ao iniciar o bot
-    console.log('Servidores em que estou:');
+    console.log(`${new Date().toLocaleString("pt-BR")} | Servidores em que estou:`);
     client.guilds.cache.forEach(guild => {
         console.log(`${guild.name}`);
     });
+    await executeMacacoCommandOnStartup(); // Pré-carrega o fetch de 'macaco'
     console.log(`${new Date().toLocaleString("pt-BR")} | ${client.user.tag} está online.`);
 });
 
