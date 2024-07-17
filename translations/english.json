@@ -109,6 +109,10 @@
         "addFields": "Creation date",
         "toLocaleString": "en-US"
     },
+    "simp": {
+        "setTitle": "Simp meter",
+        "setDescription": "{0} is {1}% simp"
+    },
     "stank": {
         "setTitle": "Stank meter",
         "setDescription": "{0} is {1}% stanky\n\nStank-o-meter: {2}"

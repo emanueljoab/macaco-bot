@@ -109,6 +109,10 @@
         "addFields": "Data de criação",
         "toLocaleString": "pt-BR"
     },
+    "simp": {
+        "setTitle": "Medidor de simp",
+        "setDescription": "{0} é {1}% simp"
+    },
     "stank": {
         "setTitle": "Medidor de fedor",
         "setDescription": "{0} é {1}% fedido(a)\n\nFedômetro: {2}"
