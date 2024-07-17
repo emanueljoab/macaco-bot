@@ -55,7 +55,7 @@
     },
     "help": {
         "setTitle": "Help",
-        "setDescription": "**Command list**\n\n**`8ball`**: Ask a question and get an answer.\n**`weather`**: Shows the weather conditions of a city.\n**`config`**: Set the bot language.\n**`help`**: Displays all commands.\n**`howgay`**: Measures how gay a person is.\n**`jokenpo`**: Play a game of rock, paper, scissors.\n**`monkey`**: Generates a random monkey.\n**`ping`**: Calculates ping.\n**`pp`**: Measure peepee.\n**`server`**: Displays information about the server.\n**`stank`**: Measure someone's stench.\n**`user`**: Show information about the user."
+        "setDescription": "**Command list**\n\n**`8ball`**: Ask a question and get an answer.\n**`weather`**: Shows the weather conditions of a city.\n**`config`**: Set the bot language.\n**`help`**: Displays all commands.\n**`howgay`**: Measures how gay a person is.\n**`jokenpo`**: Play a game of rock, paper, scissors.\n**`monkey`**: Generates a random monkey.\n**`ping`**: Calculates ping.\n**`pp`**: Measure peepee.\n**`server`**: Displays information about the server.\n**`simp`**: Measures how simp someone is.\n**`stank`**: Measure someone's stench.\n**`user`**: Show information about the user."
     },
     "howgay": {
         "description1": "{0} is {1}% gay 🏳️‍🌈",

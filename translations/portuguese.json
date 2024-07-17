@@ -55,7 +55,7 @@
     },
     "help": {
         "setTitle": "Ajuda",
-        "setDescription": "**Lista de comandos**\n\n**`8ball`**: Faça uma pergunta e obtenha uma resposta.\n**`clima`**: Mostra as condições climáticas de uma cidade.\n**`config`**: Configura o idioma do bot.\n**`help`**: Exibe todos os comandos.\n**`howgay`**: Mede o quão gay uma pessoa é.\n**`jokenpo`**: Joga um jogo de pedra, papel e tesoura.\n**`macaco`**: Gera um macaco aleatório.\n**`ping`**: Calcula o ping.\n**`pp`**: Mede o pipi.\n**`server`**: Exibe informações acerca do servidor.\n**`stank`**: Mede o fedor de alguém.\n**`user`**: Mostra informações sobre o usuário."
+        "setDescription": "**Lista de comandos**\n\n**`8ball`**: Faça uma pergunta e obtenha uma resposta.\n**`clima`**: Mostra as condições climáticas de uma cidade.\n**`config`**: Configura o idioma do bot.\n**`help`**: Exibe todos os comandos.\n**`howgay`**: Mede o quão gay uma pessoa é.\n**`jokenpo`**: Joga um jogo de pedra, papel e tesoura.\n**`macaco`**: Gera um macaco aleatório.\n**`ping`**: Calcula o ping.\n**`pp`**: Mede o pipi.\n**`server`**: Exibe informações acerca do servidor.\n**`simp`**: Mede o quão simp alguém é.\n**`stank`**: Mede o fedor de alguém.\n**`user`**: Mostra informações sobre o usuário."
     },
     "howgay": {
         "description1": "{0} é {1}% gay 🏳️‍🌈",
