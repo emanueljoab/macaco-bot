@@ -24,7 +24,7 @@ db.serialize(() => {
         player2_wins INTEGER,
         PRIMARY KEY (player1_id, player2_id)
     )`
-    );  
+    );
     db.run(
         `CREATE TABLE IF NOT EXISTS server_language (
         guild_id TEXT PRIMARY KEY,
@@ -41,17 +41,13 @@ function getLanguagePreference(guildId) {
                 reject(err);
             } else if (!row) {
                 // Define o idioma padrão como 'english' se não estiver definido
-                db.run(
-                    "INSERT INTO server_language (guild_id, language) VALUES (?, ?)",
-                    [guildId, 'english'],
-                    (err) => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve('english');
-                        }
+                db.run("INSERT INTO server_language (guild_id, language) VALUES (?, ?)", [guildId, "english"], (err) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve("english");
                     }
-                );
+                });
             } else {
                 resolve(row.language);
             }
@@ -61,5 +57,5 @@ function getLanguagePreference(guildId) {
 
 module.exports = {
     db,
-    getLanguagePreference
+    getLanguagePreference,
 };

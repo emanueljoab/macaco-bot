@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder } = require("discord.js");
 
 async function execute(message, __, __, translate) {
     const user = message.mentions.users.first() || message.author;
@@ -6,22 +6,22 @@ async function execute(message, __, __, translate) {
     let footer;
 
     if (simp === 100) {
-        footer = 'GADO! 🐂'
+        footer = "GADO! 🐂";
     }
 
     const embed = new EmbedBuilder()
-        .setTitle(await translate('simp', 'setTitle'))
-        .setDescription(await translate('simp', 'setDescription', user.username, simp))
-        .setThumbnail('https://i.imgur.com/gvRF6X5.jpg')
+        .setTitle(await translate("simp", "setTitle"))
+        .setDescription(await translate("simp", "setDescription", user.username, simp))
+        .setThumbnail("https://i.imgur.com/gvRF6X5.jpg");
 
-        if (footer) {
-        embed.setFooter( {text: footer} )
-        }
+    if (footer) {
+        embed.setFooter({ text: footer });
+    }
 
     await message.reply({ embeds: [embed] });
-    console.log(`${new Date().toLocaleString('pt-BR')} | ${user.username} é ${simp}% simp (${message.author.username})`);
+    console.log(`${new Date().toLocaleString("pt-BR")} | ${user.username} é ${simp}% simp (${message.author.username})`);
 }
 
 module.exports = {
-    execute
-}
+    execute,
+};

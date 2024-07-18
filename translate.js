@@ -13,19 +13,15 @@ const context = {
 
 // Carrega traduções dos arquivos JSON
 function loadTranslations() {
-    translations.english = JSON.parse(
-        fs.readFileSync(path.join(__dirname, "translations", "english.json"))
-    );
-    translations.portuguese = JSON.parse(
-        fs.readFileSync(path.join(__dirname, "translations", "portuguese.json"))
-    );
+    translations.english = JSON.parse(fs.readFileSync(path.join(__dirname, "translations", "english.json")));
+    translations.portuguese = JSON.parse(fs.readFileSync(path.join(__dirname, "translations", "portuguese.json")));
 }
 
 // Carrega a tradução com placeholders
 async function translate(command, key, ...args) {
     const guildid = context.guildid;
     const language = await getLanguagePreference(guildid);
-    let translation = translations[language][command][key]
+    let translation = translations[language][command][key];
     if (!translation) return "Translation not found";
 
     args.forEach((arg, index) => {

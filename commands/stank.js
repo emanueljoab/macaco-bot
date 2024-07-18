@@ -1,15 +1,9 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder } = require("discord.js");
 
 async function execute(message, __, __, translate) {
     let user = message.mentions.users.first() || message.author;
     let stank = Math.floor(Math.random() * 101);
-    let thumbnails = [
-        'https://i.imgur.com/dP60pVE.gif',
-        'https://i.imgur.com/NbxSkEX.jpg',
-        'https://i.imgur.com/DhTukGt.jpg',
-        'https://i.imgur.com/p9oHo94.png',
-        'https://i.imgur.com/DnmBv6d.gif'
-    ];
+    let thumbnails = ["https://i.imgur.com/dP60pVE.gif", "https://i.imgur.com/NbxSkEX.jpg", "https://i.imgur.com/DhTukGt.jpg", "https://i.imgur.com/p9oHo94.png", "https://i.imgur.com/DnmBv6d.gif"];
 
     const thumbnailAleatorio = thumbnails[Math.floor(Math.random() * thumbnails.length)];
 
@@ -17,12 +11,12 @@ async function execute(message, __, __, translate) {
     const barraPorcentagem = generateProgressBar(stank);
 
     const embed = new EmbedBuilder()
-        .setTitle(await translate('stank', 'setTitle'))
-        .setDescription(await translate('stank', 'setDescription', user.username, stank, barraPorcentagem))
+        .setTitle(await translate("stank", "setTitle"))
+        .setDescription(await translate("stank", "setDescription", user.username, stank, barraPorcentagem))
         .setThumbnail(thumbnailAleatorio);
 
     await message.reply({ embeds: [embed] });
-    console.log(`${new Date().toLocaleString('pt-BR')} | ${user.username} é ${stank}% fedido(a) (${message.author.username})`);
+    console.log(`${new Date().toLocaleString("pt-BR")} | ${user.username} é ${stank}% fedido(a) (${message.author.username})`);
 }
 
 // Função para gerar a barra de porcentagem
@@ -31,7 +25,7 @@ function generateProgressBar(percent) {
     const filledBlocks = Math.floor((percent / 100) * progressChars);
     const emptyBlocks = progressChars - filledBlocks;
 
-    const progressBar = '▰'.repeat(filledBlocks) + '▱'.repeat(emptyBlocks); // Usando caracteres Unicode
+    const progressBar = "▰".repeat(filledBlocks) + "▱".repeat(emptyBlocks); // Usando caracteres Unicode
 
     return progressBar;
 }

@@ -5,7 +5,7 @@ const path = require("node:path");
 const { Client, GatewayIntentBits } = require("discord.js");
 const { db } = require("../database"); // Importe a instância do banco de dados
 const { loadTranslations, translate, setContext } = require("../translate");
-const { executeMacacoCommandOnStartup } = require('../commands/macaco');
+const { executeMacacoCommandOnStartup } = require("../commands/macaco");
 
 const prefix = "pls ";
 
@@ -19,16 +19,12 @@ const macaco = require("../commands/macaco");
 const ping = require("../commands/ping");
 const pp = require("../commands/pp");
 const server = require("../commands/server");
-const simp = require("../commands/simp")
+const simp = require("../commands/simp");
 const stank = require("../commands/stank");
 const user = require("../commands/user");
 
 const client = new Client({
-    intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent,
-    ],
+    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
 });
 
 client.once("ready", async () => {
@@ -65,14 +61,14 @@ client.on("messageCreate", (message) => {
         howgay: howgay.execute,
         jokenpo: jokenpo.execute,
         macaco: macaco.execute,
-        "monkey": macaco.execute,
+        monkey: macaco.execute,
         ping: ping.execute,
         pp: pp.execute,
         server: server.execute,
         stank: stank.execute,
         simp: simp.execute,
         user: user.execute,
-        "weather": clima.execute
+        weather: clima.execute,
     };
 
     if (commands[command]) {
