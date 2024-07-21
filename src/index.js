@@ -12,6 +12,7 @@ const prefix = "pls ";
 const ball8 = require("../commands/8ball");
 const clima = require("../commands/clima");
 const config = require("../commands/config");
+const flip = require("../commands/flip");
 const help = require("../commands/help");
 const howgay = require("../commands/howgay");
 const jokenpo = require("../commands/jokenpo");
@@ -57,6 +58,7 @@ client.on("messageCreate", (message) => {
         "8ball": ball8.execute,
         clima: clima.execute,
         config: config.execute,
+        flip: flip.execute,
         help: help.execute.bind(null, client),
         howgay: howgay.execute,
         jokenpo: jokenpo.execute,
@@ -64,6 +66,7 @@ client.on("messageCreate", (message) => {
         monkey: macaco.execute,
         ping: ping.execute,
         pp: pp.execute,
+        rps: jokenpo.execute,
         server: server.execute,
         stank: stank.execute,
         simp: simp.execute,
@@ -74,7 +77,7 @@ client.on("messageCreate", (message) => {
     if (commands[command]) {
         // Verificar e executar comandos
         try {
-            const noArgsCommands = ["config", "help", "macaco", "ping", "server"];
+            const noArgsCommands = ["config", "flip", "help", "macaco", "monkey", "ping", "server"];
             if (noArgsCommands.includes(command) && args.length > 0) return; // Retorna se um dos noArgsCommands tiver algo escrito além do prefixo e comando
 
             const argsCommands = ["pp", "howgay", "stank", "simp", "user"];
