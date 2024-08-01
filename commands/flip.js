@@ -12,7 +12,7 @@ async function execute(message, __, __, translate) {
     }
 
     const embed = new EmbedBuilder()
-        .setTitle(await translate("flip", "setTitle"))
+        .setTitle("** **")
         .setDescription(await translate ("flip", "setDescription", user.username, ladoEscolhido))
         .setThumbnail(miniatura)
 
