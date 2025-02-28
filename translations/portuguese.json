@@ -36,7 +36,7 @@
         "feels like": "Sensação térmica",
         "wind speed": "Velocidade do vento",
         "humidity": "Umidade",
-        "minmax": "Mín / Max (24 horas)",
+        "minmax": "Mín / Máx",
         "setFooter": "Dados fornecidos por OpenWeatherMap",
         "catch error": "Erro ao obter o clima: ",
         "message reply error": "Ocorreu um erro ao tentar obter o clima."

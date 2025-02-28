@@ -36,7 +36,7 @@
         "feels like": "Feels like",
         "wind speed": "Wind speed",
         "humidity": "Humidity",
-        "minmax": "Min / Max (24 hours)",
+        "minmax": "Min / Max",
         "setFooter": "Data provided by OpenWeatherMap",
         "catch error": "Error getting weather: ",
         "message reply error": "An error occurred while trying to get the weather."
