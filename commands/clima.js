@@ -89,7 +89,7 @@ async function execute(message, args, __, translate) {
                 { name: await translate("clima", "condition"), value: `${weatherIcon} ${currentWeatherData.weather[0].description}`, inline: true },
                 { name: await translate("clima", "temperature"), value: `${temperature} °C`, inline: true },
                 { name: await translate("clima", "feels like"), value: `${feelsLike} °C`, inline: true },
-                { name: await translate("clima", "wind speed"), value: `${windSpeed} m/s`, inline: true },
+                { name: await translate("clima", "wind speed"), value: `${(windSpeed * 3.6).toFixed(1)} km/h`, inline: true },
                 { name: await translate("clima", "humidity"), value: `${humidity}%`, inline: true },
                 { name: await translate("clima", "minmax"), value: `${tempMin} °C / ${tempMax} °C`, inline: true }
             )

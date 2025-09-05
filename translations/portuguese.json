@@ -96,7 +96,8 @@
         "no history": "Histórico não disponível",
         "time up": "Tempo esgotado! Um ou mais jogadores não escolheram a tempo.",
         "score": "Placar: {0} {1} — {2} {3}",
-        "error jokenpo": "Ocorreu um erro ao executar o comando jokenpo."
+        "error jokenpo": "Ocorreu um erro ao executar o comando jokenpo.",
+        "yourself": "Você não pode jogar contra si mesmo!"
     },
     "macaco": {
         "no monkey found": "Não foi possível encontrar um macaco com imagem e descrição."

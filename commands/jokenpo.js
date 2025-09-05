@@ -36,6 +36,10 @@ async function execute(message, args, db, translate) {
                     id: "1243673463902834809",
                 };
             }
+            
+            if (player1.id === player2.id) {
+                return message.reply(await translate("jokenpo", "yourself"));
+            }
 
             const isBotGame = player2.id === "1243673463902834809";
             const [sortedPlayer1, sortedPlayer2] = isBotGame ? [player1, player2] : player1.id < player2.id ? [player1, player2] : [player2, player1];

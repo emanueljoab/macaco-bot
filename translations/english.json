@@ -96,7 +96,8 @@
         "no history": "History not available",
         "time up": "Time's up! One or more players didn't choose in time.",
         "score": "Score: {0} {1} — {2} {3}",
-        "error jokenpo": "An error occurred while executing the Rock Paper Scissors command"
+        "error jokenpo": "An error occurred while executing the Rock Paper Scissors command",
+        "yourself": "You cannot play against yourself!"
     },
     "macaco": {
         "no monkey found": "Unable to find a monkey with image and description."

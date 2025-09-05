@@ -46,7 +46,7 @@ client.on("messageCreate", (message) => {
 
     if (content === "oi") {
         message.reply("vai tomar no cu");
-        console.log(`${new Date().toLocaleString("pt-BR")} | vai tomar no cu`);
+        console.log(`${new Date().toLocaleString("pt-BR")} | vai tomar no cu (${message.author.username})`);
     }
 
     if (!content.startsWith(prefix) || message.author.bot) return;
