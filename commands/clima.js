@@ -62,8 +62,14 @@ async function execute(message, args, __, translate) {
         const country = currentWeatherData.sys.country;
         const temperature = currentWeatherData.main.temp;
         const feelsLike = currentWeatherData.main.feels_like;
-        const windSpeed = currentWeatherData.wind.speed;
+        const windSpeed = currentWeatherData.wind.speed; // Valor bruto em m/s
+        const windKmhRaw = windSpeed * 3.6; // Conversão para km/h
+        const windKmh = Math.trunc(windKmhRaw); // Remover casas decimais
         const humidity = currentWeatherData.main.humidity;
+
+        console.log(`DEBUG: windSpeed bruto = ${windSpeed} m/s`);
+        console.log(`DEBUG: windKmhRaw = ${windKmhRaw} km/h`);
+        console.log(`DEBUG: windKmh (truncado) = ${windKmh} km/h`);
 
         // Processar dados da previsão (24 horas)
         let tempMin = Infinity;
@@ -87,16 +93,15 @@ async function execute(message, args, __, translate) {
             .setThumbnail(`https://openweathermap.org/img/wn/${weatherIconCode}.png`)
             .addFields(
                 { name: await translate("clima", "condition"), value: `${weatherIcon} ${currentWeatherData.weather[0].description}`, inline: true },
-                { name: await translate("clima", "temperature"), value: `${temperature} °C`, inline: true },
-                { name: await translate("clima", "feels like"), value: `${feelsLike} °C`, inline: true },
-                { name: await translate("clima", "wind speed"), value: `${(windSpeed * 3.6).toFixed(1)} km/h`, inline: true },
+                { name: await translate("clima", "temperature"), value: `${Math.trunc(temperature)} °C`, inline: true },
+                { name: await translate("clima", "feels like"), value: `${Math.trunc(feelsLike)} °C`, inline: true },
+                { name: await translate("clima", "wind speed"), value: `${windKmh} km/h`, inline: true },
                 { name: await translate("clima", "humidity"), value: `${humidity}%`, inline: true },
-                { name: await translate("clima", "minmax"), value: `${tempMin} °C / ${tempMax} °C`, inline: true }
+                { name: await translate("clima", "minmax"), value: `${Math.trunc(tempMin)} °C / ${Math.trunc(tempMax)} °C`, inline: true }
             )
             .setFooter({ text: await translate("clima", "setFooter") });
-
         message.channel.send({ embeds: [weatherInfo] });
-        console.log(`${new Date().toLocaleString("pt-BR")} | ${cityName}: ${temperature} °C e ${currentWeatherData.weather[0].description}. (${message.author.username})`);
+        console.log(`${new Date().toLocaleString("pt-BR")} | ${cityName}: ${Math.trunc(temperature)} °C e ${currentWeatherData.weather[0].description}. (${message.author.username})`);
     } catch (error) {
         console.error(await translate("clima", "catch error"), error);
         message.reply(await translate("clima", "message reply error"));
