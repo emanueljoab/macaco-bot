@@ -12,7 +12,7 @@ async function execute(message, __, __, translate) {
     } else if (howgay > 0 && howgay < 100) {
         description = await translate("howgay", "description2", user.username, howgay);
     } else {
-        description = await translate("howgay", "description3");
+        description = await translate("howgay", "description3", user.username, howgay);
     }
 
     const embed = new EmbedBuilder()

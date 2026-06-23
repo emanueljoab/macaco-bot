@@ -66,7 +66,7 @@
         "description1": "{0} is {1}% gay 🏳️‍🌈",
         "footer": "What a faggot! 🦄",
         "description2": "{0} is {1}% gay 🏳️‍🌈",
-        "description3": "{0} is {1}% gay 🏳️‍🌈",
+        "description3": "{0} is {1}% gay ⚤",
         "setTitle": "Gay meter"
     },
     "jokenpo": {
@@ -91,7 +91,7 @@
         ],
         "tie": "**Draw!**",
         "player 1 win": "**{0} wins!**",
-        "player 2 win": "**{0} venceu!**",
+        "player 2 win": "**{0} wins!**",
         "choices": "{0} chose {1}\n{2} chose {3}\n\n{4}",
         "no history": "History not available",
         "time up": "Time's up! One or more players didn't choose in time.",
