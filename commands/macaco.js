@@ -20,20 +20,18 @@ async function translateText(text) {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
+                "Authorization": `DeepL-Auth-Key ${apiKey}`,
             },
-            body: `auth_key=${apiKey}&text=${encodeURIComponent(text)}&source_lang=EN&target_lang=PT`,
+            body: `text=${encodeURIComponent(text)}&source_lang=EN&target_lang=PT`,sd
         });
-
         if (!response.ok) {
             const responseBody = await response.text();
             throw new Error(`Erro na requisição de tradução: ${response.statusText}. Detalhes: ${responseBody}`);
         }
-
         const data = await response.json();
         if (data.translations && data.translations.length > 0) {
             return data.translations[0].text;
         }
-
         throw new Error("Nenhuma tradução disponível");
     } catch (error) {
         console.error("Erro ao traduzir texto:", error);
