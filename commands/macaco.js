@@ -22,7 +22,7 @@ async function translateText(text) {
                 "Content-Type": "application/x-www-form-urlencoded",
                 "Authorization": `DeepL-Auth-Key ${apiKey}`,
             },
-            body: `text=${encodeURIComponent(text)}&source_lang=EN&target_lang=PT`,sd
+            body: `text=${encodeURIComponent(text)}&source_lang=EN&target_lang=PT`,
         });
         if (!response.ok) {
             const responseBody = await response.text();
