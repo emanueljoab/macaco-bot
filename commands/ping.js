@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
 
-async function execute(message, __, __, translate) {
+async function execute(message, _args, _db, translate) {
     const startTimestamp = Date.now(); // Captura o timestamp antes do processamento da interação
 
     const initialEmbed = new EmbedBuilder().setTitle("Pong!").setDescription(await translate("ping", "calculating"));

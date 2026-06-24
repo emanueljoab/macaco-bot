@@ -23,7 +23,7 @@ const weatherIcons = {
     "50n": "🌫️",
 };
 
-async function execute(message, args, __, translate) {
+async function execute(message, args, _db, translate) {
     if (!args.length) {
         return message.reply(await translate("clima", "no args"));
     }
@@ -67,10 +67,6 @@ async function execute(message, args, __, translate) {
         const windKmh = Math.trunc(windKmhRaw); // Remover casas decimais
         const humidity = currentWeatherData.main.humidity;
 
-        console.log(`DEBUG: windSpeed bruto = ${windSpeed} m/s`);
-        console.log(`DEBUG: windKmhRaw = ${windKmhRaw} km/h`);
-        console.log(`DEBUG: windKmh (truncado) = ${windKmh} km/h`);
-
         // Processar dados da previsão (24 horas)
         let tempMin = Infinity;
         let tempMax = -Infinity;
@@ -100,7 +96,7 @@ async function execute(message, args, __, translate) {
                 { name: await translate("clima", "minmax"), value: `${Math.trunc(tempMin)} °C / ${Math.trunc(tempMax)} °C`, inline: true }
             )
             .setFooter({ text: await translate("clima", "setFooter") });
-        message.channel.send({ embeds: [weatherInfo] });
+        message.reply({ embeds: [weatherInfo] });
         console.log(`${new Date().toLocaleString("pt-BR")} | ${cityName}: ${Math.trunc(temperature)} °C e ${currentWeatherData.weather[0].description}. (${message.author.username})`);
     } catch (error) {
         console.error(await translate("clima", "catch error"), error);

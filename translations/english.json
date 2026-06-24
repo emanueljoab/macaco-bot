@@ -22,6 +22,7 @@
             "🔴 Outlook not so good",
             "🔴 Very doubtful" 
         ],
+        "no question": "Ask a question!",
         "setTitle": "Magic 8 Ball",
         "setDescription": "{0} asked\n{1}\nMy answer:\n**{2}**"
     },

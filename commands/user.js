@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require("discord.js");
 const { getLanguagePreference } = require("../database");
 
-async function execute(message, __, __, translate) {
+async function execute(message, _args, _db, translate) {
     let user = message.mentions.users.first() || message.author;
     let member = message.guild.members.cache.get(user.id);
 

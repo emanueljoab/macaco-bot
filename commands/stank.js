@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
 
-async function execute(message, __, __, translate) {
+async function execute(message, _args, _db, translate) {
     let user = message.mentions.users.first() || message.author;
     let stank = Math.floor(Math.random() * 101);
     let thumbnails = ["https://i.imgur.com/dP60pVE.gif", "https://i.imgur.com/NbxSkEX.jpg", "https://i.imgur.com/DhTukGt.jpg", "https://i.imgur.com/p9oHo94.png", "https://i.imgur.com/DnmBv6d.gif"];

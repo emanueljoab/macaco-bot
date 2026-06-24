@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
 
-async function execute(message, __, __, translate) {
+async function execute(message, _args, _db, translate) {
     // Cria o embed com as informações do servidor
     const serverEmbed = new EmbedBuilder()
         .setTitle(`${message.guild.name}`)

@@ -40,6 +40,21 @@ client.once("ready", async () => {
 });
 
 client.on("messageCreate", (message) => {
+    if (process.env.DEV_MODE === 'true') { // Verifica se o modo de desenvolvimento está ativado
+        if (message.channelId !== process.env.DEV_CHANNEL_ID) return;
+
+        const originalReply = message.reply.bind(message);
+        
+        message.reply = (content) => {
+            if (typeof content === 'string') {
+                return originalReply('-# 🛠️ DEV MODE\n' + content);
+            } else if (content?.embeds) {
+                return originalReply({ ...content, content: '-# 🛠️ DEV MODE' });
+            }
+            return originalReply(content);''
+        };
+    }
+
     setContext(message.guild.id);
     // Evento para mensagens
     const content = message.content.toLowerCase();
@@ -55,23 +70,20 @@ client.on("messageCreate", (message) => {
     const command = args.shift().toLowerCase();
 
     const commands = {
-        "8ball": ball8.execute,
-        clima: clima.execute,
+        bola8: ball8.execute, "8ball": ball8.execute,
+        clima: clima.execute, weather: clima.execute,
         config: config.execute,
         flip: flip.execute,
         help: help.execute.bind(null, client),
         howgay: howgay.execute,
-        jokenpo: jokenpo.execute,
-        macaco: macaco.execute,
-        monkey: macaco.execute,
+        jokenpo: jokenpo.execute, rps: jokenpo.execute,
+        macaco: macaco.execute, monkey: macaco.execute,
         ping: ping.execute,
         pp: pp.execute,
-        rps: jokenpo.execute,
         server: server.execute,
         stank: stank.execute,
         simp: simp.execute,
         user: user.execute,
-        weather: clima.execute,
     };
 
     if (commands[command]) {
@@ -102,4 +114,3 @@ client.on("messageCreate", (message) => {
 });
 
 client.login(process.env.TOKEN);
-//test

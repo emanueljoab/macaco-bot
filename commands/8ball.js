@@ -1,6 +1,10 @@
 const { EmbedBuilder } = require("discord.js");
 
-async function execute(message, args, __, translate) {
+async function execute(message, args, _db, translate) {
+    if (args.length === 0) {
+        return message.reply(await translate("8ball", "no question"));
+    }
+
     const respostas = await translate("8ball", "respostas");
     const indiceAleatorio = Math.floor(Math.random() * respostas.length);
     const resposta = respostas[indiceAleatorio];

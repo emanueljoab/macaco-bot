@@ -2,7 +2,7 @@
 const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, ComponentType, PermissionsBitField } = require("discord.js");
 const { db } = require("../database");
 
-async function execute(message, __, __, translate) {
+async function execute(message, _args, _db, translate) {
     // Verifica se o usuário tem permissão de administrador
     if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
         return message.reply(await translate("config", "permission"));
@@ -36,7 +36,7 @@ async function execute(message, __, __, translate) {
     const row = new ActionRowBuilder().addComponents(languageMenu);
 
     // Envia o embed e o menu de seleção
-    message.channel.send({ embeds: [embed], components: [row] });
+    message.reply({ embeds: [embed], components: [row] });
 
     // Listener para interações com o menu de seleção
     const filter = (interaction) => interaction.customId === "select-language" && interaction.user.id === message.author.id;

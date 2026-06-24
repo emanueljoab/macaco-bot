@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
 
-async function execute(client, message, __, __, translate) {
+async function execute(client, message, _args, _db, translate) {
     const embed = new EmbedBuilder()
         .setTitle(await translate("help", "setTitle"))
         .setDescription(await translate("help", "setDescription"))

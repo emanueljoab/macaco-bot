@@ -171,7 +171,7 @@ async function getRandomMonkey(message) {
     }
 }
 
-async function execute(message, __, __, translate) {
+async function execute(message, _args, _db, translate) {
     try {
         const { nome, imagem, descricao } = await getRandomMonkey(message);
 

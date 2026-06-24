@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
 
-async function execute(message, __, __, translate) {
+async function execute(message, _args, _db, translate) {
     const user = message.mentions.users.first() || message.author;
     const simp = Math.floor(Math.random() * 101);
     let footer;
