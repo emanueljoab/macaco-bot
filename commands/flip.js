@@ -5,6 +5,8 @@ async function execute(message, _args, _db, translate) {
     const ladosDaMoeda = await translate("flip", "ladosDaMoeda");
     const ladoEscolhido = ladosDaMoeda[Math.floor(Math.random() * ladosDaMoeda.length)];
     
+    let miniatura;
+
     if (ladoEscolhido === "Coroa" || ladoEscolhido === "Tails") {
         miniatura = 'https://i.imgur.com/8wTa5Qa.png'
     } else {

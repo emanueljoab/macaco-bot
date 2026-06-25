@@ -5,7 +5,6 @@ const path = require("node:path");
 const { Client, GatewayIntentBits } = require("discord.js");
 const { db } = require("../database"); // Importe a instância do banco de dados
 const { loadTranslations, translate, setContext } = require("../translate");
-const { executeMacacoCommandOnStartup } = require("../commands/macaco");
 
 const prefix = "pls ";
 
@@ -36,7 +35,6 @@ client.once("ready", async () => {
         console.log(`${index + 1}. ${guild.name}`);
     });
     console.log(`${new Date().toLocaleString("pt-BR")} | ${client.user.tag} está online.`);
-    await executeMacacoCommandOnStartup(); // Pré-carrega o fetch de 'macaco'
 });
 
 client.on("messageCreate", (message) => {
@@ -51,11 +49,10 @@ client.on("messageCreate", (message) => {
             } else if (content?.embeds) {
                 return originalReply({ ...content, content: '-# 🛠️ DEV MODE' });
             }
-            return originalReply(content);''
+            return originalReply(content);
         };
     }
 
-    setContext(message.guild.id);
     // Evento para mensagens
     const content = message.content.toLowerCase();
 
@@ -65,6 +62,8 @@ client.on("messageCreate", (message) => {
     }
 
     if (!content.startsWith(prefix) || message.author.bot) return;
+
+    setContext(message.guild.id);
 
     const args = content.slice(prefix.length).trim().split(/ +/);
     const command = args.shift().toLowerCase();

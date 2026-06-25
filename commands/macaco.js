@@ -87,151 +87,102 @@ async function fetchVernacularNames(speciesKey) {
     }
 }
 
-async function fetchMacacos(message, offset) {
-    try {
-        const speciesData = await fetchSpecies(offset);
-
-        const guildId = message.guild.id;
-        const languagePreference = await getLanguagePreference(guildId);
-
-        const promises = speciesData.results.map(async (species) => {
-            if (!familiasSimiiformes.includes(species.family)) {
-                return;
-            }
-            try {
-                const vernacularData = await fetchVernacularNames(species.key);
-                let vernacularName = null;
-
-                if (languagePreference === "english") {
-                    // Procurar por um nome vernacular em inglês
-                    const englishVernacular = vernacularData.results.find((vernacular) => vernacular.language === "eng");
-                    if (englishVernacular) {
-                        vernacularName = englishVernacular.vernacularName;
-                    }
-                } else {
-                    // Procurar por um nome vernacular em português
-                    const portugueseVernacular = vernacularData.results.find((vernacular) => vernacular.language === "por");
-                    if (portugueseVernacular) {
-                        vernacularName = portugueseVernacular.vernacularName;
-                    } else {
-                        // Se não houver nome em português, usar o nome em inglês
-                        const englishVernacular = vernacularData.results.find((vernacular) => vernacular.language === "eng");
-                        if (englishVernacular) {
-                            vernacularName = englishVernacular.vernacularName;
-                        }
-                    }
-                }
-
-                // Obter uma descrição aleatória e limitar a 100 caracteres
-                let description = "";
-                if (species.descriptions && species.descriptions.length > 0) {
-                    const randomIndex = Math.floor(Math.random() * species.descriptions.length);
-                    description = species.descriptions[randomIndex].description;
-                    description = description.slice(0, 100); // Limita a 100 caracteres
-                    if (description.length === 100) {
-                        description += "..."; // Adiciona reticências se cortou no meio da palavra
-                    }
-                }
-
-                // Se encontramos um nome vernacular e uma descrição, adicionamos ao objeto macacos
-                if (vernacularName && description) {
-                    const imageUrl = await fetchImage(species.key);
-                    if (imageUrl) {
-                        macacos[vernacularName] = { imageUrl, description };
-                    }
-                }
-            } catch (error) {
-                console.error(`Erro ao obter informações para a espécie com chave ${species.key}:`, error);
-            }
-        });
-        await Promise.all(promises);
-    } catch (error) {
-        console.error("Erro ao buscar espécies de macacos:", error);
-    }
-}
-
 async function getRandomMonkey(message) {
-    try {
-        // Gera um offset aleatório para a página a ser buscada
-        const offset = Math.floor(Math.random() * 1000);
-        if (Object.keys(macacos).length === 0) {
-            await fetchMacacos(message, offset);
-        }
-        const nomesMacacos = Object.keys(macacos);
-        const aleatorio = nomesMacacos[Math.floor(Math.random() * nomesMacacos.length)];
+    await loadFetch();
+    const guildId = message.guild.id;
+    const languagePreference = await getLanguagePreference(guildId);
 
-        return {
-            nome: aleatorio,
-            imagem: macacos[aleatorio].imageUrl,
-            descricao: macacos[aleatorio].description,
-        };
-    } catch (error) {
-        console.error("Erro ao obter macacos aleatórios:", error);
-        return null;
+    for (let tentativa = 0; tentativa < 20; tentativa++) {
+        try {
+            const offset = Math.floor(Math.random() * 1000);
+            const speciesData = await fetchSpecies(offset);
+
+            // Filtra só as famílias válidas e embaralha
+            const validas = speciesData.results
+                .filter(s => familiasSimiiformes.includes(s.family))
+                .sort(() => Math.random() - 0.5);
+
+            for (const species of validas) {
+                try {
+                    // Precisa ter descrição
+                    if (!species.descriptions || species.descriptions.length === 0) continue;
+
+                    const vernacularData = await fetchVernacularNames(species.key);
+
+                    let vernacularName = null;
+                    if (languagePreference === 'english') {
+                        const eng = vernacularData.results.find(v => v.language === 'eng');
+                        if (eng) vernacularName = eng.vernacularName;
+                    } else {
+                        const por = vernacularData.results.find(v => v.language === 'por');
+                        const eng = vernacularData.results.find(v => v.language === 'eng');
+                        vernacularName = por?.vernacularName || eng?.vernacularName || null;
+                    }
+
+                    if (!vernacularName) continue;
+
+                    const imageUrl = await fetchImage(species.key);
+                    if (!imageUrl) continue;
+
+                    const randomIndex = Math.floor(Math.random() * species.descriptions.length);
+                    let description = species.descriptions[randomIndex].description.slice(0, 200);
+                    if (description.length === 200) description += '...';
+
+                    return { nome: vernacularName, imagem: imageUrl, descricao: description };
+                } catch {
+                    continue;
+                }
+            }
+        } catch {
+            continue;
+        }
     }
+
+    return null;
 }
 
 async function execute(message, _args, _db, translate) {
     try {
+        const loadingEmbed = new EmbedBuilder()
+            .setDescription(await translate("macaco", "searching"));
+
+        const reply = await message.reply({ embeds: [loadingEmbed] });
+
         const { nome, imagem, descricao } = await getRandomMonkey(message);
 
         if (!nome || !imagem || !descricao) {
             throw new Error("Não foi possível encontrar um macaco com imagem e descrição.");
         }
 
-        const embed = new EmbedBuilder().setTitle(nome).setImage(imagem).setDescription(descricao);
-
-        const reply = await message.reply({
-            embeds: [embed],
-        });
-
         console.log(`${new Date().toLocaleString("pt-BR")} | ${nome} (${message.author.username})`);
 
-        // Traduzir o nome e a descrição após enviar a resposta
         const guildId = message.guild.id;
         const language = await getLanguagePreference(guildId);
 
-        if (language === "portuguese") {
-            try {
-                const translatedNome = await translateText(nome);
-                const translatedDescricao = await translateText(descricao);
-                const translatedEmbed = new EmbedBuilder().setTitle(translatedNome).setImage(imagem).setDescription(translatedDescricao);
+        let titulo = nome;
+        let descricaoFinal = descricao;
 
-                await reply.edit({
-                    embeds: [translatedEmbed],
-                });
-            } catch (translationError) {
-                console.error("Erro ao traduzir nome e descrição:", translationError);
-            }
+        if (language === "portuguese") {
+            titulo = await translateText(nome);
+            descricaoFinal = await translateText(descricao);
         }
+
+        const imageResponse = await fetch(imagem);
+        const imageBuffer = await imageResponse.buffer();
+        const attachment = { attachment: imageBuffer, name: 'macaco.jpg' };
+
+        const embed = new EmbedBuilder()
+            .setTitle(titulo)
+            .setImage('attachment://macaco.jpg')
+            .setDescription(descricaoFinal);
+
+        await reply.edit({ embeds: [embed], files: [attachment] });
     } catch (error) {
         console.error("Erro ao gerar macaco:", error);
         await message.reply(await translate("macaco", "no monkey found"));
     }
 }
 
-async function executeMacacoCommandOnStartup() {
-    console.log(`${new Date().toLocaleString("pt-BR")} | Executando comando 'macaco' para pré-carregar dados...`);
-
-    const fakeMessage = {
-        reply: () => Promise.resolve(),
-        guild: {
-            id: "default_guild_id",
-        },
-        author: {
-            username: "System",
-        },
-    };
-
-    try {
-        await execute(fakeMessage, null, null);
-        console.log(`${new Date().toLocaleString("pt-BR")} | Comando 'macaco' executado com sucesso para pré-carregamento.`);
-    } catch (error) {
-        console.error(`${new Date().toLocaleString("pt-BR")} | Erro ao executar comando 'macaco' para pré-carregamento:`, error);
-    }
-}
-
 module.exports = {
     execute,
-    executeMacacoCommandOnStartup,
 };

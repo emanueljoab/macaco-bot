@@ -101,7 +101,9 @@
         "yourself": "Você não pode jogar contra si mesmo!"
     },
     "macaco": {
-        "no monkey found": "Não foi possível encontrar um macaco com imagem e descrição."
+        "found": "Macaco encontrado! 🐒",
+        "no monkey found": "Nenhum macaco encontrado, poxa.",
+        "searching": "Procurando macaco... 🔍"
     },
     "ping": {
         "calculating": "Calculando...",
