@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const { getLanguagePreference } = require("../database");
-const { EmbedBuilder } = require("discord.js");
+const { EmbedBuilder, AttachmentBuilder } = require("discord.js");
 
 const familiasSimiiformes = ["Cebidae", "Cercopithecidae", "Hominidae", "Hylobatidae", "Pitheciidae", "Aotidae", "Atelidae", "Callitrichidae"];
 
@@ -167,9 +167,26 @@ async function execute(message, _args, _db, translate) {
             descricaoFinal = await translateText(descricao);
         }
 
-        const imageResponse = await fetch(imagem);
-        const imageBuffer = await imageResponse.buffer();
-        const attachment = { attachment: imageBuffer, name: 'macaco.jpg' };
+        // Disfarça a requisição do bot como se fosse um navegador comum
+        const imageResponse = await fetch(imagem, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
+            }
+        });
+        
+        if (!imageResponse.ok) {
+            throw new Error(`Erro ao baixar a imagem: ${imageResponse.statusText}`);
+        }
+
+        // --- CORREÇÃO APLICADA AQUI ---
+        // Usa arrayBuffer() em vez de buffer() para evitar o aviso
+        const arrayBuffer = await imageResponse.arrayBuffer();
+        const imageBuffer = Buffer.from(arrayBuffer);
+        
+        // Cria o anexo corretamente com a classe do discord.js
+        const attachment = new AttachmentBuilder(imageBuffer, { name: 'macaco.jpg' });
+        // ------------------------------
 
         const embed = new EmbedBuilder()
             .setTitle(titulo)

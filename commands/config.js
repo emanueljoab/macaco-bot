@@ -1,4 +1,3 @@
-// config.js
 const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, ComponentType, PermissionsBitField } = require("discord.js");
 const { db } = require("../database");
 
@@ -32,16 +31,18 @@ async function execute(message, _args, _db, translate) {
             },
         ]);
 
-    // Cria uma action row e adiciona o menu de seleção
     const row = new ActionRowBuilder().addComponents(languageMenu);
 
-    // Envia o embed e o menu de seleção
-    message.reply({ embeds: [embed], components: [row] });
+    const reply = await message.reply({ embeds: [embed], components: [row] });
 
     // Listener para interações com o menu de seleção
     const filter = (interaction) => interaction.customId === "select-language" && interaction.user.id === message.author.id;
 
-    const collector = message.channel.createMessageComponentCollector({ filter, componentType: ComponentType.StringSelect });
+    const collector = reply.createMessageComponentCollector({ 
+        filter, 
+        componentType: ComponentType.StringSelect,
+        time: 60000 
+    });
 
     collector.on("collect", (interaction) => {
         const selectedLanguage = interaction.values[0];
@@ -52,18 +53,30 @@ async function execute(message, _args, _db, translate) {
             `INSERT INTO server_language (guild_id, language) VALUES (?, ?) ON CONFLICT(guild_id) DO UPDATE SET language = ?`,
             [message.guild.id, selectedLanguage, selectedLanguage],
             async (err) => {
-                if (err) {
-                    console.error("Erro ao atualizar o idioma:", err);
-                    embed.setFields({ name: "\u200B", value: await translate("config", "error") });
-                    await interaction.update({ embeds: [embed], components: [] });
-                } else {
-                    embed.setFields({ name: "\u200B", value: await translate("config", "success", selectedLanguage) });
-                    await interaction.update({ embeds: [embed], components: [] });
-                    console.log(new Date().toLocaleString("pt-BR"), "| Idioma alterado para", selectedLanguage, "em", guild.name);
+                try {
+                    if (err) {
+                        console.error("Erro ao atualizar o idioma:", err);
+                        embed.setFields({ name: "\u200B", value: await translate("config", "error") });
+                        await interaction.update({ embeds: [embed], components: [] });
+                    } else {
+                        embed.setFields({ name: "\u200B", value: await translate("config", "success", selectedLanguage) });
+                        await interaction.update({ embeds: [embed], components: [] });
+                        console.log(new Date().toLocaleString("pt-BR"), "| Idioma alterado para", selectedLanguage, "em", guild.name);
+                    }
+                } catch (error) {
+                    if (error.code !== 10062) {
+                        console.error("Erro inesperado na interação:", error);
+                    }
                 }
                 collector.stop();
             }
         );
+    });
+
+    collector.on("end", (collected, reason) => {
+        if (reason === "time") {
+            reply.edit({ components: [] }).catch(console.error);
+        }
     });
 }
 

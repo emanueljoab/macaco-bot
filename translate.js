@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { getLanguagePreference } = require("./database"); // Ajuste conforme a localização do seu banco de dados
+const { getLanguagePreference } = require("./database");
 
 let translations = {
     english: {},
