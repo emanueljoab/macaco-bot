@@ -7,20 +7,15 @@ let translations = {
     portuguese: {},
 };
 
-const context = {
-    guildid: null,
-};
-
-// Carrega traduções dos arquivos JSON
+// Carregar traduções dos arquivos JSON
 function loadTranslations() {
     translations.english = JSON.parse(fs.readFileSync(path.join(__dirname, "translations", "english.json")));
     translations.portuguese = JSON.parse(fs.readFileSync(path.join(__dirname, "translations", "portuguese.json")));
 }
 
-// Carrega a tradução com placeholders
-async function translate(command, key, ...args) {
-    const guildid = context.guildid;
-    const language = await getLanguagePreference(guildid);
+// Carregar a tradução com placeholders
+async function translate(guildId, command, key, ...args) {
+    const language = await getLanguagePreference(guildId);
     let translation = translations[language][command][key];
     if (!translation) return "Translation not found";
 
@@ -31,12 +26,7 @@ async function translate(command, key, ...args) {
     return translation;
 }
 
-function setContext(guildid) {
-    context.guildid = guildid;
-}
-
 module.exports = {
     loadTranslations,
     translate,
-    setContext,
 };

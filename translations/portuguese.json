@@ -127,6 +127,7 @@
         "setDescription": "{0} é {1}% fedido(a)\n\nFedômetro: {2}"
     },
     "user": {
+        "member not found": "Esse usuário não é membro deste servidor.",
         "setDescription": "Juntou-se ao servidor em {0}."
     }
 }

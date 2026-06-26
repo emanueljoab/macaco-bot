@@ -5,6 +5,14 @@ async function execute(message, _args, _db, translate) {
     let user = message.mentions.users.first() || message.author;
     let member = message.guild.members.cache.get(user.id);
 
+    if (!member) {
+        try {
+            member = await message.guild.members.fetch(user.id);
+        } catch {
+            return message.reply(await translate("user", "member not found"));
+        }
+    }
+
     const guildId = message.guild.id;
     const languagePreference = await getLanguagePreference(guildId);
     const timeZone = languagePreference === "english" ? "UTC" : "America/Sao_Paulo";

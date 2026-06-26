@@ -127,6 +127,7 @@
         "setDescription": "{0} is {1}% stanky\n\nStank-o-meter: {2}"
     },
     "user": {
+        "member not found": "That user is not a member of this server.",
         "setDescription": "Joined server at {0}."
     }
 }

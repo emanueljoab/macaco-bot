@@ -3,8 +3,8 @@ require("dotenv").config();
 const fs = require("node:fs");
 const path = require("node:path");
 const { Client, GatewayIntentBits } = require("discord.js");
-const { db } = require("../database"); // Importe a instância do banco de dados
-const { loadTranslations, translate, setContext } = require("../translate");
+const { db } = require("../database");
+const { loadTranslations, translate: translateRaw } = require("../translate");
 
 const prefix = "pls ";
 
@@ -37,7 +37,7 @@ client.once("ready", async () => {
     console.log(`${new Date().toLocaleString("pt-BR")} | ${client.user.tag} está online.`);
 });
 
-client.on("messageCreate", (message) => {
+client.on("messageCreate", async (message) => {
     if (process.env.DEV_MODE === 'true') { // Verifica se o modo de desenvolvimento está ativado
         if (message.channelId !== process.env.DEV_CHANNEL_ID) return;
 
@@ -62,8 +62,10 @@ client.on("messageCreate", (message) => {
     }
 
     if (!content.startsWith(prefix) || message.author.bot) return;
+    if (!message.guild) return;
 
-    setContext(message.guild.id);
+    const guildId = message.guild.id;
+    const translate = (command, key, ...args) => translateRaw(guildId, command, key, ...args);
 
     const args = content.slice(prefix.length).trim().split(/ +/);
     const command = args.shift().toLowerCase();
@@ -98,12 +100,12 @@ client.on("messageCreate", (message) => {
                     args.length === 0 ||
                     (args.length === 1 && message.mentions.users.size > 0)
                 ) {
-                    commands[command](message, args, db, translate);
+                    await commands[command](message, args, db, translate);
                 } else {
                     return;
                 }
             } else {
-                commands[command](message, args, db, translate);
+                await commands[command](message, args, db, translate);
             }
         } catch (error) {
             console.error(`Erro ao executar o comando ${command}:`, error);
