@@ -22,9 +22,10 @@
             "🔴 Outlook not so good",
             "🔴 Very doubtful" 
         ],
-        "no question": "Ask a question!",
+        "no question": "You need to ask a question!",
         "setTitle": "Magic 8 Ball",
-        "setDescription": "{0} asked\n{1}\nMy answer:\n**{2}**"
+        "setDescription": "{0} asked\n> {1}\n\nMy answer:\n**{2}**",
+        "setFooter": "Example: pls 8ball will I be rich?"
     },
     "clima": {
         "no args": "You need to provide a city name!",
@@ -70,6 +71,9 @@
         "description3": "{0} is {1}% gay ⚤",
         "setTitle": "Gay meter"
     },
+    "index": {
+        "error": "An error occurred while trying to execute the command {0}."
+    },
     "jokenpo": {
         "reply rank error": "An error occurred while retrieving the ranking",
         "jokenpo ranking": "Rock Paper Scissors Ranking",
@@ -101,7 +105,6 @@
         "yourself": "You cannot play against yourself!"
     },
     "macaco": {
-        "found": "Monkey found! 🐒",
         "no monkey found": "No monkey found, damn.",
         "searching": "Searching for a monkey... 🔍"
     },
@@ -121,6 +124,11 @@
     "simp": {
         "setTitle": "Simp meter",
         "setDescription": "{0} is {1}% simp"
+    },
+    "spam": {
+        "detected": "⚠️ {0} has been timed out for 30 minutes for sending identical messages across multiple channels.",
+        "reason": "Spam detected: identical messages sent across multiple channels",
+        "setTitle": "Spam detected"
     },
     "stank": {
         "setTitle": "Stank meter",

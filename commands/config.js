@@ -1,5 +1,6 @@
 const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, ComponentType, PermissionsBitField } = require("discord.js");
 const { db } = require("../database");
+const { log, error } = require("../utils");
 
 async function execute(message, _args, _db, translate) {
     // Verifica se o usuário tem permissão de administrador

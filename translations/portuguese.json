@@ -22,9 +22,10 @@
             "🔴 Perspectiva não muito boa",
             "🔴 Duvido muito"
         ],
-        "no question": "Faça uma pergunta!",
+        "no question": "Você precisa fazer uma pergunta!",
         "setTitle": "Bola 8 Mágica",
-        "setDescription": "{0} perguntou\n{1}\nMinha resposta:\n**{2}**"
+        "setDescription": "{0} perguntou\n> {1}\n\nMinha resposta:\n**{2}**",
+        "setFooter": "Exemplo: pls bola8 eu vou ficar rico?"
     },
     "clima": {
         "no args": "Você precisa fornecer o nome de uma cidade!",
@@ -39,7 +40,6 @@
         "humidity": "Umidade",
         "minmax": "Mín / Máx",
         "setFooter": "Dados fornecidos por OpenWeatherMap",
-        "catch error": "Erro ao obter o clima: ",
         "message reply error": "Ocorreu um erro ao tentar obter o clima."
     },
     "config": {
@@ -69,6 +69,9 @@
         "description2": "{0} é {1}% gay 🏳️‍🌈",
         "description3": "{0} é {1}% gay ⚤",
         "setTitle": "Medidor de gay"
+    },
+    "index": {
+        "error": "Ocorreu um erro ao tentar executar o comando {0}."
     },
     "jokenpo": {
         "reply rank error": "Ocorreu um erro ao obter o ranking",
@@ -101,7 +104,6 @@
         "yourself": "Você não pode jogar contra si mesmo!"
     },
     "macaco": {
-        "found": "Macaco encontrado! 🐒",
         "no monkey found": "Nenhum macaco encontrado, poxa.",
         "searching": "Procurando macaco... 🔍"
     },
@@ -121,6 +123,11 @@
     "simp": {
         "setTitle": "Medidor de simp",
         "setDescription": "{0} é {1}% simp"
+    },
+    "spam": {
+        "detected": "⚠️ {0} foi silenciado(a) por 30 minutos por enviar mensagens idênticas em múltiplos canais.",
+        "reason": "Spam detectado: mensagens idênticas enviadas em múltiplos canais",
+        "setTitle": "Spam detectado"
     },
     "stank": {
         "setTitle": "Medidor de fedor",

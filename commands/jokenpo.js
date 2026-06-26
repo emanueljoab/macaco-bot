@@ -1,4 +1,5 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const { log, error } = require("../utils");
 
 async function execute(message, args, db, translate) {
     try {

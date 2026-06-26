@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
 const { getLanguagePreference } = require("../database");
+const { log, error } = require("../utils");
 
 // Mapeamento de códigos de condições climáticas para emojis
 const weatherIcons = {
@@ -25,6 +26,7 @@ const weatherIcons = {
 
 async function execute(message, args, _db, translate) {
     if (!args.length) {
+        log(message, `Usuário não forneceu o nome da cidade`);
         return message.reply(await translate("clima", "no args"));
     }
 
@@ -44,6 +46,7 @@ async function execute(message, args, _db, translate) {
         const currentWeatherData = await currentWeatherResponse.json();
 
         if (currentWeatherData.cod !== 200) {
+            log(message, `Erro ao obter dados do clima para ${city}: ${currentWeatherData.message}`);
             return message.reply(await translate("clima", "error 200", city));
         }
 
@@ -52,6 +55,7 @@ async function execute(message, args, _db, translate) {
         const forecastData = await forecastResponse.json();
 
         if (forecastData.cod !== "200") {
+            log(message, `Erro ao obter dados da previsão para ${city}: ${forecastData.message}`);
             return message.reply(await translate("clima", "error not 200", city));
         }
 
@@ -97,9 +101,9 @@ async function execute(message, args, _db, translate) {
             )
             .setFooter({ text: await translate("clima", "setFooter") });
         message.reply({ embeds: [weatherInfo] });
-        console.log(`${new Date().toLocaleString("pt-BR")} | ${cityName}: ${Math.trunc(temperature)} °C e ${currentWeatherData.weather[0].description}. (${message.author.username})`);
+        log(message, `Informações de clima para ${cityName}, ${country} obtidas.`);
     } catch (error) {
-        console.error(await translate("clima", "catch error"), error);
+        error("Erro ao obter clima", error);
         message.reply(await translate("clima", "message reply error"));
     }
 }

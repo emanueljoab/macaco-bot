@@ -1,10 +1,10 @@
 require("dotenv").config();
 
-const fs = require("node:fs");
-const path = require("node:path");
-const { Client, GatewayIntentBits } = require("discord.js");
+const { Client, GatewayIntentBits, EmbedBuilder } = require("discord.js");
 const { db } = require("../database");
 const { loadTranslations, translate: translateRaw } = require("../translate");
+const { checkSpam } = require("../spam");
+const { log, error } = require("../utils");
 
 const prefix = "pls ";
 
@@ -29,16 +29,16 @@ const client = new Client({
 
 client.once("ready", async () => {
     client.user.setActivity({ name: "pls macaco" });
-    loadTranslations(); // Carrega traduções ao iniciar o bot
-    console.log(`${new Date().toLocaleString("pt-BR")} | Servidores em que estou:`);
+    loadTranslations(); // Carregar traduções ao iniciar o bot
+    log(null, `Servidores em que estou:`);
     Array.from(client.guilds.cache.values()).forEach((guild, index) => {
-        console.log(`${index + 1}. ${guild.name}`);
+        log(null, `${index + 1}. ${guild.name}`);
     });
-    console.log(`${new Date().toLocaleString("pt-BR")} | ${client.user.tag} está online.`);
+    log(null, `${client.user.tag} está online.`);
 });
 
 client.on("messageCreate", async (message) => {
-    if (process.env.DEV_MODE === 'true') { // Verifica se o modo de desenvolvimento está ativado
+    if (process.env.DEV_MODE === 'true') { // Verificar se o modo de desenvolvimento está ativado
         if (message.channelId !== process.env.DEV_CHANNEL_ID) return;
 
         const originalReply = message.reply.bind(message);
@@ -53,15 +53,21 @@ client.on("messageCreate", async (message) => {
         };
     }
 
+    // Verificar spam antes de qualquer coisa
+    const guildTranslate = (command, key, ...args) => translateRaw(message.guild?.id, command, key, ...args);
+    await checkSpam(message, guildTranslate);
+
     // Evento para mensagens
     const content = message.content.toLowerCase();
 
+    if (message.author.bot) return;
+
     if (content === "oi") {
         message.reply("vai tomar no cu");
-        console.log(`${new Date().toLocaleString("pt-BR")} | vai tomar no cu (${message.author.username})`);
+        log(message, `vai tomar no cu`);
     }
 
-    if (!content.startsWith(prefix) || message.author.bot) return;
+    if (!content.startsWith(prefix)) return;
     if (!message.guild) return;
 
     const guildId = message.guild.id;
@@ -91,12 +97,12 @@ client.on("messageCreate", async (message) => {
         // Verificar e executar comandos
         try {
             const noArgsCommands = ["config", "flip", "help", "macaco", "monkey", "ping", "server"];
-            if (noArgsCommands.includes(command) && args.length > 0) return; // Retorna se um dos noArgsCommands tiver algo escrito além do prefixo e comando
+            if (noArgsCommands.includes(command) && args.length > 0) return; // Retornar se um dos noArgsCommands tiver algo escrito além do prefixo e comando
 
             const argsCommands = ["pp", "howgay", "stank", "simp", "user"];
             if (argsCommands.includes(command)) {
                 if (
-                    // Verifica se não tem args OU se menciona um usuário
+                    // Verificar se não tem args OU se menciona um usuário
                     args.length === 0 ||
                     (args.length === 1 && message.mentions.users.size > 0)
                 ) {
@@ -108,8 +114,10 @@ client.on("messageCreate", async (message) => {
                 await commands[command](message, args, db, translate);
             }
         } catch (error) {
-            console.error(`Erro ao executar o comando ${command}:`, error);
-            message.reply("Ocorreu um erro ao tentar executar esse comando.");
+            error(message, `Erro ao executar o comando`);
+            const errorEmbed = new EmbedBuilder()
+                .setDescription(await translate("index", "error", command));
+            message.reply({ embeds: [errorEmbed] });
         }
     }
 });

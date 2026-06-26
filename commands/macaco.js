@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const { getLanguagePreference } = require("../database");
 const { EmbedBuilder, AttachmentBuilder } = require("discord.js");
+const { log, error } = require("../utils");
 
 const familiasSimiiformes = ["Cebidae", "Cercopithecidae", "Hominidae", "Hylobatidae", "Pitheciidae", "Aotidae", "Atelidae", "Callitrichidae"];
 
@@ -39,8 +40,6 @@ async function translateText(text) {
     }
 }
 
-const macacos = {};
-
 async function fetchSpecies(offset = 0) {
     await loadFetch(); // Carrega o fetch dinamicamente
     const response = await fetch(`https://api.gbif.org/v1/species/search?rank=SPECIES&highertaxon_key=798&limit=1000&offset=${offset}`);
@@ -64,7 +63,7 @@ async function fetchImage(speciesKey) {
 }
 
 async function fetchVernacularNames(speciesKey) {
-    await loadFetch(); // Carrega o fetch dinamicamente
+    await loadFetch(); // Carregar o fetch dinamicamente
 
     let retryCount = 3; // Tentativas máximas
     while (retryCount > 0) {
@@ -97,14 +96,13 @@ async function getRandomMonkey(message) {
             const offset = Math.floor(Math.random() * 1000);
             const speciesData = await fetchSpecies(offset);
 
-            // Filtra só as famílias válidas e embaralha
+            // Filtrar só as famílias válidas e embaralha
             const validas = speciesData.results
                 .filter(s => familiasSimiiformes.includes(s.family))
                 .sort(() => Math.random() - 0.5);
 
             for (const species of validas) {
                 try {
-                    // Precisa ter descrição
                     if (!species.descriptions || species.descriptions.length === 0) continue;
 
                     const vernacularData = await fetchVernacularNames(species.key);
@@ -148,11 +146,13 @@ async function execute(message, _args, _db, translate) {
 
         const reply = await message.reply({ embeds: [loadingEmbed] });
 
-        const { nome, imagem, descricao } = await getRandomMonkey(message);
+        const result = await getRandomMonkey(message);
 
-        if (!nome || !imagem || !descricao) {
+        if (!result) {
             throw new Error("Não foi possível encontrar um macaco com imagem e descrição.");
         }
+
+        const { nome, imagem, descricao } = result;
 
         console.log(`${new Date().toLocaleString("pt-BR")} | ${nome} (${message.author.username})`);
 
@@ -167,7 +167,7 @@ async function execute(message, _args, _db, translate) {
             descricaoFinal = await translateText(descricao);
         }
 
-        // Disfarça a requisição do bot como se fosse um navegador comum
+        // Disfarçar a requisição do bot como se fosse um navegador comum
         const imageResponse = await fetch(imagem, {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -179,17 +179,13 @@ async function execute(message, _args, _db, translate) {
             throw new Error(`Erro ao baixar a imagem: ${imageResponse.statusText}`);
         }
 
-        // --- CORREÇÃO APLICADA AQUI ---
-        // Usa arrayBuffer() em vez de buffer() para evitar o aviso
         const arrayBuffer = await imageResponse.arrayBuffer();
         const imageBuffer = Buffer.from(arrayBuffer);
         
-        // Cria o anexo corretamente com a classe do discord.js
         const attachment = new AttachmentBuilder(imageBuffer, { name: 'macaco.jpg' });
-        // ------------------------------
 
         const embed = new EmbedBuilder()
-            .setTitle(titulo)
+            .setTitle(`${titulo} 🐒`)
             .setImage('attachment://macaco.jpg')
             .setDescription(descricaoFinal);
 

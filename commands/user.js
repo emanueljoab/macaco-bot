@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
 const { getLanguagePreference } = require("../database");
+const { log, error } = require("../utils");
 
 async function execute(message, _args, _db, translate) {
     let user = message.mentions.users.first() || message.author;

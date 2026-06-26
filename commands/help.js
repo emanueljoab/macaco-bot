@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
+const { log, error } = require("../utils");
 
 async function execute(client, message, _args, _db, translate) {
     const embed = new EmbedBuilder()

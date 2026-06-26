@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
+const { log, error } = require("../utils");
 
 async function execute(message, _args, _db, translate) {
     const startTimestamp = Date.now(); // Captura o timestamp antes do processamento da interação
