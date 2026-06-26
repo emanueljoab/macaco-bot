@@ -4,9 +4,22 @@ const { log, error } = require("./utils");
 // Map: userId -> [{ content, channelId, timestamp, message }]
 const recentMessages = new Map();
 
-const WINDOW_MS = 10_000;       // 10 second window
-const THRESHOLD = 3;            // distinct channels threshold
+const WINDOW_MS = 10_000;           // 10 second window
+const THRESHOLD = 3;                // distinct channels threshold
 const TIMEOUT_MS = 30 * 60 * 1000; // 30 minute timeout
+
+// Periodically clean up inactive users from memory
+setInterval(() => {
+    const now = Date.now();
+    for (const [userId, history] of recentMessages.entries()) {
+        const fresh = history.filter(e => now - e.timestamp <= WINDOW_MS);
+        if (fresh.length === 0) {
+            recentMessages.delete(userId);
+        } else {
+            recentMessages.set(userId, fresh);
+        }
+    }
+}, 5 * 60 * 1000); // every 5 minutes
 
 async function checkSpam(message, translate) {
     if (message.author.bot) return;
@@ -77,8 +90,8 @@ async function checkSpam(message, translate) {
             .setDescription(await translate("spam", "detected", `<@${userId}>`));
 
         await message.channel.send({ embeds: [embed] });
-    } catch (error) {
-        error(message, `Erro ao processar spam: ${error.message}`);
+    } catch (err) {
+        error(message, `Erro ao processar spam: ${err.message}`);
     }
 }
 

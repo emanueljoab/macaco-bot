@@ -40,7 +40,7 @@ function getLanguagePreference(guildId) {
             if (err) {
                 reject(err);
             } else if (!row) {
-                // Define o idioma padrão como 'english' se não estiver definido
+                // Definir o idioma padrão como 'english' se não estiver definido
                 db.run("INSERT INTO server_language (guild_id, language) VALUES (?, ?)", [guildId, "english"], (err) => {
                     if (err) {
                         reject(err);

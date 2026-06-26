@@ -55,13 +55,28 @@
         "success": "Idioma alterado para {0}."
     },
     "flip": {
-        "ladosDaMoeda": ["Cara", "Coroa"],
-        "setTitle": "Cara ou Coroa",
-        "setDescription": "{0} jogou uma moeda...\n**{1}**!"
+        "ladosDaMoeda": ["CARA", "COROA"],
+        "setDescription": "\u200B\n\n**{0}!**"
     },
     "help": {
         "setTitle": "Ajuda",
-        "setDescription": "**Lista de comandos**\n\n**`bola8`**: Faça uma pergunta e obtenha uma resposta.\n**`clima`**: Mostra as condições climáticas de uma cidade.\n**`config`**: Configura o idioma do bot.\n**`flip`**: Joga uma moeda.\n**`help`**: Exibe todos os comandos.\n**`howgay`**: Mede o quão gay uma pessoa é.\n**`jokenpo`**: Joga um jogo de pedra, papel e tesoura.\n**`macaco`**: Gera um macaco aleatório.\n**`ping`**: Calcula o ping.\n**`pp`**: Mede o pipi.\n**`server`**: Exibe informações acerca do servidor.\n**`simp`**: Mede o quão simp alguém é.\n**`stank`**: Mede o fedor de alguém.\n**`user`**: Mostra informações sobre o usuário."
+        "setDescription": [
+            "**Lista de comandos**",
+            "**`bola8`**: Faça uma pergunta e obtenha uma resposta.",
+            "**`clima`**: Mostra as condições climáticas de uma cidade.",
+            "**`config`**: Configura o idioma do bot.",
+            "**`moeda`**: Joga uma moeda.",
+            "**`ajuda`**: Exibe todos os comandos.",
+            "**`gay`**: Mede o quão gay uma pessoa é.",
+            "**`jokenpo`**: Joga um jogo de pedra, papel e tesoura.",
+            "**`macaco`**: Gera um macaco aleatório.",
+            "**`ping`**: Calcula o ping.",
+            "**`pp`**: Mede o pipi.",
+            "**`servidor`**: Exibe informações acerca do servidor.",
+            "**`simp`**: Mede o quão simp alguém é.",
+            "**`fedor`**: Mede o fedor de alguém.",
+            "**`perfil`**: Mostra informações sobre o usuário."
+        ]
     },
     "howgay": {
         "description1": "{0} é {1}% gay 🏳️‍🌈",

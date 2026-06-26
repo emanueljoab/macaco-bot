@@ -28,7 +28,7 @@ async function execute(message, args, _db, translate) {
         .setDescription(await translate("8ball", "setDescription", message.author.username, pergunta, resposta))
         .setThumbnail("https://i.imgur.com/z2Qu5QQ.png");
     await message.reply({ embeds: [embed] });
-    log(message, `Pergunta: "${pergunta}" | Resposta: ${resposta}`);
+    log(message, `Pergunta: "${pergunta}" | Resposta: "${resposta}"`);
 }
 
 module.exports = {

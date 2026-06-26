@@ -79,18 +79,18 @@ client.on("messageCreate", async (message) => {
     const commands = {
         bola8: ball8.execute, "8ball": ball8.execute,
         clima: clima.execute, weather: clima.execute,
-        config: config.execute,
-        flip: flip.execute,
-        help: help.execute.bind(null, client),
-        howgay: howgay.execute,
-        jokenpo: jokenpo.execute, rps: jokenpo.execute,
+        config: config.execute, settings: config.execute,
+        flip: flip.execute, moeda: flip.execute, coin: flip.execute,
+        help: help.execute.bind(null, client), ajuda: help.execute.bind(null, client), 
+        howgay: howgay.execute, gay: howgay.execute,
+        jokenpo: jokenpo.execute, jankenpon: jokenpo.execute, rps: jokenpo.execute,
         macaco: macaco.execute, monkey: macaco.execute,
         ping: ping.execute,
         pp: pp.execute,
-        server: server.execute,
-        stank: stank.execute,
+        server: server.execute, servidor: server.execute,
+        stank: stank.execute, fedor: stank.execute,
         simp: simp.execute,
-        user: user.execute,
+        user: user.execute, usuario: user.execute, usuário: user.execute, profile: user.execute, perfil: user.execute
     };
 
     if (commands[command]) {

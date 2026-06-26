@@ -2,6 +2,13 @@ const { EmbedBuilder } = require("discord.js");
 const { getLanguagePreference } = require("../database");
 const { log, error } = require("../utils");
 
+let fetch;
+async function loadFetch() {
+    if (!fetch) {
+        fetch = (await import("node-fetch")).default;
+    }
+}
+
 // Mapeamento de códigos de condições climáticas para emojis
 const weatherIcons = {
     "01d": "🌞",
@@ -24,10 +31,17 @@ const weatherIcons = {
     "50n": "🌫️",
 };
 
+async function replyEmbed(message, text) {
+    const embed = new EmbedBuilder().setDescription(text);
+    return message.reply({ embeds: [embed] });
+}
+
 async function execute(message, args, _db, translate) {
+    await loadFetch();
+
     if (!args.length) {
         log(message, `Usuário não forneceu o nome da cidade`);
-        return message.reply(await translate("clima", "no args"));
+        return replyEmbed(message, await translate("clima", "no args"));
     }
 
     const apiKey = process.env.OPENWEATHERMAP_API_KEY;
@@ -46,8 +60,8 @@ async function execute(message, args, _db, translate) {
         const currentWeatherData = await currentWeatherResponse.json();
 
         if (currentWeatherData.cod !== 200) {
-            log(message, `Erro ao obter dados do clima para ${city}: ${currentWeatherData.message}`);
-            return message.reply(await translate("clima", "error 200", city));
+            error(message, `Erro ao obter dados do clima para "${city}": ${currentWeatherData.message}`);
+            return replyEmbed(message, await translate("clima", "error 200", city));
         }
 
         // Obter dados da previsão
@@ -55,8 +69,8 @@ async function execute(message, args, _db, translate) {
         const forecastData = await forecastResponse.json();
 
         if (forecastData.cod !== "200") {
-            log(message, `Erro ao obter dados da previsão para ${city}: ${forecastData.message}`);
-            return message.reply(await translate("clima", "error not 200", city));
+            error(message, `Erro ao obter dados da previsão para "${city}": ${forecastData.message}`);
+            return replyEmbed(message, await translate("clima", "error not 200", city));
         }
 
         // Processar dados do clima atual
@@ -101,10 +115,10 @@ async function execute(message, args, _db, translate) {
             )
             .setFooter({ text: await translate("clima", "setFooter") });
         message.reply({ embeds: [weatherInfo] });
-        log(message, `Informações de clima para ${cityName}, ${country} obtidas.`);
-    } catch (error) {
-        error("Erro ao obter clima", error);
-        message.reply(await translate("clima", "message reply error"));
+        log(message, `Informações de clima para "${cityName}, ${country}" obtidas`);
+    } catch (err) {
+        error(message, `Erro ao obter clima: ${err.message}`);
+        replyEmbed(message, await translate("clima", "message reply error"));
     }
 }
 
