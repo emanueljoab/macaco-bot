@@ -16,7 +16,8 @@ function loadTranslations() {
 // Carregar a tradução com placeholders
 async function translate(guildId, command, key, ...args) {
     const language = await getLanguagePreference(guildId);
-    let translation = translations[language][command][key];
+    const lang = translations[language] ?? translations['english'];
+    let translation = lang?.[command]?.[key];
     if (!translation) return "Translation not found";
 
     args.forEach((arg, index) => {

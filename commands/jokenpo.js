@@ -81,88 +81,100 @@ async function execute(message, args, db, translate) {
             let gameDecided = false; // Controle de estado para evitar múltiplas atualizações
 
             collector.on("collect", async (interaction) => {
-                if (gameDecided) return; // Evita múltiplas interações após a decisão do jogo
+                try {
+                    if (gameDecided) return; // Evita múltiplas interações após a decisão do jogo
 
-                choices[interaction.user.id] = interaction.customId;
-                await interaction.deferUpdate();
+                    choices[interaction.user.id] = interaction.customId;
+                    await interaction.deferUpdate();
 
-                if (Object.keys(choices).length < 2) {
-                    const jogadorEsperando = [sortedPlayer1, sortedPlayer2].find((player) => !choices[player.id]);
+                    if (Object.keys(choices).length < 2) {
+                        const jogadorEsperando = [sortedPlayer1, sortedPlayer2].find((player) => !choices[player.id]);
 
-                    embed.setDescription(
-                        await translate("jokenpo", "waiting", escapeMarkdown(sortedPlayer1.username), escapeMarkdown(sortedPlayer2.username), escapeMarkdown(jogadorEsperando.username))
-                    );
+                        embed.setDescription(
+                            await translate("jokenpo", "waiting", escapeMarkdown(sortedPlayer1.username), escapeMarkdown(sortedPlayer2.username), escapeMarkdown(jogadorEsperando.username))
+                        );
 
-                    await reply.edit({ embeds: [embed] });
-                }
-
-                if (sortedPlayer2.id === "1243673463902834809") {
-                    const opcoes = await translate("jokenpo", "options");
-                    choices[sortedPlayer2.id] = opcoes[Math.floor(Math.random() * 3)];
-                }
-
-                if (Object.keys(choices).length === 2 && !gameDecided) {
-                    gameDecided = true; // Marca que o jogo foi decidido
-                    collector.stop();
-
-                    if (choices[sortedPlayer1.id] === choices[sortedPlayer2.id]) {
-                        resultado = await translate("jokenpo", "tie");
-                        log(message, `Empate entre ${sortedPlayer1.username} e ${sortedPlayer2.username}`);
-                    } else if (
-                        (choices[sortedPlayer1.id] === (await translate("jokenpo", "id rock")) && choices[sortedPlayer2.id] === (await translate("jokenpo", "id scissors"))) ||
-                        (choices[sortedPlayer1.id] === (await translate("jokenpo", "id paper")) && choices[sortedPlayer2.id] === (await translate("jokenpo", "id rock"))) ||
-                        (choices[sortedPlayer1.id] === (await translate("jokenpo", "id scissors")) && choices[sortedPlayer2.id] === (await translate("jokenpo", "id paper")))
-                    ) {
-                        resultado = await translate("jokenpo", "player 1 win", escapeMarkdown(sortedPlayer1.username));
-                        log(message, `${sortedPlayer1.username} venceu ${sortedPlayer2.username}`);
-                    } else {
-                        resultado = await translate("jokenpo", "player 2 win", escapeMarkdown(sortedPlayer2.username));
-                        log(message, `${sortedPlayer2.username} venceu ${sortedPlayer1.username}`);
+                        await reply.edit({ embeds: [embed] });
                     }
 
-                    embed.setDescription(
-                        await translate(
-                            "jokenpo",
-                            "choices",
-                            escapeMarkdown(sortedPlayer1.username),
-                            choices[sortedPlayer1.id],
-                            escapeMarkdown(sortedPlayer2.username),
-                            choices[sortedPlayer2.id],
-                            resultado
-                        )
-                    );
-
-                    const guildId = message.guild.id;
-
-                    let historyMessage = await translate("jokenpo", "no history");
-                    if (resultado.includes(escapeMarkdown(sortedPlayer1.username))) {
-                        historyMessage = await atualizarHistorico(sortedPlayer1.id, sortedPlayer2.id, sortedPlayer1.username, sortedPlayer2.username, 1, 0);
-                        atualizarPontuacao(guildId, sortedPlayer1.id, sortedPlayer1.username, 1, 0);
-                        atualizarPontuacao(guildId, sortedPlayer2.id, sortedPlayer2.username, 0, 1);
-                    } else if (resultado.includes(escapeMarkdown(sortedPlayer2.username))) {
-                        historyMessage = await atualizarHistorico(sortedPlayer1.id, sortedPlayer2.id, sortedPlayer1.username, sortedPlayer2.username, 0, 1);
-                        atualizarPontuacao(guildId, sortedPlayer2.id, sortedPlayer2.username, 1, 0);
-                        atualizarPontuacao(guildId, sortedPlayer1.id, sortedPlayer1.username, 0, 1);
-                    } else {
-                        historyMessage = await atualizarHistorico(sortedPlayer1.id, sortedPlayer2.id, sortedPlayer1.username, sortedPlayer2.username, 0, 0);
+                    if (sortedPlayer2.id === "1243673463902834809") {
+                        const opcoes = await translate("jokenpo", "options");
+                        choices[sortedPlayer2.id] = opcoes[Math.floor(Math.random() * 3)];
                     }
 
-                    if (historyMessage) {
-                        embed.setFooter({ text: historyMessage });
-                    } else {
-                        embed.setFooter({
-                            text: await translate("jokenpo", "no history"),
-                        });
-                    }
+                    if (Object.keys(choices).length === 2 && !gameDecided) {
+                        gameDecided = true; // Marca que o jogo foi decidido
+                        collector.stop();
 
-                    await reply.edit({ embeds: [embed], components: [] });
+                        if (choices[sortedPlayer1.id] === choices[sortedPlayer2.id]) {
+                            resultado = await translate("jokenpo", "tie");
+                            log(message, `Empate entre ${sortedPlayer1.username} e ${sortedPlayer2.username}`);
+                        } else if (
+                            (choices[sortedPlayer1.id] === (await translate("jokenpo", "id rock")) && choices[sortedPlayer2.id] === (await translate("jokenpo", "id scissors"))) ||
+                            (choices[sortedPlayer1.id] === (await translate("jokenpo", "id paper")) && choices[sortedPlayer2.id] === (await translate("jokenpo", "id rock"))) ||
+                            (choices[sortedPlayer1.id] === (await translate("jokenpo", "id scissors")) && choices[sortedPlayer2.id] === (await translate("jokenpo", "id paper")))
+                        ) {
+                            resultado = await translate("jokenpo", "player 1 win", escapeMarkdown(sortedPlayer1.username));
+                            log(message, `${sortedPlayer1.username} venceu ${sortedPlayer2.username}`);
+                        } else {
+                            resultado = await translate("jokenpo", "player 2 win", escapeMarkdown(sortedPlayer2.username));
+                            log(message, `${sortedPlayer2.username} venceu ${sortedPlayer1.username}`);
+                        }
+
+                        embed.setDescription(
+                            await translate(
+                                "jokenpo",
+                                "choices",
+                                escapeMarkdown(sortedPlayer1.username),
+                                choices[sortedPlayer1.id],
+                                escapeMarkdown(sortedPlayer2.username),
+                                choices[sortedPlayer2.id],
+                                resultado
+                            )
+                        );
+
+                        const guildId = message.guild.id;
+
+                        let historyMessage = await translate("jokenpo", "no history");
+                        if (resultado.includes(escapeMarkdown(sortedPlayer1.username))) {
+                            historyMessage = await atualizarHistorico(sortedPlayer1.id, sortedPlayer2.id, sortedPlayer1.username, sortedPlayer2.username, 1, 0);
+                            atualizarPontuacao(guildId, sortedPlayer1.id, sortedPlayer1.username, 1, 0);
+                            atualizarPontuacao(guildId, sortedPlayer2.id, sortedPlayer2.username, 0, 1);
+                        } else if (resultado.includes(escapeMarkdown(sortedPlayer2.username))) {
+                            historyMessage = await atualizarHistorico(sortedPlayer1.id, sortedPlayer2.id, sortedPlayer1.username, sortedPlayer2.username, 0, 1);
+                            atualizarPontuacao(guildId, sortedPlayer2.id, sortedPlayer2.username, 1, 0);
+                            atualizarPontuacao(guildId, sortedPlayer1.id, sortedPlayer1.username, 0, 1);
+                        } else {
+                            historyMessage = await atualizarHistorico(sortedPlayer1.id, sortedPlayer2.id, sortedPlayer1.username, sortedPlayer2.username, 0, 0);
+                        }
+
+                        if (historyMessage) {
+                            embed.setFooter({ text: historyMessage });
+                        } else {
+                            embed.setFooter({
+                                text: await translate("jokenpo", "no history"),
+                            });
+                        }
+
+                        await reply.edit({ embeds: [embed], components: [] });
+                    }
+                } catch (err) {
+                    if (err.code !== 10062) {
+                        error(message, `Erro no collector do jokenpo: ${err.message}`);
+                    }
                 }
             });
 
             collector.on("end", async (collected, reason) => {
-                if (reason === "time" && !gameDecided) {
-                    embed.setDescription(await translate("jokenpo", "time up"));
-                    reply.edit({ embeds: [embed], components: [] });
+                try {
+                    if (reason === "time" && !gameDecided) {
+                        embed.setDescription(await translate("jokenpo", "time up"));
+                        await reply.edit({ embeds: [embed], components: [] });
+                    }
+                } catch (err) {
+                    if (err.code !== 10008) {
+                        error(message, `Erro no fim do collector do jokenpo: ${err.message}`);
+                    }
                 }
             });
 
