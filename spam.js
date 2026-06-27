@@ -59,7 +59,7 @@ async function checkSpam(message, translate) {
 
     // Check if the bot has permission to timeout members
     const me = message.guild.members.me;
-    if (!me.permissions.has(PermissionsBitField.Flags.ModerateMembers)) {
+    if (!me || !me.permissions.has(PermissionsBitField.Flags.ModerateMembers)) {
         error(message, `Sem permissão para aplicar timeout`);
         return;
     }

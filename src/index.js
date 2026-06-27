@@ -123,3 +123,11 @@ client.on("messageCreate", async (message) => {
 });
 
 client.login(process.env.TOKEN);
+
+process.on("unhandledRejection", (err) => {
+    error(null, `Unhandled rejection: ${err?.message ?? err}`);
+});
+
+client.on("error", (err) => {
+    error(null, `Client error: ${err.message}`);
+});

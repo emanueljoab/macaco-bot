@@ -16,11 +16,11 @@ async function execute(message, _args, _db, translate) {
         description = await translate("howgay", "description3", user.username, howgay);
     }
 
-    const embed = new EmbedBuilder()
+    const embedBuilder = new EmbedBuilder()
         .setTitle(await translate("howgay", "setTitle"))
-        .setDescription(description)
-        .setFooter({ text: footer });
-    await message.reply({ embeds: [embed] });
+        .setDescription(description);
+    if (footer) embedBuilder.setFooter({ text: footer });
+    await message.reply({ embeds: [embedBuilder] });
     log(message, `${user.username} é ${howgay}% gay`);
 }
 
