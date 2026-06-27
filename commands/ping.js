@@ -2,18 +2,19 @@ const { EmbedBuilder } = require("discord.js");
 const { log, error } = require("../utils");
 
 async function execute(message, _args, _db, translate) {
-    const startTimestamp = Date.now(); // Captura o timestamp antes do processamento da interação
-
-    const initialEmbed = new EmbedBuilder().setTitle("Pong!").setDescription(await translate("ping", "calculating"));
-    const sentMessage = await message.reply({ embeds: [initialEmbed] });
-
-    const endTimestamp = Date.now(); // Captura o timestamp após o processamento da interação
-    const latency = endTimestamp - startTimestamp;
-
-    // Cria o embed final com a latência calculada
-    const latencyEmbed = new EmbedBuilder().setTitle("Pong!").setDescription(await translate("ping", "latency", latency));
-    await sentMessage.edit({ embeds: [latencyEmbed] });
-    console.log(`${new Date().toLocaleString("pt-BR")} | Pong! Latência ${latency}ms (${message.author.tag})`);
+    try {
+        const startTimestamp = Date.now();
+        const initialEmbed = new EmbedBuilder().setTitle("Pong!").setDescription(await translate("ping", "calculating"));
+        const sentMessage = await message.reply({ embeds: [initialEmbed] });
+        const endTimestamp = Date.now();
+        const latency = endTimestamp - startTimestamp;
+        const latencyEmbed = new EmbedBuilder().setTitle("Pong!").setDescription(await translate("ping", "latency", latency));
+        await sentMessage.edit({ embeds: [latencyEmbed] });
+        log(message, `Pong! Latência ${latency} ms`);
+    } catch (err) {
+        error(message, `Erro ao executar ping: ${err.message}`);
+        await message.reply(await translate("ping", "error"));
+    }
 }
 
 module.exports = {

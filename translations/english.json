@@ -125,18 +125,22 @@
     },
     "ping": {
         "calculating": "Calculating...",
-        "latency": "Latency: {0}ms"
+        "error": "An error occurred while trying to calculate the latency.",
+        "latency": "Latency: {0} ms"
     },
     "pp": {
+        "error": "An error occurred while trying to measure the peepee.",
         "setTitle": "Peepee meter",
         "setDescription": "{0}'s peepee\n{1}"
     },
     "server": {
+        "error": "An error occurred while trying to get the server information.",
         "setDescription": "{0} members",
         "addFields": "Creation date",
         "toLocaleString": "en-US"
     },
     "simp": {
+        "maxSimp": "Maximum simp level reached!",
         "setTitle": "Simp meter",
         "setDescription": "{0} is {1}% simp"
     },
@@ -146,10 +150,13 @@
         "setTitle": "Spam detected"
     },
     "stank": {
+        "error": "An error occurred while trying to measure the stank.",
+        "maxStank": "Maximum stank level reached!",
         "setTitle": "Stank meter",
         "setDescription": "{0} is {1}% stanky\n\nStank-o-meter: {2}"
     },
     "user": {
+        "error": "An error occurred while trying to get the user information.",
         "member not found": "That user is not a member of this server.",
         "setDescription": "Joined server at {0}."
     }

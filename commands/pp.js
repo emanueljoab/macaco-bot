@@ -2,16 +2,23 @@ const { EmbedBuilder } = require("discord.js");
 const { log, error } = require("../utils");
 
 async function execute(message, _args, _db, translate) {
-    let user = message.mentions.users.first() || message.author;
-    const tamanho = Math.floor(Math.random() * 21);
-    const pp = "8" + "=".repeat(tamanho) + "D";
+    try {
+        let user = message.mentions.users.first() || message.author;
+        const tamanho = Math.floor(Math.random() * 21);
+        const pp = "8" + "=".repeat(tamanho) + "D";
 
-    const embed = new EmbedBuilder()
-        .setTitle(await translate("pp", "setTitle"))
-        .setDescription(await translate("pp", "setDescription", user.username, pp))
-        .setFooter({ text: `${tamanho} cm` });
-    await message.reply({ embeds: [embed] });
-    console.log(`${new Date().toLocaleString("pt-BR")} | Pipi de ${user.username} ${pp} ${tamanho} cm (${message.author.username})`);
+        const embed = new EmbedBuilder()
+            .setTitle(await translate("pp", "setTitle"))
+            .setDescription(await translate("pp", "setDescription", user.username, pp))
+            .setFooter({ text: `${tamanho} cm` });
+        await message.reply({ embeds: [embed] });
+        log(message, `Pipi de ${user.username} ${pp} ${tamanho} cm`);
+    } catch (err) {
+        const embed = new EmbedBuilder()
+            .setDescription(await translate("pp", "error"))
+        await message.reply({ embeds: [embed] });
+        error(message, `Erro ao executar comando: ${err.message}`);
+    }
 }
 
 module.exports = {

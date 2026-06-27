@@ -2,25 +2,28 @@ const { EmbedBuilder } = require("discord.js");
 const { log, error } = require("../utils");
 
 async function execute(message, _args, _db, translate) {
-    const user = message.mentions.users.first() || message.author;
-    const simp = Math.floor(Math.random() * 101);
-    let footer;
-
-    if (simp === 100) {
-        footer = "GADO! 🐂";
+    try {
+        const user = message.mentions.users.first() || message.author;
+        const simp = Math.floor(Math.random() * 101);
+        let footer;
+        if (simp === 100) {
+            footer = await translate("simp", "maxSimp");
+        }
+        const embed = new EmbedBuilder()
+            .setTitle(await translate("simp", "setTitle"))
+            .setDescription(await translate("simp", "setDescription", user.username, simp))
+            .setThumbnail("https://i.imgur.com/gvRF6X5.jpg");
+        if (footer) {
+            embed.setFooter({ text: footer });
+        }
+        await message.reply({ embeds: [embed] });
+        log(message, `${user.username} é ${simp}% simp`);
+    } catch (err) {
+        error(message, `Erro ao executar comando: ${err.message}`);
+        const errorEmbed = new EmbedBuilder()
+            .setDescription(await translate("simp", "error"));
+        await message.reply({ embeds: [errorEmbed] });
     }
-
-    const embed = new EmbedBuilder()
-        .setTitle(await translate("simp", "setTitle"))
-        .setDescription(await translate("simp", "setDescription", user.username, simp))
-        .setThumbnail("https://i.imgur.com/gvRF6X5.jpg");
-
-    if (footer) {
-        embed.setFooter({ text: footer });
-    }
-
-    await message.reply({ embeds: [embed] });
-    console.log(`${new Date().toLocaleString("pt-BR")} | ${user.username} é ${simp}% simp (${message.author.username})`);
 }
 
 module.exports = {

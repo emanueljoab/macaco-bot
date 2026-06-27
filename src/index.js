@@ -113,8 +113,8 @@ client.on("messageCreate", async (message) => {
             } else {
                 await commands[command](message, args, db, translate);
             }
-        } catch (error) {
-            error(message, `Erro ao executar o comando`);
+        } catch (err) {
+            error(message, `Erro ao executar o comando: ${err.message}`);
             const errorEmbed = new EmbedBuilder()
                 .setDescription(await translate("index", "error", command));
             message.reply({ embeds: [errorEmbed] });

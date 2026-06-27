@@ -14,7 +14,7 @@ async function loadFetch() {
 }
 
 // Função para traduzir texto usando a API da DeepL
-async function translateText(text) {
+async function translateText(text, message) {
     const apiKey = process.env.DEEPL_API_KEY;
     try {
         const response = await fetch("https://api-free.deepl.com/v2/translate", {
@@ -34,9 +34,9 @@ async function translateText(text) {
             return data.translations[0].text;
         }
         throw new Error("Nenhuma tradução disponível");
-    } catch (error) {
-        console.error("Erro ao traduzir texto:", error);
-        throw error;
+    } catch (err) {
+        error(message, `Erro ao traduzir texto: ${err.message}`);
+        throw err;
     }
 }
 
@@ -62,7 +62,7 @@ async function fetchImage(speciesKey) {
     return null;
 }
 
-async function fetchVernacularNames(speciesKey) {
+async function fetchVernacularNames(speciesKey, message) {
     await loadFetch(); // Carregar o fetch dinamicamente
 
     let retryCount = 3; // Tentativas máximas
@@ -73,14 +73,14 @@ async function fetchVernacularNames(speciesKey) {
                 throw new Error(`Erro na requisição: ${response.statusText}`);
             }
             return await response.json();
-        } catch (error) {
-            console.error(`Erro ao buscar nomes vernaculares para a espécie com chave ${speciesKey}:`, error);
+        } catch (err) {
+            error(message, `Erro ao buscar nomes vernaculares para a espécie com chave ${speciesKey}: ${err.message}`);
             retryCount--;
             if (retryCount > 0) {
-                console.log(`Tentando novamente... Restam ${retryCount} tentativas.`);
-                await new Promise((resolve) => setTimeout(resolve, 2000)); // Aguarda 2 segundos antes de tentar novamente
+                log(message, `Tentando novamente... Restam ${retryCount} tentativas`);
+                await new Promise((resolve) => setTimeout(resolve, 2000)); // Aguardar 2 segundos antes de tentar novamente
             } else {
-                throw new Error(`Falha após ${retryCount + 1} tentativas: ${error.message}`);
+                throw new Error(`Falha após ${retryCount + 1} tentativas: ${err.message}`);
             }
         }
     }
@@ -105,7 +105,7 @@ async function getRandomMonkey(message) {
                 try {
                     if (!species.descriptions || species.descriptions.length === 0) continue;
 
-                    const vernacularData = await fetchVernacularNames(species.key);
+                    const vernacularData = await fetchVernacularNames(species.key, message);
 
                     let vernacularName = null;
                     if (languagePreference === 'english') {
@@ -154,7 +154,7 @@ async function execute(message, _args, _db, translate) {
 
         const { nome, imagem, descricao } = result;
 
-        console.log(`${new Date().toLocaleString("pt-BR")} | ${nome} (${message.author.username})`);
+        log(message, `${nome}`);
 
         const guildId = message.guild.id;
         const language = await getLanguagePreference(guildId);
@@ -163,8 +163,8 @@ async function execute(message, _args, _db, translate) {
         let descricaoFinal = descricao;
 
         if (language === "portuguese") {
-            titulo = await translateText(nome);
-            descricaoFinal = await translateText(descricao);
+            titulo = await translateText(nome, message);
+            descricaoFinal = await translateText(descricao, message);
         }
 
         // Disfarçar a requisição do bot como se fosse um navegador comum
@@ -190,8 +190,8 @@ async function execute(message, _args, _db, translate) {
             .setDescription(descricaoFinal);
 
         await reply.edit({ embeds: [embed], files: [attachment] });
-    } catch (error) {
-        console.error("Erro ao gerar macaco:", error);
+    } catch (err) {
+        error(message, `Erro ao gerar macaco: ${err.message}`);
         await message.reply(await translate("macaco", "no monkey found"));
     }
 }

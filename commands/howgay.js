@@ -21,7 +21,7 @@ async function execute(message, _args, _db, translate) {
         .setDescription(description)
         .setFooter({ text: footer });
     await message.reply({ embeds: [embed] });
-    console.log(`${new Date().toLocaleString("pt-BR")} | ${user.username} é ${howgay}% gay (${message.author.username})`);
+    log(message, `${user.username} é ${howgay}% gay`);
 }
 
 module.exports = {

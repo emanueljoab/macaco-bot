@@ -124,18 +124,22 @@
     },
     "ping": {
         "calculating": "Calculando...",
-        "latency": "Latência: {0}ms"
+        "error": "Ocorreu um erro ao tentar calcular a latência.",
+        "latency": "Latência: {0} ms"
     },
     "pp": {
+        "error": "Ocorreu um erro ao tentar medir o pipi.",
         "setTitle": "Medidor de pipi",
         "setDescription": "pipi de {0}\n{1}"
     },
     "server": {
+        "error": "Ocorreu um erro ao tentar obter as informações do servidor.",
         "setDescription": "{0} membros",
         "addFields": "Data de criação",
         "toLocaleString": "pt-BR"
     },
     "simp": {
+        "maxSimp": "Nível máximo de simp atingido!",
         "setTitle": "Medidor de simp",
         "setDescription": "{0} é {1}% simp"
     },
@@ -145,10 +149,13 @@
         "setTitle": "Spam detectado"
     },
     "stank": {
+        "error": "Ocorreu um erro ao tentar medir o fedor.",
+        "maxStank": "Nível máximo de fedor atingido!",
         "setTitle": "Medidor de fedor",
         "setDescription": "{0} é {1}% fedido(a)\n\nFedômetro: {2}"
     },
     "user": {
+        "error": "Ocorreu um erro ao tentar obter as informações do usuário.",
         "member not found": "Esse usuário não é membro deste servidor.",
         "setDescription": "Juntou-se ao servidor em {0}."
     }

@@ -11,7 +11,7 @@ async function execute(message, args, db, translate) {
 
             db.all("SELECT user_id, username, wins, losses FROM jokenpo_rank WHERE guild_id = ? ORDER BY wins DESC LIMIT 10", [guildId], async (err, rows) => {
                 if (err) {
-                    console.error("Erro ao obter o ranking do banco de dados:");
+                    error(message, `Erro ao obter o ranking do banco de dados: ${err.message}`);
                     return message.reply(await translate("jokenpo", "reply rank error"));
                 }
 
@@ -107,17 +107,17 @@ async function execute(message, args, db, translate) {
 
                     if (choices[sortedPlayer1.id] === choices[sortedPlayer2.id]) {
                         resultado = await translate("jokenpo", "tie");
-                        console.log(`${new Date().toLocaleString("pt-BR")} | Jokenpo: Empate entre ${sortedPlayer1.username} e ${sortedPlayer2.username}`);
+                        log(message, `Empate entre ${sortedPlayer1.username} e ${sortedPlayer2.username}`);
                     } else if (
                         (choices[sortedPlayer1.id] === (await translate("jokenpo", "id rock")) && choices[sortedPlayer2.id] === (await translate("jokenpo", "id scissors"))) ||
                         (choices[sortedPlayer1.id] === (await translate("jokenpo", "id paper")) && choices[sortedPlayer2.id] === (await translate("jokenpo", "id rock"))) ||
                         (choices[sortedPlayer1.id] === (await translate("jokenpo", "id scissors")) && choices[sortedPlayer2.id] === (await translate("jokenpo", "id paper")))
                     ) {
                         resultado = await translate("jokenpo", "player 1 win", escapeMarkdown(sortedPlayer1.username));
-                        console.log(`${new Date().toLocaleString("pt-BR")} | Jokenpo: ${sortedPlayer1.username} venceu ${sortedPlayer2.username}`);
+                        log(message, `${sortedPlayer1.username} venceu ${sortedPlayer2.username}`);
                     } else {
                         resultado = await translate("jokenpo", "player 2 win", escapeMarkdown(sortedPlayer2.username));
-                        console.log(`${new Date().toLocaleString("pt-BR")} | Jokenpo: ${sortedPlayer2.username} venceu ${sortedPlayer1.username}`);
+                        log(message, `${sortedPlayer2.username} venceu ${sortedPlayer1.username}`);
                     }
 
                     embed.setDescription(
@@ -170,7 +170,7 @@ async function execute(message, args, db, translate) {
                 db.run("INSERT OR IGNORE INTO jokenpo_rank (guild_id, user_id, username, wins, losses) VALUES (?, ?, ?, 0, 0)", [guildId, userId, username]);
                 db.run("UPDATE jokenpo_rank SET wins = wins + ?, losses = losses + ? WHERE guild_id = ? AND user_id = ?", [winsToAdd, lossesToAdd, guildId, userId], function (err) {
                     if (err) {
-                        console.error("Erro ao atualizar a pontuação:", err);
+                        error(message, `Erro ao atualizar a pontuação: ${err.message} `);
                     }
                 });
             }
@@ -184,7 +184,7 @@ async function execute(message, args, db, translate) {
                             [player1Id, player2Id, player1Username, player2Username],
                             function (err) {
                                 if (err) {
-                                    console.error("Erro ao inserir no histórico:", err);
+                                    error(message, `Erro ao inserir no histórico: ${err.message}`);
                                     reject(err);
                                 }
                             }
@@ -197,7 +197,7 @@ async function execute(message, args, db, translate) {
                             [player1WinsToAdd, player2WinsToAdd, player1Id, player2Id],
                             function (err) {
                                 if (err) {
-                                    console.error("Erro ao atualizar o histórico:", err);
+                                    error(message, `Erro ao atualizar o histórico: ${err.message}`);
                                     reject(err);
                                 } else {
                                     db.get(
@@ -207,7 +207,7 @@ async function execute(message, args, db, translate) {
                                         [player1Id, player2Id],
                                         async (err, row) => {
                                             if (err) {
-                                                console.error("Erro ao obter o histórico atualizado:", err);
+                                                error(message, `Erro ao obter o histórico atualizado: ${err.message}`);
                                                 reject(err);
                                             } else if (row) {
                                                 const historyMessage = await translate("jokenpo", "score", player1Username, row.player1_wins, row.player2_wins, player2Username);
@@ -224,8 +224,8 @@ async function execute(message, args, db, translate) {
                 });
             }
         }
-    } catch (error) {
-        console.error("Ocorreu um erro ao executar o comando jokenpo:", error);
+    } catch (err) {
+        error(message, `Ocorreu um erro ao executar o comando jokenpo: ${err.message}`);
         message.reply(await translate("jokenpo", "error jokenpo"));
     }
 }
