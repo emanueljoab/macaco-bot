@@ -13,7 +13,8 @@ async function execute(message, _args, _db, translate) {
         log(message, `Pong! Latência ${latency} ms`);
     } catch (err) {
         error(message, `Erro ao executar ping: ${err.message}`);
-        await message.reply(await translate("ping", "error"));
+        const errEmbed = new EmbedBuilder().setDescription(await translate("ping", "error"));
+        await message.reply({ embeds: [errEmbed] });
     }
 }
 

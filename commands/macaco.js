@@ -192,7 +192,8 @@ async function execute(message, _args, _db, translate) {
         await reply.edit({ embeds: [embed], files: [attachment] });
     } catch (err) {
         error(message, `Erro ao gerar macaco: ${err.message}`);
-        await message.reply(await translate("macaco", "no monkey found"));
+        const errEmbed = new EmbedBuilder().setDescription(await translate("macaco", "no monkey found"));
+        await message.reply({ embeds: [errEmbed] });
     }
 }
 

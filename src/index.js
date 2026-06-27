@@ -55,7 +55,7 @@ client.on("messageCreate", async (message) => {
 
     // Verificar spam antes de qualquer coisa
     const guildTranslate = (command, key, ...args) => translateRaw(message.guild?.id, command, key, ...args);
-    await checkSpam(message, guildTranslate);
+    await checkSpam(message, guildTranslate).catch(err => error(message, `Erro no checkSpam: ${err.message}`));
 
     // Evento para mensagens
     const content = message.content.toLowerCase();
@@ -117,7 +117,7 @@ client.on("messageCreate", async (message) => {
             error(message, `Erro ao executar o comando: ${err.message}`);
             const errorEmbed = new EmbedBuilder()
                 .setDescription(await translate("index", "error", command));
-            message.reply({ embeds: [errorEmbed] });
+            await message.reply({ embeds: [errorEmbed] });
         }
     }
 });

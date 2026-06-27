@@ -59,7 +59,7 @@ async function execute(message, args, _db, translate) {
         const currentWeatherResponse = await fetch(currentWeatherUrl);
         const currentWeatherData = await currentWeatherResponse.json();
 
-        if (currentWeatherData.cod !== 200) {
+        if (String(currentWeatherData.cod) !== "200") {
             error(message, `Erro ao obter dados do clima para "${city}": ${currentWeatherData.message}`);
             return replyEmbed(message, await translate("clima", "error 200", city));
         }
@@ -68,7 +68,7 @@ async function execute(message, args, _db, translate) {
         const forecastResponse = await fetch(forecastUrl);
         const forecastData = await forecastResponse.json();
 
-        if (forecastData.cod !== "200") {
+        if (String(forecastData.cod) !== "200") {
             error(message, `Erro ao obter dados da previsão para "${city}": ${forecastData.message}`);
             return replyEmbed(message, await translate("clima", "error not 200", city));
         }

@@ -12,7 +12,8 @@ async function execute(message, args, db, translate) {
             db.all("SELECT user_id, username, wins, losses FROM jokenpo_rank WHERE guild_id = ? ORDER BY wins DESC LIMIT 10", [guildId], async (err, rows) => {
                 if (err) {
                     error(message, `Erro ao obter o ranking do banco de dados: ${err.message}`);
-                    return message.reply(await translate("jokenpo", "reply rank error"));
+                    const rankErrEmbed = new EmbedBuilder().setDescription(await translate("jokenpo", "reply rank error"));
+                    return message.reply({ embeds: [rankErrEmbed] });
                 }
 
                 const rankings = await Promise.all(
@@ -39,7 +40,8 @@ async function execute(message, args, db, translate) {
             }
             
             if (player1.id === player2.id) {
-                return message.reply(await translate("jokenpo", "yourself"));
+                const yourselfEmbed = new EmbedBuilder().setDescription(await translate("jokenpo", "yourself"));
+                return message.reply({ embeds: [yourselfEmbed] });
             }
 
             const isBotGame = player2.id === "1243673463902834809";
@@ -238,7 +240,8 @@ async function execute(message, args, db, translate) {
         }
     } catch (err) {
         error(message, `Ocorreu um erro ao executar o comando jokenpo: ${err.message}`);
-        message.reply(await translate("jokenpo", "error jokenpo"));
+        const errEmbed = new EmbedBuilder().setDescription(await translate("jokenpo", "error jokenpo"));
+        message.reply({ embeds: [errEmbed] });
     }
 }
 

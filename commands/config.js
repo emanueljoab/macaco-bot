@@ -5,7 +5,8 @@ const { log, error } = require("../utils");
 async function execute(message, _args, _db, translate) {
     // Verificar se o usuário tem permissão de administrador
     if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
-        return message.reply(await translate("config", "permission"));
+        const permEmbed = new EmbedBuilder().setDescription(await translate("config", "permission"));
+        return message.reply({ embeds: [permEmbed] });
     }
 
     // Criar um embed com informações sobre a configuração
