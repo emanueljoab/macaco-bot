@@ -27,7 +27,7 @@ const client = new Client({
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
 });
 
-client.once("ready", async () => {
+client.once("clientReady", async () => {
     client.user.setActivity({ name: "pls macaco" });
     loadTranslations(); // Carregar traduções ao iniciar o bot
     log(null, `Servidores em que estou:`);
