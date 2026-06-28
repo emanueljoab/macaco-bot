@@ -84,7 +84,7 @@ async function execute(message, args, db, translate) {
 
             collector.on("collect", async (interaction) => {
                 try {
-                    if (gameDecided) return; // Evita múltiplas interações após a decisão do jogo
+                    if (gameDecided) return; // Evitar múltiplas interações após a decisão do jogo
 
                     choices[interaction.user.id] = interaction.customId;
                     await interaction.deferUpdate();
@@ -105,7 +105,7 @@ async function execute(message, args, db, translate) {
                     }
 
                     if (Object.keys(choices).length === 2 && !gameDecided) {
-                        gameDecided = true; // Marca que o jogo foi decidido
+                        gameDecided = true; // Marcar que o jogo foi decidido
                         collector.stop();
 
                         if (choices[sortedPlayer1.id] === choices[sortedPlayer2.id]) {

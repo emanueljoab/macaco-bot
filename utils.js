@@ -17,11 +17,11 @@ function getUser(message) {
 }
 
 function log(message, text) {
-    console.log(`[${timestamp()}] [${getFile()}] [${getGuild(message)}] [${getUser(message)}] [${text}]`);
+    console.log(`[${timestamp()}] [${getGuild(message)}] [${getFile()}] [${getUser(message)}] [${text}]`);
 }
 
 function error(message, text) {
-    console.error(`[${timestamp()}] [${getFile()}] [${getGuild(message)}] [${getUser(message)}] [${text}]`);
+    console.error(`[${timestamp()}] [${getGuild(message)}] [${getFile()}] [${getUser(message)}] [${text}]`);
 }
 
 module.exports = { log, error };

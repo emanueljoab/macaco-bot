@@ -94,9 +94,9 @@ client.on("messageCreate", async (message) => {
     };
 
     if (commands[command]) {
-        // Verificar e executar comandos
+        // Verificar e executar os comandos
         try {
-            const noArgsCommands = ["config", "flip", "help", "macaco", "monkey", "ping", "server"];
+            const noArgsCommands = ["config", "flip", "help", "macaco", "ping", "server"];
             if (noArgsCommands.includes(command) && args.length > 0) return; // Retornar se um dos noArgsCommands tiver algo escrito além do prefixo e comando
 
             const argsCommands = ["pp", "howgay", "stank", "simp", "user"];
