@@ -6,6 +6,17 @@ const { log, error } = require("../utils");
 
 const familiasSimiiformes = ["Cebidae", "Cercopithecidae", "Hominidae", "Hylobatidae", "Pitheciidae", "Aotidae", "Atelidae", "Callitrichidae"];
 
+// Macacos locais (não estão na API)
+const macacosLocais = [
+    {
+        nomeEn: "Mico-ladr\u00e3o-safado",
+        nomePt: "Mico-ladr\u00e3o-safado",
+        imagem: "https://i.imgur.com/F3UGERk.jpeg",
+        descricaoEn: "Brazil's most protected animal.",
+        descricaoPt: "O animal mais protegido do Brasil.",
+    },
+];
+
 let fetch;
 async function loadFetch() {
     if (!fetch) {
@@ -13,7 +24,7 @@ async function loadFetch() {
     }
 }
 
-// Função para traduzir texto usando a API da DeepL
+// Traduzir texto usando a API da DeepL
 async function translateText(text, message) {
     const apiKey = process.env.DEEPL_API_KEY;
     try {
@@ -40,26 +51,30 @@ async function translateText(text, message) {
     }
 }
 
-async function fetchSpecies(offset = 0) {
-    await loadFetch(); // Carrega o fetch dinamicamente
-    const response = await fetch(`https://api.gbif.org/v1/species/search?rank=SPECIES&highertaxon_key=798&limit=1000&offset=${offset}`);
-    if (!response.ok) {
-        throw new Error(`Erro na requisição: ${response.statusText}`);
+async function fetchSpecies() {
+    await loadFetch(); // Carregar o fetch dinamicamente
+    const offsets = [0, 1000, 2000, 3000];
+    const responses = await Promise.all(
+        offsets.map(offset => fetch(`https://api.gbif.org/v1/species/search?rank=SPECIES&highertaxon_key=798&limit=1000&offset=${offset}`))
+    );
+    if (responses.some(r => !r.ok)) {
+        throw new Error(`Erro na requisição`);
     }
-    return await response.json();
+    const pages = await Promise.all(responses.map(r => r.json()));
+    return { results: pages.flatMap(p => p.results) };
 }
 
 async function fetchImage(speciesKey) {
-    await loadFetch(); // Carrega o fetch dinamicamente
-    const response = await fetch(`https://api.gbif.org/v1/occurrence/search?mediaType=StillImage&speciesKey=${speciesKey}&limit=1`);
-    if (!response.ok) {
-        throw new Error(`Erro na requisição: ${response.statusText}`);
-    }
+    await loadFetch(); // Carregar o fetch dinamicamente
+    const countRes = await fetch(`https://api.gbif.org/v1/occurrence/search?mediaType=StillImage&speciesKey=${speciesKey}&limit=0`);
+    if (!countRes.ok) throw new Error(`Erro na requisição: ${countRes.statusText}`);
+    const { count } = await countRes.json();
+    if (!count) return null;
+    const offset = Math.floor(Math.random() * Math.min(count, 100000));
+    const response = await fetch(`https://api.gbif.org/v1/occurrence/search?mediaType=StillImage&speciesKey=${speciesKey}&limit=1&offset=${offset}`);
+    if (!response.ok) throw new Error(`Erro na requisição: ${response.statusText}`);
     const data = await response.json();
-    if (data.results && data.results[0] && data.results[0].media && data.results[0].media[0]) {
-        return data.results[0].media[0].identifier;
-    }
-    return null;
+    return data.results?.[0]?.media?.[0]?.identifier ?? null;
 }
 
 async function fetchVernacularNames(speciesKey, message) {
@@ -91,12 +106,23 @@ async function getRandomMonkey(message) {
     const guildId = message.guild.id;
     const languagePreference = await getLanguagePreference(guildId);
 
+    // Chance de retornar um macaco local
+    if (Math.random() < 0.01) {
+        const macaco = macacosLocais[Math.floor(Math.random() * macacosLocais.length)];
+        const usePt = languagePreference !== 'english';
+        return {
+            nome: usePt ? macaco.nomePt : macaco.nomeEn,
+            imagem: macaco.imagem,
+            descricao: usePt ? macaco.descricaoPt : macaco.descricaoEn,
+            local: true,
+        };
+    }
+
     for (let tentativa = 0; tentativa < 20; tentativa++) {
         try {
-            const offset = Math.floor(Math.random() * 1000);
-            const speciesData = await fetchSpecies(offset);
+            const speciesData = await fetchSpecies();
 
-            // Filtrar só as famílias válidas e embaralha
+            // Filtrar só as famílias válidas e embaralhar
             const validas = speciesData.results
                 .filter(s => familiasSimiiformes.includes(s.family))
                 .sort(() => Math.random() - 0.5);
@@ -152,7 +178,7 @@ async function execute(message, _args, _db, translate) {
             throw new Error("Não foi possível encontrar um macaco com imagem e descrição.");
         }
 
-        const { nome, imagem, descricao } = result;
+        const { nome, imagem, descricao, local } = result;
 
         log(message, `${nome}`);
 
@@ -162,7 +188,7 @@ async function execute(message, _args, _db, translate) {
         let titulo = nome;
         let descricaoFinal = descricao;
 
-        if (language === "portuguese") {
+        if (language === "portuguese" && !local) {
             titulo = await translateText(nome, message);
             descricaoFinal = await translateText(descricao, message);
         }
