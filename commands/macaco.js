@@ -230,7 +230,7 @@ async function execute(message, _args, _db, translate) {
         const attachment = new AttachmentBuilder(imageBuffer, { name: 'gerador-de-macaco-aleatorio.jpg' });
         const embed = new EmbedBuilder()
             .setTitle(`${titulo} 🐒`)
-            .setImage('attachment://macaco.jpg')
+            .setImage('attachment://gerador-de-macaco-aleatorio.jpg')
             .setDescription(descricaoFinal);
 
         await reply.edit({ embeds: [embed], files: [attachment] });
