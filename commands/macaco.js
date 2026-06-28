@@ -64,14 +64,16 @@ async function fetchSpecies() {
     return { results: pages.flatMap(p => p.results) };
 }
 
+const BASIS_FILTER = "basisOfRecord=HUMAN_OBSERVATION&basisOfRecord=MACHINE_OBSERVATION&basisOfRecord=LIVING_SPECIMEN&basisOfRecord=OBSERVATION";
+
 async function fetchImage(speciesKey) {
     await loadFetch(); // Carregar o fetch dinamicamente
-    const countRes = await fetch(`https://api.gbif.org/v1/occurrence/search?mediaType=StillImage&speciesKey=${speciesKey}&limit=0`);
+    const countRes = await fetch(`https://api.gbif.org/v1/occurrence/search?mediaType=StillImage&speciesKey=${speciesKey}&${BASIS_FILTER}&limit=0`);
     if (!countRes.ok) throw new Error(`Erro na requisição: ${countRes.statusText}`);
     const { count } = await countRes.json();
     if (!count) return null;
     const offset = Math.floor(Math.random() * Math.min(count, 100000));
-    const response = await fetch(`https://api.gbif.org/v1/occurrence/search?mediaType=StillImage&speciesKey=${speciesKey}&limit=1&offset=${offset}`);
+    const response = await fetch(`https://api.gbif.org/v1/occurrence/search?mediaType=StillImage&speciesKey=${speciesKey}&${BASIS_FILTER}&limit=1&offset=${offset}`);
     if (!response.ok) throw new Error(`Erro na requisição: ${response.statusText}`);
     const data = await response.json();
     return data.results?.[0]?.media?.[0]?.identifier ?? null;
@@ -152,7 +154,7 @@ async function getRandomMonkey(message) {
                     let description = species.descriptions[randomIndex].description.slice(0, 200);
                     if (description.length === 200) description += '...';
 
-                    return { nome: vernacularName, imagem: imageUrl, descricao: description };
+                    return { nome: vernacularName, imagem: imageUrl, descricao: description, speciesKey: species.key };
                 } catch {
                     continue;
                 }
@@ -166,11 +168,12 @@ async function getRandomMonkey(message) {
 }
 
 async function execute(message, _args, _db, translate) {
+    let reply;
     try {
         const loadingEmbed = new EmbedBuilder()
             .setDescription(await translate("macaco", "searching"));
 
-        const reply = await message.reply({ embeds: [loadingEmbed] });
+        reply = await message.reply({ embeds: [loadingEmbed] });
 
         const result = await getRandomMonkey(message);
 
@@ -178,7 +181,8 @@ async function execute(message, _args, _db, translate) {
             throw new Error("Não foi possível encontrar um macaco com imagem e descrição.");
         }
 
-        const { nome, imagem, descricao, local } = result;
+        const { nome, descricao, local, speciesKey } = result;
+        let imagem = result.imagem;
 
         log(message, `${nome}`);
 
@@ -193,23 +197,37 @@ async function execute(message, _args, _db, translate) {
             descricaoFinal = await translateText(descricao, message);
         }
 
-        // Disfarçar a requisição do bot como se fosse um navegador comum
-        const imageResponse = await fetch(imagem, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
+        let imageBuffer;
+        for (let tentativa = 0; tentativa < 5; tentativa++) {
+            // Disfarçar a requisição do bot como se fosse um navegador comum
+            const imageResponse = await fetch(imagem, {
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
+                }
+            });
+
+            if (!imageResponse.ok) {
+                error(message, `Erro ao baixar a imagem: ${imageResponse.statusText} — tentando outra imagem`);
+                if (speciesKey) {
+                    imagem = await fetchImage(speciesKey);
+                    if (!imagem) break;
+                } else {
+                    break;
+                }
+                continue;
             }
-        });
-        
-        if (!imageResponse.ok) {
-            throw new Error(`Erro ao baixar a imagem: ${imageResponse.statusText}`);
+
+            const arrayBuffer = await imageResponse.arrayBuffer();
+            imageBuffer = Buffer.from(arrayBuffer);
+            break;
         }
 
-        const arrayBuffer = await imageResponse.arrayBuffer();
-        const imageBuffer = Buffer.from(arrayBuffer);
-        
-        const attachment = new AttachmentBuilder(imageBuffer, { name: 'macaco.jpg' });
+        if (!imageBuffer) {
+            throw new Error("Não foi possível baixar a imagem após várias tentativas.");
+        }
 
+        const attachment = new AttachmentBuilder(imageBuffer, { name: 'gerador-de-macaco-aleatorio.jpg' });
         const embed = new EmbedBuilder()
             .setTitle(`${titulo} 🐒`)
             .setImage('attachment://macaco.jpg')
@@ -219,7 +237,11 @@ async function execute(message, _args, _db, translate) {
     } catch (err) {
         error(message, `Erro ao gerar macaco: ${err.message}`);
         const errEmbed = new EmbedBuilder().setDescription(await translate("macaco", "no monkey found"));
-        await message.reply({ embeds: [errEmbed] });
+        if (reply) {
+            await reply.edit({ embeds: [errEmbed], files: [] });
+        } else {
+            await message.reply({ embeds: [errEmbed] });
+        }
     }
 }
 
