@@ -109,7 +109,7 @@ async function getRandomMonkey(message) {
     const languagePreference = await getLanguagePreference(guildId);
 
     // Chance de retornar um macaco local
-    if (Math.random() < 0.01) {
+    if (Math.random() < 0.025) {
         const macaco = macacosLocais[Math.floor(Math.random() * macacosLocais.length)];
         const usePt = languagePreference !== 'english';
         return {
