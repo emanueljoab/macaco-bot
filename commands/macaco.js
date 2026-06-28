@@ -197,43 +197,52 @@ async function execute(message, _args, _db, translate) {
             descricaoFinal = await translateText(descricao, message);
         }
 
-        let imageBuffer;
-        for (let tentativa = 0; tentativa < 5; tentativa++) {
-            // Disfarçar a requisição do bot como se fosse um navegador comum
-            const imageResponse = await fetch(imagem, {
-                headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                    'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
-                }
-            });
+        let attachment;
+        if (!local) {
+            let imageBuffer;
+            for (let tentativa = 0; tentativa < 5; tentativa++) {
+                // Disfarçar a requisição do bot como se fosse um navegador comum
+                const imageResponse = await fetch(imagem, {
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                        'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
+                    }
+                });
 
-            if (!imageResponse.ok) {
-                error(message, `Erro ao baixar a imagem: ${imageResponse.statusText} — tentando outra imagem`);
-                if (speciesKey) {
-                    imagem = await fetchImage(speciesKey);
-                    if (!imagem) break;
-                } else {
-                    break;
+                if (!imageResponse.ok) {
+                    error(message, `Erro ao baixar a imagem: ${imageResponse.statusText} — tentando outra imagem`);
+                    if (speciesKey) {
+                        imagem = await fetchImage(speciesKey);
+                        if (!imagem) break;
+                    } else {
+                        break;
+                    }
+                    continue;
                 }
-                continue;
+
+                const arrayBuffer = await imageResponse.arrayBuffer();
+                imageBuffer = Buffer.from(arrayBuffer);
+                break;
             }
 
-            const arrayBuffer = await imageResponse.arrayBuffer();
-            imageBuffer = Buffer.from(arrayBuffer);
-            break;
+            if (!imageBuffer) {
+                throw new Error("Não foi possível baixar a imagem após várias tentativas.");
+            }
+
+            attachment = new AttachmentBuilder(imageBuffer, { name: 'gerador-de-macaco-aleatorio.jpg' });
         }
 
-        if (!imageBuffer) {
-            throw new Error("Não foi possível baixar a imagem após várias tentativas.");
-        }
-
-        const attachment = new AttachmentBuilder(imageBuffer, { name: 'gerador-de-macaco-aleatorio.jpg' });
         const embed = new EmbedBuilder()
             .setTitle(`${titulo} 🐒`)
-            .setImage('attachment://gerador-de-macaco-aleatorio.jpg')
             .setDescription(descricaoFinal);
 
-        await reply.edit({ embeds: [embed], files: [attachment] });
+        if (attachment) {
+            embed.setImage('attachment://gerador-de-macaco-aleatorio.jpg');
+            await reply.edit({ embeds: [embed], files: [attachment] });
+        } else {
+            embed.setImage(imagem);
+            await reply.edit({ embeds: [embed] });
+        }
     } catch (err) {
         error(message, `Erro ao gerar macaco: ${err.message}`);
         const errEmbed = new EmbedBuilder().setDescription(await translate("macaco", "no monkey found"));
