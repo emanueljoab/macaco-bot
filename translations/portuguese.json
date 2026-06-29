@@ -88,12 +88,14 @@
     "index": {
         "error": "Ocorreu um erro ao tentar executar o comando {0}."
     },
+    "rank": {
+        "error": "Ocorreu um erro ao obter o ranking",
+        "title": "Ranking Jokenpo",
+        "unknown user": "Usuário desconhecido",
+        "entry": "{0} **{1}** — {2}V · {3}D · {4}%",
+        "empty": "Nenhum dado de ranking encontrado."
+    },
     "jokenpo": {
-        "reply rank error": "Ocorreu um erro ao obter o ranking",
-        "jokenpo ranking": "Ranking Jokenpo",
-        "unknown user": "Usuário deconhecido",
-        "users rank": "{0}. {1}: {2} vitórias, {3} derrotas",
-        "no rank data": "Nenhum dado de ranking encontrado.",
         "jokenpo": "Jokenpo",
         "challenge": "{0} desafiou {1} para um jogo de Jokenpo!",
         "id rock": "pedra 👊",

@@ -89,12 +89,14 @@
     "index": {
         "error": "An error occurred while trying to execute the command {0}."
     },
-    "jokenpo": {
-        "reply rank error": "An error occurred while retrieving the ranking",
-        "jokenpo ranking": "Rock Paper Scissors Ranking",
+    "rank": {
+        "error": "An error occurred while retrieving the ranking",
+        "title": "Rock Paper Scissors Ranking",
         "unknown user": "Unknown user",
-        "users rank": "{0}. {1}: {2} wins, {3} loses",
-        "no rank data": "No ranking data found.",
+        "entry": "{0} **{1}** — {2}W · {3}L · {4}%",
+        "empty": "No ranking data found."
+    },
+    "jokenpo": {
         "jokenpo": "Rock Paper Scissors",
         "challenge": "{0} has challenged {1} to a game of Rock Paper Scissors!",
         "id rock": "rock 👊",

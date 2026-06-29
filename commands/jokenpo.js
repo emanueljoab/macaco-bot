@@ -3,33 +3,10 @@ const { log, error } = require("../utils");
 
 async function execute(message, args, db, translate) {
     try {
-        if (args.length > 1 || (args.length === 1 && args[0].toLowerCase() !== "rank" && !args[0].startsWith("<@") && !args[0].endsWith(">"))) {
+        if (args.length > 1 || (args.length === 1 && !args[0].startsWith("<@") && !args[0].endsWith(">"))) {
             return;
         }
-        if (args.length > 0 && args[0].toLowerCase() === "rank") {
-            const guildId = message.guild.id;
-
-            db.all("SELECT user_id, username, wins, losses FROM jokenpo_rank WHERE guild_id = ? ORDER BY wins DESC LIMIT 10", [guildId], async (err, rows) => {
-                if (err) {
-                    error(message, `Erro ao obter o ranking do banco de dados: ${err.message}`);
-                    const rankErrEmbed = new EmbedBuilder().setDescription(await translate("jokenpo", "reply rank error"));
-                    return message.reply({ embeds: [rankErrEmbed] });
-                }
-
-                const rankings = await Promise.all(
-                    rows.map(async (row, index) => {
-                        const user = message.guild.members.cache.get(row.user_id);
-                        const username = row.username || (user ? escapeMarkdown(user.displayName) : await translate("jokenpo", "unknown user"));
-                        return await translate("jokenpo", "users rank", index + 1, username, row.wins, row.losses);
-                    })
-                );
-
-                const embed = new EmbedBuilder().setTitle(await translate("jokenpo", "jokenpo ranking")).setDescription(rankings.join("\n") || (await translate("jokenpo", "no rank data")));
-
-                message.reply({ embeds: [embed] });
-            });
-        } else {
-            const player1 = message.author;
+        const player1 = message.author;
             let player2 = message.mentions.users.first();
 
             if (!player2) {
@@ -237,7 +214,6 @@ async function execute(message, args, db, translate) {
                     });
                 });
             }
-        }
     } catch (err) {
         error(message, `Ocorreu um erro ao executar o comando jokenpo: ${err.message}`);
         const errEmbed = new EmbedBuilder().setDescription(await translate("jokenpo", "error jokenpo"));

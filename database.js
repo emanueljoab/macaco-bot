@@ -1,5 +1,5 @@
 const sqlite3 = require("sqlite3").verbose();
-const db = new sqlite3.Database("./jokenpo.db");
+const db = new sqlite3.Database("./macaco.db");
 
 // Criação das tabelas se não existirem
 db.serialize(() => {
@@ -40,12 +40,12 @@ function getLanguagePreference(guildId) {
             if (err) {
                 reject(err);
             } else if (!row) {
-                // Definir o idioma padrão como 'english' se não estiver definido
-                db.run("INSERT INTO server_language (guild_id, language) VALUES (?, ?)", [guildId, "english"], (err) => {
+                // Definir o idioma padrão como 'portuguese' se não estiver definido
+                db.run("INSERT INTO server_language (guild_id, language) VALUES (?, ?)", [guildId, "portuguese"], (err) => {
                     if (err) {
                         reject(err);
                     } else {
-                        resolve("english");
+                        resolve("portuguese");
                     }
                 });
             } else {

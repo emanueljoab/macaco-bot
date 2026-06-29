@@ -16,6 +16,7 @@ const help = require("../commands/help");
 const howgay = require("../commands/howgay");
 const jokenpo = require("../commands/jokenpo");
 const macaco = require("../commands/macaco");
+const rank = require("../commands/rank");
 const ping = require("../commands/ping");
 const pp = require("../commands/pp");
 const server = require("../commands/server");
@@ -76,33 +77,43 @@ client.on("messageCreate", async (message) => {
     const args = content.slice(prefix.length).trim().split(/ +/);
     const command = args.shift().toLowerCase();
 
-    const commands = {
-        bola8: ball8.execute, "8ball": ball8.execute,
-        clima: clima.execute, weather: clima.execute,
-        config: config.execute, settings: config.execute,
-        flip: flip.execute, moeda: flip.execute, coin: flip.execute,
-        help: help.execute.bind(null, client), ajuda: help.execute.bind(null, client), 
-        howgay: howgay.execute, gay: howgay.execute,
-        jokenpo: jokenpo.execute, jankenpon: jokenpo.execute, rps: jokenpo.execute,
-        macaco: macaco.execute, monkey: macaco.execute,
-        ping: ping.execute,
-        pp: pp.execute,
-        server: server.execute, servidor: server.execute,
-        stank: stank.execute, fedor: stank.execute,
-        simp: simp.execute,
-        user: user.execute, usuario: user.execute, usuário: user.execute, profile: user.execute, perfil: user.execute
-    };
+    const commandDefs = [
+        { names: ["bola8", "8ball"],                                          handler: ball8.execute },
+        { names: ["clima", "weather"],                                        handler: clima.execute },
+        { names: ["config", "settings"],                                      handler: config.execute,              noMention: true },
+        { names: ["flip", "moeda", "coin"],                                   handler: flip.execute,                noMention: true },
+        { names: ["help", "ajuda"],                                           handler: help.execute.bind(null, client), noMention: true },
+        { names: ["howgay", "gay"],                                           handler: howgay.execute,              mention: true },
+        { names: ["jokenpo", "jankenpon", "rps"],                             handler: jokenpo.execute },
+        { names: ["macaco", "monkey"],                                        handler: macaco.execute,              noMention: true },
+        { names: ["ping"],                                                    handler: ping.execute,                noMention: true },
+        { names: ["pp"],                                                      handler: pp.execute,                  mention: true },
+        { names: ["rank"],                                                    handler: rank.execute,                noMention: true },
+        { names: ["server", "servidor"],                                      handler: server.execute,              noMention: true },
+        { names: ["simp"],                                                    handler: simp.execute,                mention: true },
+        { names: ["stank", "fedor"],                                          handler: stank.execute,               mention: true },
+        { names: ["user", "usuario", "usuário", "profile", "perfil"],         handler: user.execute,                mention: true },
+    ];
+
+    const commands = {};
+    const noMentionHandlers = new Set();
+    const mentionHandlers = new Set();
+
+    for (const def of commandDefs) {
+        for (const name of def.names) commands[name] = def.handler;
+        if (def.noMention) noMentionHandlers.add(def.handler);
+        if (def.mention) mentionHandlers.add(def.handler);
+    }
 
     if (commands[command]) {
         // Verificar e executar os comandos
         try {
-            const noArgsCommands = ["config", "flip", "help", "macaco", "ping", "server"];
-            if (noArgsCommands.includes(command) && args.length > 0) return; // Retornar se um dos noArgsCommands tiver algo escrito além do prefixo e comando
+            const fn = commands[command];
 
-            const argsCommands = ["pp", "howgay", "stank", "simp", "user"];
-            if (argsCommands.includes(command)) {
+            if (noMentionHandlers.has(fn) && args.length > 0) return;
+
+            if (mentionHandlers.has(fn)) {
                 if (
-                    // Verificar se não tem args OU se menciona um usuário
                     args.length === 0 ||
                     (args.length === 1 && message.mentions.users.size > 0)
                 ) {
