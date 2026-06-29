@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
-const { error } = require("../utils");
+const { log, error } = require("../utils");
 
 async function execute(message, args, db, translate) {
     try {
@@ -29,6 +29,7 @@ async function execute(message, args, db, translate) {
                 .setDescription(rankings.join("\n") || (await translate("rank", "empty")));
 
             message.reply({ embeds: [embed] });
+            log(message, `Ranking exibido`);
         });
     } catch (err) {
         error(message, `Erro ao executar o comando rank: ${err.message}`);

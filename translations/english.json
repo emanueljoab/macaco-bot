@@ -73,6 +73,7 @@
             "**`monkey`**: Generates a random monkey.",
             "**`ping`**: Calculates ping.",
             "**`pp`**: Measure peepee.",
+            "**`rank`**: Displays the rock paper scissors ranking.",
             "**`server`**: Displays information about the server.",
             "**`simp`**: Measures how simp someone is.",
             "**`stank`**: Measure someone's stench.",
