@@ -1,8 +1,11 @@
 const sqlite3 = require("sqlite3").verbose();
+const { log, error } = require("./utils");
 const db = new sqlite3.Database("./macaco.db");
 
-// Criação das tabelas se não existirem
-db.serialize(() => {
+// Criar tabelas se não existirem
+db.all("SELECT name FROM sqlite_master WHERE type='table'", [], (err, rows) => {
+    const existing = new Set(err ? [] : rows.map(r => r.name));
+    db.serialize(() => {
     db.run(
         `CREATE TABLE IF NOT EXISTS jokenpo_rank (
         guild_id TEXT,
@@ -11,7 +14,11 @@ db.serialize(() => {
         wins INTEGER,
         losses INTEGER,
         PRIMARY KEY (guild_id, user_id)
-    )`
+    )`,
+        (err) => {
+            if (err) error(null, `Erro ao criar tabela jokenpo_rank: ${err.message}`);
+            else if (!existing.has("jokenpo_rank")) log(null, `Tabela criada: jokenpo_rank`);
+        }
     );
 
     db.run(
@@ -23,13 +30,21 @@ db.serialize(() => {
         player1_wins INTEGER,
         player2_wins INTEGER,
         PRIMARY KEY (player1_id, player2_id)
-    )`
+    )`,
+        (err) => {
+            if (err) error(null, `Erro ao criar tabela jokenpo_history: ${err.message}`);
+            else if (!existing.has("jokenpo_history")) log(null, `Tabela criada: jokenpo_history`);
+        }
     );
     db.run(
         `CREATE TABLE IF NOT EXISTS server_language (
         guild_id TEXT PRIMARY KEY,
         language TEXT
-    )`
+    )`,
+        (err) => {
+            if (err) error(null, `Erro ao criar tabela server_language: ${err.message}`);
+            else if (!existing.has("server_language")) log(null, `Tabela criada: server_language`);
+        }
     );
 
     db.run(
@@ -44,11 +59,16 @@ db.serialize(() => {
         max_simp INTEGER,
         max_stank INTEGER,
         PRIMARY KEY (guild_id, user_id)
-    )`
+    )`,
+        (err) => {
+            if (err) error(null, `Erro ao criar tabela user_records: ${err.message}`);
+            else if (!existing.has("user_records")) log(null, `Tabela criada: user_records`);
+        }
     );
+    });
 });
 
-// Função para obter a preferência de idioma
+// Obter a preferência de idioma
 function getLanguagePreference(guildId) {
     return new Promise((resolve, reject) => {
         db.get("SELECT language FROM server_language WHERE guild_id = ?", [guildId], (err, row) => {
@@ -60,6 +80,7 @@ function getLanguagePreference(guildId) {
                     if (err) {
                         reject(err);
                     } else {
+                        log(null, `Idioma padrão definido para guild ${guildId}`);
                         resolve("portuguese");
                     }
                 });
@@ -80,11 +101,13 @@ function updateRecord(guildId, guildName, userId, username, column, value, extra
 
     db.run(
         `INSERT OR IGNORE INTO user_records (guild_id, guild_name, user_id, username) VALUES (?, ?, ?, ?)`,
-        [guildId, guildName, userId, username]
+        [guildId, guildName, userId, username],
+        (err) => { if (err) error(null, `Erro ao inserir user_records (${userId}): ${err.message}`); }
     );
     db.run(
         `UPDATE user_records SET ${setSql} WHERE guild_id = ? AND user_id = ? AND (${column} IS NULL OR ${column} < ?)`,
-        [guildName, username, value, ...extraVals, guildId, userId, value]
+        [guildName, username, value, ...extraVals, guildId, userId, value],
+        (err) => { if (err) error(null, `Erro ao atualizar user_records ${column} (${userId}): ${err.message}`); }
     );
 }
 

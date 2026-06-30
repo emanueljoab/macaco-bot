@@ -7,7 +7,7 @@ async function execute(message, _args, _db, translate) {
         const ladoEscolhido = ladosDaMoeda[Math.floor(Math.random() * ladosDaMoeda.length)];
         
         let miniatura;
-        if (ladoEscolhido === "Coroa" || ladoEscolhido === "Tails") {
+        if (ladoEscolhido === "COROA" || ladoEscolhido === "TAILS") {
             miniatura = 'https://i.imgur.com/8wTa5Qa.png'
         } else {
             miniatura = 'https://i.imgur.com/2DSh2S5.png'

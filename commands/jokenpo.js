@@ -85,6 +85,7 @@ async function execute(message, args, db, translate) {
                         gameDecided = true; // Marcar que o jogo foi decidido
                         collector.stop();
 
+                        let winner = null;
                         if (choices[sortedPlayer1.id] === choices[sortedPlayer2.id]) {
                             resultado = await translate("jokenpo", "tie");
                             log(message, `Empate entre ${sortedPlayer1.username} e ${sortedPlayer2.username}`);
@@ -94,9 +95,11 @@ async function execute(message, args, db, translate) {
                             (choices[sortedPlayer1.id] === (await translate("jokenpo", "id scissors")) && choices[sortedPlayer2.id] === (await translate("jokenpo", "id paper")))
                         ) {
                             resultado = await translate("jokenpo", "player 1 win", escapeMarkdown(sortedPlayer1.username));
+                            winner = sortedPlayer1;
                             log(message, `${sortedPlayer1.username} venceu ${sortedPlayer2.username}`);
                         } else {
                             resultado = await translate("jokenpo", "player 2 win", escapeMarkdown(sortedPlayer2.username));
+                            winner = sortedPlayer2;
                             log(message, `${sortedPlayer2.username} venceu ${sortedPlayer1.username}`);
                         }
 
@@ -115,11 +118,11 @@ async function execute(message, args, db, translate) {
                         const guildId = message.guild.id;
 
                         let historyMessage = await translate("jokenpo", "no history");
-                        if (resultado.includes(escapeMarkdown(sortedPlayer1.username))) {
+                        if (winner === sortedPlayer1) {
                             historyMessage = await atualizarHistorico(sortedPlayer1.id, sortedPlayer2.id, sortedPlayer1.username, sortedPlayer2.username, 1, 0);
                             atualizarPontuacao(guildId, sortedPlayer1.id, sortedPlayer1.username, 1, 0);
                             atualizarPontuacao(guildId, sortedPlayer2.id, sortedPlayer2.username, 0, 1);
-                        } else if (resultado.includes(escapeMarkdown(sortedPlayer2.username))) {
+                        } else if (winner === sortedPlayer2) {
                             historyMessage = await atualizarHistorico(sortedPlayer1.id, sortedPlayer2.id, sortedPlayer1.username, sortedPlayer2.username, 0, 1);
                             atualizarPontuacao(guildId, sortedPlayer2.id, sortedPlayer2.username, 1, 0);
                             atualizarPontuacao(guildId, sortedPlayer1.id, sortedPlayer1.username, 0, 1);

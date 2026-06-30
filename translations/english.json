@@ -163,10 +163,13 @@
         "error": "An error occurred while trying to get the user information.",
         "member not found": "That user is not a member of this server.",
         "setDescription": "Joined server at {0}.",
-        "record howgay": "🏳️‍🌈 Gay",
-        "record pp": "🍆 pp",
-        "record simp": "🥺 Simp",
-        "record stank": "🦨 Stank",
-        "records title": "🏆 Personal Records"
+        "record howgay": "🏳️‍🌈 Highest howgay",
+        "record pp": "🍆 Longest pp",
+        "record simp": "🥺 Highest simp",
+        "record stank": "🦨 Highest stank",
+        "jokenpo field name": "⚔️ Jokenpo",
+        "jokenpo field value": "{0}W · {1}L · {2}%",
+        "biggest victim name": "🎯 Biggest victim",
+        "biggest victim value": "{0} ({1}%)"
     }
 }
