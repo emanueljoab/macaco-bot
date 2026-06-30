@@ -169,7 +169,9 @@
         "record stank": "🦨 Highest stank",
         "jokenpo field name": "⚔️ Jokenpo",
         "jokenpo field value": "{0}W · {1}L · {2}%",
-        "biggest victim name": "🎯 Biggest victim",
-        "biggest victim value": "{0} ({1}%)"
+        "biggest rival name": "🗡️ Rival",
+        "biggest rival winning": "Dominates {0} ({1}-{2})",
+        "biggest rival losing": "Loses to {0} ({1}-{2})",
+        "biggest rival tied": "Tied with {0} ({1}-{2})"
     }
 }

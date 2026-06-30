@@ -34,10 +34,11 @@ async function execute(message, _args, db, translate) {
                         CASE WHEN player1_id = ? THEN player1_wins ELSE player2_wins END as user_wins,
                         CASE WHEN player1_id = ? THEN player2_wins ELSE player1_wins END as opp_wins
                     FROM jokenpo_history
-                    WHERE (player1_id = ? OR player2_id = ?) AND (player1_wins + player2_wins) > 0
-                    ORDER BY CAST(CASE WHEN player1_id = ? THEN player1_wins ELSE player2_wins END AS REAL) / (player1_wins + player2_wins) DESC
+                    WHERE (player1_id = ? OR player2_id = ?) AND (player1_wins + player2_wins) >= 5
+                    AND player1_id != '1243673463902834809' AND player2_id != '1243673463902834809'
+                    ORDER BY (player1_wins + player2_wins) DESC
                     LIMIT 1`,
-                    [user.id, user.id, user.id, user.id, user.id, user.id, user.id],
+                    [user.id, user.id, user.id, user.id, user.id, user.id],
                     (err, row) => { if (err) reject(err); else resolve(row || null); }
                 );
             }),
@@ -75,13 +76,16 @@ async function execute(message, _args, db, translate) {
 
         let biggestVictimValue;
         if (biggestVictimRow) {
-            const total = biggestVictimRow.user_wins + biggestVictimRow.opp_wins;
-            const rate = total > 0 ? Math.round((biggestVictimRow.user_wins / total) * 100) : 0;
-            biggestVictimValue = await translate("user", "biggest victim value", biggestVictimRow.opponent_username, rate);
+            const { user_wins, opp_wins, opponent_username } = biggestVictimRow;
+            let rivalKey;
+            if (user_wins > opp_wins) rivalKey = "biggest rival winning";
+            else if (user_wins < opp_wins) rivalKey = "biggest rival losing";
+            else rivalKey = "biggest rival tied";
+            biggestVictimValue = await translate("user", rivalKey, opponent_username, user_wins, opp_wins);
         } else {
             biggestVictimValue = dash;
         }
-        fields.push({ name: await translate("user", "biggest victim name"), value: biggestVictimValue, inline: true });
+        fields.push({ name: await translate("user", "biggest rival name"), value: biggestVictimValue, inline: true });
 
         const description = await translate("user", "setDescription", joinedAt);
 

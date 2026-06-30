@@ -168,7 +168,9 @@
         "record stank": "🦨 Maior stank",
         "jokenpo field name": "⚔️ Jokenpo",
         "jokenpo field value": "{0}V · {1}D · {2}%",
-        "biggest victim name": "🎯 Maior freguês",
-        "biggest victim value": "{0} ({1}%)"
+        "biggest rival name": "🗡️ Rival",
+        "biggest rival winning": "Domina {0} ({1}-{2})",
+        "biggest rival losing": "Apanha de {0} ({1}-{2})",
+        "biggest rival tied": "Empate com {0} ({1}-{2})"
     }
 }
