@@ -31,6 +31,21 @@ db.serialize(() => {
         language TEXT
     )`
     );
+
+    db.run(
+        `CREATE TABLE IF NOT EXISTS user_records (
+        guild_id TEXT,
+        guild_name TEXT,
+        user_id TEXT,
+        username TEXT,
+        max_howgay INTEGER,
+        max_pp INTEGER,
+        max_pp_string TEXT,
+        max_simp INTEGER,
+        max_stank INTEGER,
+        PRIMARY KEY (guild_id, user_id)
+    )`
+    );
 });
 
 // Função para obter a preferência de idioma
@@ -55,7 +70,40 @@ function getLanguagePreference(guildId) {
     });
 }
 
+function updateRecord(guildId, guildName, userId, username, column, value, extras = {}) {
+    const extraKeys = Object.keys(extras);
+    const extraVals = Object.values(extras);
+    const extraSets = extraKeys.map((k) => `${k} = ?`).join(", ");
+    const setSql = extraKeys.length > 0
+        ? `guild_name = ?, username = ?, ${column} = ?, ${extraSets}`
+        : `guild_name = ?, username = ?, ${column} = ?`;
+
+    db.run(
+        `INSERT OR IGNORE INTO user_records (guild_id, guild_name, user_id, username) VALUES (?, ?, ?, ?)`,
+        [guildId, guildName, userId, username]
+    );
+    db.run(
+        `UPDATE user_records SET ${setSql} WHERE guild_id = ? AND user_id = ? AND (${column} IS NULL OR ${column} < ?)`,
+        [guildName, username, value, ...extraVals, guildId, userId, value]
+    );
+}
+
+function getUserRecords(guildId, userId) {
+    return new Promise((resolve, reject) => {
+        db.get(
+            "SELECT * FROM user_records WHERE guild_id = ? AND user_id = ?",
+            [guildId, userId],
+            (err, row) => {
+                if (err) reject(err);
+                else resolve(row || null);
+            }
+        );
+    });
+}
+
 module.exports = {
     db,
     getLanguagePreference,
+    updateRecord,
+    getUserRecords,
 };

@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
 const { log, error } = require("../utils");
+const { updateRecord } = require("../database");
 
 async function execute(message, _args, _db, translate) {
     try {
@@ -18,6 +19,7 @@ async function execute(message, _args, _db, translate) {
         }
         await message.reply({ embeds: [embed] });
         log(message, `${user.username} é ${simp}% simp`);
+        updateRecord(message.guild.id, message.guild.name, user.id, user.username, "max_simp", simp);
     } catch (err) {
         error(message, `Erro ao executar comando: ${err.message}`);
         const errorEmbed = new EmbedBuilder()

@@ -120,7 +120,8 @@
         "time up": "Time's up! One or more players didn't choose in time.",
         "score": "Score: {0} {1} — {2} {3}",
         "error jokenpo": "An error occurred while executing the Rock Paper Scissors command",
-        "yourself": "You cannot play against yourself!"
+        "yourself": "You cannot play against yourself!",
+        "rematch": "🔄 Rematch?"
     },
     "macaco": {
         "no monkey found": "No monkey found, damn.",
@@ -161,6 +162,11 @@
     "user": {
         "error": "An error occurred while trying to get the user information.",
         "member not found": "That user is not a member of this server.",
-        "setDescription": "Joined server at {0}."
+        "setDescription": "Joined server at {0}.",
+        "record howgay": "🏳️‍🌈 Gay",
+        "record pp": "🍆 pp",
+        "record simp": "🥺 Simp",
+        "record stank": "🦨 Stank",
+        "records title": "🏆 Personal Records"
     }
 }

@@ -135,7 +135,56 @@ async function execute(message, args, db, translate) {
                             });
                         }
 
-                        await reply.edit({ embeds: [embed], components: [] });
+                        const rematchId = "rematch";
+                        const rematchRow = new ActionRowBuilder().addComponents(
+                            new ButtonBuilder()
+                                .setCustomId(rematchId)
+                                .setLabel(await translate("jokenpo", "rematch"))
+                                .setStyle(ButtonStyle.Secondary)
+                        );
+
+                        await reply.edit({ embeds: [embed], components: [rematchRow] });
+
+                        const rematchFilter = (i) =>
+                            i.isButton() &&
+                            i.customId === rematchId &&
+                            (isBotGame ? i.user.id === player1.id : [sortedPlayer1.id, sortedPlayer2.id].includes(i.user.id));
+
+                        const rematchCollector = reply.createMessageComponentCollector({
+                            filter: rematchFilter,
+                            time: 30000,
+                            max: 1,
+                        });
+
+                        rematchCollector.on("collect", async (interaction) => {
+                            try {
+                                const disabledRow = new ActionRowBuilder().addComponents(
+                                    new ButtonBuilder()
+                                        .setCustomId(rematchId)
+                                        .setLabel(await translate("jokenpo", "rematch"))
+                                        .setStyle(ButtonStyle.Secondary)
+                                        .setDisabled(true)
+                                );
+                                await interaction.update({ components: [disabledRow] });
+                                await execute(message, args, db, translate);
+                            } catch (err) {
+                                if (err.code !== 10062) {
+                                    error(message, `Erro no collector de revanche: ${err.message}`);
+                                }
+                            }
+                        });
+
+                        rematchCollector.on("end", async (collected, reason) => {
+                            if (reason === "time") {
+                                try {
+                                    await reply.edit({ components: [] });
+                                } catch (err) {
+                                    if (err.code !== 10008) {
+                                        error(message, `Erro ao remover botão de revanche: ${err.message}`);
+                                    }
+                                }
+                            }
+                        });
                     }
                 } catch (err) {
                     if (err.code !== 10062) {

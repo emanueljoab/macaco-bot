@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
 const { log, error } = require("../utils");
+const { updateRecord } = require("../database");
 
 async function execute(message, _args, _db, translate) {
     try {
@@ -13,6 +14,7 @@ async function execute(message, _args, _db, translate) {
             .setFooter({ text: `${tamanho} cm` });
         await message.reply({ embeds: [embed] });
         log(message, `Pipi de ${user.username} ${pp} ${tamanho} cm`);
+        updateRecord(message.guild.id, message.guild.name, user.id, user.username, "max_pp", tamanho, { max_pp_string: pp });
     } catch (err) {
         const embed = new EmbedBuilder()
             .setDescription(await translate("pp", "error"))

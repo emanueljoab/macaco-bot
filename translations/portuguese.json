@@ -119,7 +119,8 @@
         "time up": "Tempo esgotado! Um ou mais jogadores não escolheram a tempo.",
         "score": "Placar: {0} {1} — {2} {3}",
         "error jokenpo": "Ocorreu um erro ao executar o comando jokenpo.",
-        "yourself": "Você não pode jogar contra si mesmo!"
+        "yourself": "Você não pode jogar contra si mesmo!",
+        "rematch": "🔄 Revanche?"
     },
     "macaco": {
         "no monkey found": "Nenhum macaco encontrado, poxa.",
@@ -160,6 +161,11 @@
     "user": {
         "error": "Ocorreu um erro ao tentar obter as informações do usuário.",
         "member not found": "Esse usuário não é membro deste servidor.",
-        "setDescription": "Juntou-se ao servidor em {0}."
+        "setDescription": "Juntou-se ao servidor em {0}.",
+        "record howgay": "🏳️‍🌈 Gay",
+        "record pp": "🍆 pp",
+        "record simp": "🥺 Simp",
+        "record stank": "🦨 Fedor",
+        "records title": "🏆 Recordes Pessoais"
     }
 }
