@@ -166,8 +166,8 @@
         "jokenpo field name": "⚔️ Jokenpo",
         "jokenpo field value": "{0}V · {1}D · {2}%",
         "biggest rival name": "🗡️ Rival",
-        "biggest rival winning": "{0} (ganhando de {1}-{2})",
-        "biggest rival losing": "{0} (perdendo de {1}-{2})",
-        "biggest rival tied": "{0} (empatando em {1}-{2})"
+        "biggest rival winning": "{3} {1}-{2} {0}",
+        "biggest rival losing": "{3} {1}-{2} {0}",
+        "biggest rival tied": "{3} {1}-{2} {0}"
     }
 }

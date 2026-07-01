@@ -81,7 +81,7 @@ async function execute(message, _args, db, translate) {
             if (user_wins > opp_wins) rivalKey = "biggest rival winning";
             else if (user_wins < opp_wins) rivalKey = "biggest rival losing";
             else rivalKey = "biggest rival tied";
-            biggestVictimValue = await translate("user", rivalKey, opponent_username, user_wins, opp_wins);
+            biggestVictimValue = await translate("user", rivalKey, opponent_username, user_wins, opp_wins, user.username);
         } else {
             biggestVictimValue = dash;
         }

@@ -167,8 +167,8 @@
         "jokenpo field name": "⚔️ Rock Paper Scissors",
         "jokenpo field value": "{0}W · {1}L · {2}%",
         "biggest rival name": "🗡️ Rival",
-        "biggest rival winning": "{0} (winning against {1}-{2})",
-        "biggest rival losing": "{0} (losing to {1}-{2})",
-        "biggest rival tied": "{0} (tied at {1}-{2})"
+        "biggest rival winning": "{3} {1}-{2} {0}",
+        "biggest rival losing": "{3} {1}-{2} {0}",
+        "biggest rival tied": "{3} {1}-{2} {0}"
     }
 }
