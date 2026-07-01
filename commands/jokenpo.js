@@ -1,6 +1,12 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const { log, error } = require("../utils");
 
+const CHOICE_IDS = {
+    ROCK: "rock",
+    PAPER: "paper",
+    SCISSORS: "scissors",
+};
+
 async function execute(message, args, db, translate) {
     try {
         if (args.length > 1 || (args.length === 1 && !args[0].startsWith("<@") && !args[0].endsWith(">"))) {
@@ -30,15 +36,15 @@ async function execute(message, args, db, translate) {
 
             const row = new ActionRowBuilder().addComponents(
                 new ButtonBuilder()
-                    .setCustomId(await translate("jokenpo", "id rock"))
+                    .setCustomId(CHOICE_IDS.ROCK)
                     .setLabel(await translate("jokenpo", "label rock"))
                     .setStyle(ButtonStyle.Primary),
                 new ButtonBuilder()
-                    .setCustomId(await translate("jokenpo", "id paper"))
+                    .setCustomId(CHOICE_IDS.PAPER)
                     .setLabel(await translate("jokenpo", "label paper"))
                     .setStyle(ButtonStyle.Success),
                 new ButtonBuilder()
-                    .setCustomId(await translate("jokenpo", "id scissors"))
+                    .setCustomId(CHOICE_IDS.SCISSORS)
                     .setLabel(await translate("jokenpo", "label scissors"))
                     .setStyle(ButtonStyle.Danger)
             );
@@ -66,6 +72,11 @@ async function execute(message, args, db, translate) {
                     choices[interaction.user.id] = interaction.customId;
                     await interaction.deferUpdate();
 
+                    if (sortedPlayer2.id === "1243673463902834809") {
+                        const opcoes = [CHOICE_IDS.ROCK, CHOICE_IDS.PAPER, CHOICE_IDS.SCISSORS];
+                        choices[sortedPlayer2.id] = opcoes[Math.floor(Math.random() * 3)];
+                    }
+
                     if (Object.keys(choices).length < 2) {
                         const jogadorEsperando = [sortedPlayer1, sortedPlayer2].find((player) => !choices[player.id]);
 
@@ -74,11 +85,6 @@ async function execute(message, args, db, translate) {
                         );
 
                         await reply.edit({ embeds: [embed] });
-                    }
-
-                    if (sortedPlayer2.id === "1243673463902834809") {
-                        const opcoes = await translate("jokenpo", "options");
-                        choices[sortedPlayer2.id] = opcoes[Math.floor(Math.random() * 3)];
                     }
 
                     if (Object.keys(choices).length === 2 && !gameDecided) {
@@ -90,9 +96,9 @@ async function execute(message, args, db, translate) {
                             resultado = await translate("jokenpo", "tie");
                             log(message, `Empate entre ${sortedPlayer1.username} e ${sortedPlayer2.username}`);
                         } else if (
-                            (choices[sortedPlayer1.id] === (await translate("jokenpo", "id rock")) && choices[sortedPlayer2.id] === (await translate("jokenpo", "id scissors"))) ||
-                            (choices[sortedPlayer1.id] === (await translate("jokenpo", "id paper")) && choices[sortedPlayer2.id] === (await translate("jokenpo", "id rock"))) ||
-                            (choices[sortedPlayer1.id] === (await translate("jokenpo", "id scissors")) && choices[sortedPlayer2.id] === (await translate("jokenpo", "id paper")))
+                            (choices[sortedPlayer1.id] === CHOICE_IDS.ROCK && choices[sortedPlayer2.id] === CHOICE_IDS.SCISSORS) ||
+                            (choices[sortedPlayer1.id] === CHOICE_IDS.PAPER && choices[sortedPlayer2.id] === CHOICE_IDS.ROCK) ||
+                            (choices[sortedPlayer1.id] === CHOICE_IDS.SCISSORS && choices[sortedPlayer2.id] === CHOICE_IDS.PAPER)
                         ) {
                             resultado = await translate("jokenpo", "player 1 win", escapeMarkdown(sortedPlayer1.username));
                             winner = sortedPlayer1;
@@ -103,14 +109,17 @@ async function execute(message, args, db, translate) {
                             log(message, `${sortedPlayer2.username} venceu ${sortedPlayer1.username}`);
                         }
 
+                        const player1Name = escapeMarkdown(sortedPlayer1.username);
+                        const player2Name = escapeMarkdown(sortedPlayer2.username);
+
                         embed.setDescription(
                             await translate(
                                 "jokenpo",
                                 "choices",
-                                escapeMarkdown(sortedPlayer1.username),
-                                choices[sortedPlayer1.id],
-                                escapeMarkdown(sortedPlayer2.username),
-                                choices[sortedPlayer2.id],
+                                winner === sortedPlayer1 ? `__${player1Name}__` : player1Name,
+                                getChoiceEmoji(choices[sortedPlayer1.id]),
+                                winner === sortedPlayer2 ? `__${player2Name}__` : player2Name,
+                                getChoiceEmoji(choices[sortedPlayer2.id]),
                                 resultado
                             )
                         );
@@ -273,10 +282,17 @@ async function execute(message, args, db, translate) {
     }
 }
 
-module.exports = {
-    execute,
-};
-
 function escapeMarkdown(text) {
     return text.replace(/([\\*_`~])/g, "\\$1");
 }
+
+function getChoiceEmoji(choice) {
+    if (choice === CHOICE_IDS.ROCK) return "👊";
+    if (choice === CHOICE_IDS.PAPER) return "✋";
+    if (choice === CHOICE_IDS.SCISSORS) return "✌️";
+    return "";
+}
+
+module.exports = {
+    execute,
+};

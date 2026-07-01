@@ -92,30 +92,27 @@
     },
     "rank": {
         "error": "An error occurred while retrieving the ranking",
-        "title": "Rock Paper Scissors Ranking",
+        "title wins": "Rock Paper Scissors Wins Ranking",
+        "title best": "Best Rock Paper Scissors Players",
         "unknown user": "Unknown user",
         "entry": "{0} **{1}** — {2}W · {3}L · {4}%",
-        "empty": "No ranking data found."
+        "entry best": "{0} **{1}** — {2}W · {3}L",
+        "empty": "No ranking data found.",
+        "button wins": "🏆 Wins",
+        "button best": "📊 Best Players",
+        "footer best": "Takes into account not just the win rate, but also how many games were played."
     },
     "jokenpo": {
         "jokenpo": "Rock Paper Scissors",
         "challenge": "{0} has challenged {1} to a game of Rock Paper Scissors!",
-        "id rock": "rock 👊",
         "label rock": "👊 Rock",
-        "id paper": "paper ✋",
         "label paper": "✋ Paper",
-        "id scissors": "scissors ✌",
         "label scissors": "✌ Scissors",
         "waiting": "{0} has challenged {1} to a game of Rock Paper Scissors!\n*Waiting for {2} to respond...*",
-        "options": [
-            "rock 👊",
-            "paper ✋",
-            "scissors ✌"
-        ],
         "tie": "**Draw!**",
         "player 1 win": "**{0} wins!**",
         "player 2 win": "**{0} wins!**",
-        "choices": "{0} chose {1}\n{2} chose {3}\n\n{4}",
+        "choices": "{0} {1} × {3} {2}\n\n{4}",
         "no history": "History not available",
         "time up": "Time's up! One or more players didn't choose in time.",
         "score": "Score: {0} {1} — {2} {3}",
