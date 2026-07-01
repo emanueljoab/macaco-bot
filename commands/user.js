@@ -58,10 +58,10 @@ async function execute(message, _args, db, translate) {
         const joinedAt = member.joinedAt.toLocaleString(await translate("server", "toLocaleString"), options);
         const dash = "—";
         const fields = [
-            { name: await translate("user", "record stank"),  value: records?.max_stank  != null ? `${records.max_stank}%`  : dash, inline: true },
+            { name: await translate("user", "record pp"),     value: records?.max_pp     != null ? `${records.max_pp} cm` : dash, inline: true },
             { name: await translate("user", "record howgay"), value: records?.max_howgay != null ? `${records.max_howgay}%` : dash, inline: true },
             { name: await translate("user", "record simp"),   value: records?.max_simp   != null ? `${records.max_simp}%`   : dash, inline: true },
-            { name: await translate("user", "record pp"),     value: records?.max_pp     != null ? `${records.max_pp_string} (${records.max_pp} cm)` : dash, inline: true },
+            { name: await translate("user", "record stank"),  value: records?.max_stank  != null ? `${records.max_stank}%`  : dash, inline: true },
         ];
 
         let jokenpoValue;
@@ -96,7 +96,7 @@ async function execute(message, _args, db, translate) {
             .addFields(fields);
 
         await message.reply({ embeds: [embed] });
-        log(message, `Comando executado`);
+        log(message, `Perfil de ${user.username} exibido`);
     } catch (err) {
         error(message, `Erro ao executar comando: ${err.message}`);
         const errorEmbed = new EmbedBuilder()

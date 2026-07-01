@@ -5,7 +5,10 @@ async function execute(message, args, db, translate) {
     try {
         const guildId = message.guild.id;
 
-        db.all("SELECT user_id, username, wins, losses FROM jokenpo_rank WHERE guild_id = ? AND user_id != '1243673463902834809' ORDER BY wins DESC LIMIT 10", [guildId], async (err, rows) => {
+        db.all(
+            "SELECT user_id, username, wins, losses FROM jokenpo_rank WHERE guild_id = ? AND user_id != '1243673463902834809' ORDER BY wins DESC, losses ASC LIMIT 10",
+            [guildId],
+            async (err, rows) => {
             if (err) {
                 error(message, `Erro ao obter o ranking do banco de dados: ${err.message}`);
                 const rankErrEmbed = new EmbedBuilder().setDescription(await translate("rank", "error"));
@@ -30,7 +33,8 @@ async function execute(message, args, db, translate) {
 
             message.reply({ embeds: [embed] });
             log(message, `Ranking exibido`);
-        });
+            }
+        );
     } catch (err) {
         error(message, `Erro ao executar o comando rank: ${err.message}`);
     }

@@ -163,14 +163,14 @@
         "member not found": "Esse usuário não é membro deste servidor.",
         "setDescription": "Juntou-se ao servidor em {0}.",
         "record howgay": "🏳️‍🌈 Maior howgay",
-        "record pp": "🍆 Maior pp",
+        "record pp": "🍌 Maior pp",
         "record simp": "🥺 Maior simp",
-        "record stank": "🦨 Maior stank",
+        "record stank": "👃 Maior stank",
         "jokenpo field name": "⚔️ Jokenpo",
         "jokenpo field value": "{0}V · {1}D · {2}%",
         "biggest rival name": "🗡️ Rival",
-        "biggest rival winning": "Domina {0} ({1}-{2})",
-        "biggest rival losing": "Apanha de {0} ({1}-{2})",
-        "biggest rival tied": "Empate com {0} ({1}-{2})"
+        "biggest rival winning": "{0} (ganhando de {1}-{2})",
+        "biggest rival losing": "{0} (perdendo de {1}-{2})",
+        "biggest rival tied": "{0} (empatando em {1}-{2})"
     }
 }
