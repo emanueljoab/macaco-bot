@@ -246,3 +246,32 @@ body.lang-pt .en { display: none; }
   border-color: #7c3aed;
   color: #c9a0ff;
 }
+
+@media (max-width: 520px) {
+  .container {
+    padding: 1.5rem 1.25rem;
+  }
+
+  header {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "icon text"
+      "btn  btn";
+    row-gap: 0.75rem;
+  }
+
+  .bot-icon    { grid-area: icon; }
+  .header-text { grid-area: text; }
+
+  #lang-toggle {
+    grid-area: btn;
+    margin-left: auto;
+  }
+
+  .header-actions {
+    grid-area: btn;
+    margin-left: 0;
+    justify-content: flex-end;
+  }
+}
