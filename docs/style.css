@@ -53,24 +53,33 @@ header p {
   border: 1px solid #2a2a2e;
   border-radius: 8px;
   padding: 0.4rem 0.9rem;
-  color: #9d7fe8;
+  color: #ffdf00;
   font-size: 0.85rem;
   cursor: pointer;
   transition: border-color 0.2s, color 0.2s;
 }
 
 #lang-toggle:hover {
-  border-color: #7c3aed;
-  color: #c9a0ff;
+  border-color: #c9a800;
+  color: #fff176;
+}
+
+body.lang-pt #lang-toggle {
+  color: #60a5fa;
+}
+
+body.lang-pt #lang-toggle:hover {
+  border-color: #2563eb;
+  color: #93c5fd;
 }
 
 h2 {
   font-size: 1.05rem;
   font-weight: 600;
-  color: #c9a0ff;
+  color: #86efac;
   margin: 2rem 0 0.6rem;
   padding-left: 0.75rem;
-  border-left: 3px solid #7c3aed;
+  border-left: 3px solid #16a34a;
 }
 
 p, li {
@@ -100,15 +109,15 @@ li { margin-bottom: 0.3rem; }
   border: 1px solid #2a2a2e;
   border-radius: 8px;
   padding: 0.5rem 1rem;
-  color: #9d7fe8;
+  color: #4ade80;
   text-decoration: none;
   font-size: 0.9rem;
   transition: border-color 0.2s, color 0.2s;
 }
 
 .contact-links a:hover {
-  border-color: #7c3aed;
-  color: #c9a0ff;
+  border-color: #16a34a;
+  color: #86efac;
 }
 
 footer {
@@ -166,7 +175,7 @@ body.lang-pt .en { display: none; }
 }
 
 .command-card code {
-  color: #c9a0ff;
+  color: #86efac;
   font-size: 0.9rem;
   font-weight: 600;
   font-family: monospace;
@@ -193,15 +202,15 @@ body.lang-pt .en { display: none; }
   border: 1px solid #2a2a2e;
   border-radius: 8px;
   padding: 0.5rem 1rem;
-  color: #9d7fe8;
+  color: #4ade80;
   text-decoration: none;
   font-size: 0.9rem;
   transition: border-color 0.2s, color 0.2s;
 }
 
 .links a:hover {
-  border-color: #7c3aed;
-  color: #c9a0ff;
+  border-color: #16a34a;
+  color: #86efac;
 }
 
 .aliases {
@@ -212,13 +221,13 @@ body.lang-pt .en { display: none; }
 }
 
 .aliases span {
-  background: #252530;
-  border: 1px solid #35354a;
+  background: #1a2e24;
+  border: 1px solid #2a4a38;
   border-radius: 4px;
   padding: 0.1rem 0.45rem;
   font-size: 0.72rem;
   font-family: monospace;
-  color: #7c6aaa;
+  color: #4a7a5a;
 }
 
 .header-actions {
@@ -236,15 +245,15 @@ body.lang-pt .en { display: none; }
   border: 1px solid #2a2a2e;
   border-radius: 8px;
   padding: 0.4rem 0.9rem;
-  color: #9d7fe8;
+  color: #4ade80;
   text-decoration: none;
   font-size: 0.85rem;
   transition: border-color 0.2s, color 0.2s;
 }
 
 .back-link:hover {
-  border-color: #7c3aed;
-  color: #c9a0ff;
+  border-color: #16a34a;
+  color: #86efac;
 }
 
 @media (max-width: 520px) {
