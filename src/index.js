@@ -1,12 +1,10 @@
 require("dotenv").config();
 
 const { Client, GatewayIntentBits, EmbedBuilder } = require("discord.js");
-const { db } = require("../database");
+const { db, DEFAULT_PREFIX, getPrefix } = require("../database");
 const { loadTranslations, translate: translateRaw } = require("../translate");
 const { checkSpam } = require("../spam");
-const { log, error } = require("../utils");
-
-const prefix = "pls ";
+const { log, error, matchPrefix } = require("../utils");
 
 const ball8 = require("../commands/8ball");
 const clima = require("../commands/clima");
@@ -68,14 +66,18 @@ client.on("messageCreate", async (message) => {
         log(message, `vai tomar no cu`);
     }
 
-    if (!content.startsWith(prefix)) return;
     if (!message.guild) return;
 
     const guildId = message.guild.id;
+    const guildPrefix = (await getPrefix(guildId)) || DEFAULT_PREFIX;
     const translate = (command, key, ...args) => translateRaw(guildId, command, key, ...args);
 
-    const args = content.slice(prefix.length).trim().split(/ +/);
-    const command = args.shift().toLowerCase();
+    const rest = matchPrefix(content, guildPrefix);
+    if (rest === null) return;
+
+    const args = rest.split(/ +/).filter(Boolean);
+    const command = args.shift()?.toLowerCase();
+    if (!command) return;
 
     const commandDefs = [
         { names: ["bola8", "8ball"],                                          handler: ball8.execute },

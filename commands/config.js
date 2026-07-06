@@ -1,5 +1,5 @@
-const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, ComponentType, PermissionsBitField } = require("discord.js");
-const { db } = require("../database");
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle, ComponentType, PermissionsBitField } = require("discord.js");
+const { db, DEFAULT_PREFIX, getPrefix, getLanguagePreference } = require("../database");
 const { log, error } = require("../utils");
 
 async function execute(message, _args, _db, translate) {
@@ -9,74 +9,160 @@ async function execute(message, _args, _db, translate) {
         return message.reply({ embeds: [permEmbed] });
     }
 
-    // Criar um embed com informações sobre a configuração
-    const embed = new EmbedBuilder().setTitle(await translate("config", "setTitle")).setDescription(" ");
+    const currentLanguage = await getLanguagePreference(message.guild.id);
+    const currentPrefix = (await getPrefix(message.guild.id)) || DEFAULT_PREFIX;
+    const currentLanguageLabel = await translate("config", currentLanguage === "english" ? "label-en" : "label-pt");
 
-    embed.addFields({ name: "\u200B", value: await translate("config", "addFields") });
+    // Embed inicial com os valores atuais e botões de configuração
+    const embed = new EmbedBuilder()
+        .setTitle(await translate("config", "setTitle"))
+        .setDescription(await translate("config", "currentValues", currentLanguageLabel, currentPrefix))
+        .addFields({ name: "​", value: await translate("config", "addFields") });
 
-    // Criar um menu de seleção para os idiomas com bandeiras
-    const languageMenu = new StringSelectMenuBuilder()
-        .setCustomId("select-language")
-        .setPlaceholder(await translate("config", "setPlaceholder"))
-        .addOptions([
-            {
-                label: await translate("config", "label-en"),
-                description: await translate("config", "description-en"),
-                value: "english",
-                emoji: "🇺🇸",
-            },
-            {
-                label: await translate("config", "label-pt"),
-                description: await translate("config", "description-pt"),
-                value: "portuguese",
-                emoji: "🇧🇷",
-            },
-        ]);
+    const languageButton = new ButtonBuilder()
+        .setCustomId("config-language")
+        .setLabel(await translate("config", "label-language"))
+        .setEmoji("🌐")
+        .setStyle(ButtonStyle.Primary);
 
-    const row = new ActionRowBuilder().addComponents(languageMenu);
+    const prefixButton = new ButtonBuilder()
+        .setCustomId("config-prefix")
+        .setLabel(await translate("config", "label-prefix"))
+        .setEmoji("⌨️")
+        .setStyle(ButtonStyle.Secondary);
 
+    const row = new ActionRowBuilder().addComponents(languageButton, prefixButton);
     const reply = await message.reply({ embeds: [embed], components: [row] });
 
-    // Listener para interações com o menu de seleção
-    const filter = (interaction) => interaction.customId === "select-language" && interaction.user.id === message.author.id;
-
-    const collector = reply.createMessageComponentCollector({ 
-        filter, 
-        componentType: ComponentType.StringSelect,
-        time: 60000 
+    const filter = (interaction) => ["config-language", "config-prefix"].includes(interaction.customId) && interaction.user.id === message.author.id;
+    const collector = reply.createMessageComponentCollector({
+        filter,
+        componentType: ComponentType.Button,
+        time: 60000,
+        max: 1,
     });
 
-    collector.on("collect", (interaction) => {
-        const selectedLanguage = interaction.values[0];
+    collector.on("collect", async (interaction) => {
+        if (interaction.customId === "config-language") {
+            // Fluxo de idioma
+            const languageEmbed = new EmbedBuilder()
+                .setTitle(await translate("config", "setTitle"))
+                .setDescription(" ")
+                .addFields({ name: "​", value: await translate("config", "addFieldsLanguage") });
 
-        // Atualizar o idioma no banco de dados
-        db.run(
-            `INSERT INTO server_language (guild_id, language) VALUES (?, ?) ON CONFLICT(guild_id) DO UPDATE SET language = ?`,
-            [message.guild.id, selectedLanguage, selectedLanguage],
-            async (err) => {
-                try {
-                    if (err) {
-                        error(message, `Erro ao atualizar o idioma: ${err}`);
-                        embed.setFields({ name: "\u200B", value: await translate("config", "error") });
-                        await interaction.update({ embeds: [embed], components: [] });
-                    } else {
-                        embed.setFields({ name: "\u200B", value: await translate("config", "success", selectedLanguage) });
-                        await interaction.update({ embeds: [embed], components: [] });
-                        log(message, `Idioma alterado para ${selectedLanguage}`);
+            const englishButton = new ButtonBuilder()
+                .setCustomId("lang-english")
+                .setLabel(await translate("config", "label-en"))
+                .setEmoji("🇺🇸")
+                .setStyle(currentLanguage === "english" ? ButtonStyle.Success : ButtonStyle.Primary);
+
+            const portugueseButton = new ButtonBuilder()
+                .setCustomId("lang-portuguese")
+                .setLabel(await translate("config", "label-pt"))
+                .setEmoji("🇧🇷")
+                .setStyle(currentLanguage === "portuguese" ? ButtonStyle.Success : ButtonStyle.Primary);
+
+            const langRow = new ActionRowBuilder().addComponents(englishButton, portugueseButton);
+            await interaction.update({ embeds: [languageEmbed], components: [langRow] });
+
+            const langFilter = (i) => ["lang-english", "lang-portuguese"].includes(i.customId) && i.user.id === message.author.id;
+            const langCollector = reply.createMessageComponentCollector({
+                filter: langFilter,
+                componentType: ComponentType.Button,
+                time: 60000,
+                max: 1,
+            });
+
+            langCollector.on("collect", (langInteraction) => {
+                const selectedLanguage = langInteraction.customId === "lang-english" ? "english" : "portuguese";
+                db.run(
+                    `INSERT INTO server_language (guild_id, language) VALUES (?, ?) ON CONFLICT(guild_id) DO UPDATE SET language = ?`,
+                    [message.guild.id, selectedLanguage, selectedLanguage],
+                    async (err) => {
+                        try {
+                            if (err) {
+                                error(message, `Erro ao atualizar o idioma: ${err}`);
+                                languageEmbed.setFields({ name: "​", value: await translate("config", "error") });
+                                await langInteraction.update({ embeds: [languageEmbed], components: [] });
+                            } else {
+                                languageEmbed.setFields({ name: "​", value: await translate("config", "success", selectedLanguage) });
+                                await langInteraction.update({ embeds: [languageEmbed], components: [] });
+                                log(message, `Idioma alterado para ${selectedLanguage}`);
+                            }
+                        } catch (e) {
+                            if (e.code !== 10062) error(message, `Erro inesperado na interação: ${e}`);
+                        }
                     }
-                } catch (err) {
-                    if (err.code !== 10062) {
-                        error(message, `Erro inesperado na interação: ${err}`);
-                    }
+                );
+            });
+
+            langCollector.on("end", (collected, reason) => {
+                if (reason === "time") {
+                    reply.edit({ components: [] }).catch(e => error(message, e));
                 }
-                collector.stop();
+            });
+
+        } else if (interaction.customId === "config-prefix") {
+            // Fluxo de prefixo (modal)
+            const modal = new ModalBuilder()
+                .setCustomId("set-prefix")
+                .setTitle(await translate("config", "prefixModalTitle"));
+
+            const prefixInput = new TextInputBuilder()
+                .setCustomId("prefix-input")
+                .setLabel(await translate("config", "prefixInputLabel"))
+                .setStyle(TextInputStyle.Short)
+                .setMinLength(1)
+                .setMaxLength(10)
+                .setValue(currentPrefix)
+                .setRequired(true);
+
+            modal.addComponents(new ActionRowBuilder().addComponents(prefixInput));
+            await interaction.showModal(modal);
+
+            try {
+                const modalSubmit = await interaction.awaitModalSubmit({ time: 60000 });
+                const newPrefix = modalSubmit.fields.getTextInputValue("prefix-input").trim();
+
+                if (!newPrefix || /\s/.test(newPrefix)) {
+                    const invalidEmbed = new EmbedBuilder()
+                        .setTitle(await translate("config", "setTitle"))
+                        .setDescription(" ")
+                        .setFields({ name: "​", value: await translate("config", "prefixInvalid") });
+                    await modalSubmit.update({ embeds: [invalidEmbed], components: [] });
+                    return;
+                }
+
+                db.run(
+                    `INSERT INTO server_prefix (guild_id, guild_name, prefix) VALUES (?, ?, ?) ON CONFLICT(guild_id) DO UPDATE SET guild_name = ?, prefix = ?`,
+                    [message.guild.id, message.guild.name, newPrefix, message.guild.name, newPrefix],
+                    async (err) => {
+                        try {
+                            const resultEmbed = new EmbedBuilder()
+                                .setTitle(await translate("config", "setTitle"))
+                                .setDescription(" ");
+                            if (err) {
+                                error(message, `Erro ao atualizar o prefixo: ${err}`);
+                                resultEmbed.setFields({ name: "​", value: await translate("config", "error") });
+                            } else {
+                                resultEmbed.setFields({ name: "​", value: await translate("config", "prefixSuccess", newPrefix) });
+                                log(message, `Prefixo alterado para "${newPrefix}"`);
+                            }
+                            await modalSubmit.update({ embeds: [resultEmbed], components: [] });
+                        } catch (e) {
+                            if (e.code !== 10062) error(message, `Erro inesperado ao atualizar prefixo: ${e}`);
+                        }
+                    }
+                );
+            } catch (e) {
+                await reply.edit({ components: [] }).catch(e2 => error(message, e2));
             }
-        );
+        }
     });
 
     collector.on("end", (collected, reason) => {
         if (reason === "time") {
-            reply.edit({ components: [] }).catch(err => error(message, err));
+            reply.edit({ components: [] }).catch(e => error(message, e));
         }
     });
 }

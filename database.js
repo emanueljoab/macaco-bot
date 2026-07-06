@@ -2,6 +2,8 @@ const sqlite3 = require("sqlite3").verbose();
 const { log, error } = require("./utils");
 const db = new sqlite3.Database("./macaco.db");
 
+const DEFAULT_PREFIX = "pls";
+
 // Criar tabelas se não existirem
 db.all("SELECT name FROM sqlite_master WHERE type='table'", [], (err, rows) => {
     const existing = new Set(err ? [] : rows.map(r => r.name));
@@ -44,6 +46,18 @@ db.all("SELECT name FROM sqlite_master WHERE type='table'", [], (err, rows) => {
         (err) => {
             if (err) error(null, `Erro ao criar tabela server_language: ${err.message}`);
             else if (!existing.has("server_language")) log(null, `Tabela criada: server_language`);
+        }
+    );
+
+    db.run(
+        `CREATE TABLE IF NOT EXISTS server_prefix (
+        guild_id TEXT PRIMARY KEY,
+        guild_name TEXT,
+        prefix TEXT
+    )`,
+        (err) => {
+            if (err) error(null, `Erro ao criar tabela server_prefix: ${err.message}`);
+            else if (!existing.has("server_prefix")) log(null, `Tabela criada: server_prefix`);
         }
     );
 
@@ -91,6 +105,15 @@ function getLanguagePreference(guildId) {
     });
 }
 
+function getPrefix(guildId) {
+    return new Promise((resolve, reject) => {
+        db.get("SELECT prefix FROM server_prefix WHERE guild_id = ?", [guildId], (err, row) => {
+            if (err) reject(err);
+            else resolve(row ? row.prefix : null);
+        });
+    });
+}
+
 function updateRecord(guildId, guildName, userId, username, column, value, extras = {}) {
     const extraKeys = Object.keys(extras);
     const extraVals = Object.values(extras);
@@ -126,7 +149,9 @@ function getUserRecords(guildId, userId) {
 
 module.exports = {
     db,
+    DEFAULT_PREFIX,
     getLanguagePreference,
+    getPrefix,
     updateRecord,
     getUserRecords,
 };
