@@ -90,7 +90,8 @@ function getLanguagePreference(guildId) {
                 reject(err);
             } else if (!row) {
                 // Definir o idioma padrão como 'portuguese' se não estiver definido
-                db.run("INSERT INTO server_language (guild_id, language) VALUES (?, ?)", [guildId, "portuguese"], (err) => {
+                // OR IGNORE: chamadas concorrentes podem tentar inserir a mesma guild
+                db.run("INSERT OR IGNORE INTO server_language (guild_id, language) VALUES (?, ?)", [guildId, "portuguese"], (err) => {
                     if (err) {
                         reject(err);
                     } else {
@@ -122,16 +123,19 @@ function updateRecord(guildId, guildName, userId, username, column, value, extra
         ? `guild_name = ?, username = ?, ${column} = ?, ${extraSets}`
         : `guild_name = ?, username = ?, ${column} = ?`;
 
-    db.run(
-        `INSERT OR IGNORE INTO user_records (guild_id, guild_name, user_id, username) VALUES (?, ?, ?, ?)`,
-        [guildId, guildName, userId, username],
-        (err) => { if (err) error(null, `Erro ao inserir user_records (${userId}): ${err.message}`); }
-    );
-    db.run(
-        `UPDATE user_records SET ${setSql} WHERE guild_id = ? AND user_id = ? AND (${column} IS NULL OR ${column} < ?)`,
-        [guildName, username, value, ...extraVals, guildId, userId, value],
-        (err) => { if (err) error(null, `Erro ao atualizar user_records ${column} (${userId}): ${err.message}`); }
-    );
+    // serialize: garante que o INSERT rode antes do UPDATE
+    db.serialize(() => {
+        db.run(
+            `INSERT OR IGNORE INTO user_records (guild_id, guild_name, user_id, username) VALUES (?, ?, ?, ?)`,
+            [guildId, guildName, userId, username],
+            (err) => { if (err) error(null, `Erro ao inserir user_records (${userId}): ${err.message}`); }
+        );
+        db.run(
+            `UPDATE user_records SET ${setSql} WHERE guild_id = ? AND user_id = ? AND (${column} IS NULL OR ${column} < ?)`,
+            [guildName, username, value, ...extraVals, guildId, userId, value],
+            (err) => { if (err) error(null, `Erro ao atualizar user_records ${column} (${userId}): ${err.message}`); }
+        );
+    });
 }
 
 function getUserRecords(guildId, userId) {

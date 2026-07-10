@@ -80,11 +80,14 @@ async function execute(message, args, db, translate) {
                     if (Object.keys(choices).length < 2) {
                         const jogadorEsperando = [sortedPlayer1, sortedPlayer2].find((player) => !choices[player.id]);
 
-                        embed.setDescription(
-                            await translate("jokenpo", "waiting", escapeMarkdown(sortedPlayer1.username), escapeMarkdown(sortedPlayer2.username), escapeMarkdown(jogadorEsperando.username))
-                        );
+                        const waitingDescription = await translate("jokenpo", "waiting", escapeMarkdown(sortedPlayer1.username), escapeMarkdown(sortedPlayer2.username), escapeMarkdown(jogadorEsperando.username));
 
-                        await reply.edit({ embeds: [embed] });
+                        // O outro jogador pode ter escolhido durante o await acima;
+                        // não sobrescrever o resultado final com a mensagem de espera
+                        if (!gameDecided && Object.keys(choices).length < 2) {
+                            embed.setDescription(waitingDescription);
+                            await reply.edit({ embeds: [embed] });
+                        }
                     }
 
                     if (Object.keys(choices).length === 2 && !gameDecided) {
@@ -219,11 +222,14 @@ async function execute(message, args, db, translate) {
             });
 
             function atualizarPontuacao(guildId, userId, username, winsToAdd, lossesToAdd) {
-                db.run("INSERT OR IGNORE INTO jokenpo_rank (guild_id, user_id, username, wins, losses) VALUES (?, ?, ?, 0, 0)", [guildId, userId, username]);
-                db.run("UPDATE jokenpo_rank SET wins = wins + ?, losses = losses + ? WHERE guild_id = ? AND user_id = ?", [winsToAdd, lossesToAdd, guildId, userId], function (err) {
-                    if (err) {
-                        error(message, `Erro ao atualizar a pontuação: ${err.message} `);
-                    }
+                // serialize: garante que o INSERT rode antes do UPDATE
+                db.serialize(() => {
+                    db.run("INSERT OR IGNORE INTO jokenpo_rank (guild_id, user_id, username, wins, losses) VALUES (?, ?, ?, 0, 0)", [guildId, userId, username]);
+                    db.run("UPDATE jokenpo_rank SET wins = wins + ?, losses = losses + ? WHERE guild_id = ? AND user_id = ?", [winsToAdd, lossesToAdd, guildId, userId], function (err) {
+                        if (err) {
+                            error(message, `Erro ao atualizar a pontuação: ${err.message} `);
+                        }
+                    });
                 });
             }
 

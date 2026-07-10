@@ -93,6 +93,9 @@ async function checkSpam(message, translate) {
     } catch (err) {
         error(message, `Erro ao processar spam: ${err.message}`);
     }
+
+    // A mensagem atual foi deletada como spam; o chamador não deve processá-la
+    return true;
 }
 
 module.exports = { checkSpam };

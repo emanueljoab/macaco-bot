@@ -33,7 +33,7 @@ client.once("clientReady", async () => {
     Array.from(client.guilds.cache.values()).forEach((guild, index) => {
         log(null, `${index + 1}. ${guild.name}`);
     });
-    log(null, `${client.user.tag} está online.`);
+    log(null, `${client.user.tag} está online`);
 });
 
 client.on("messageCreate", async (message) => {
@@ -54,7 +54,8 @@ client.on("messageCreate", async (message) => {
 
     // Verificar spam antes de qualquer coisa
     const guildTranslate = (command, key, ...args) => translateRaw(message.guild?.id, command, key, ...args);
-    await checkSpam(message, guildTranslate).catch(err => error(message, `Erro no checkSpam: ${err.message}`));
+    const isSpam = await checkSpam(message, guildTranslate).catch(err => error(message, `Erro no checkSpam: ${err.message}`));
+    if (isSpam) return; // Mensagem deletada como spam; não processar comandos
 
     // Evento para mensagens
     const content = message.content.toLowerCase();
