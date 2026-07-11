@@ -1,10 +1,12 @@
 require("dotenv").config();
 
+const readline = require("readline");
+
 const { Client, GatewayIntentBits, EmbedBuilder } = require("discord.js");
 const { db, DEFAULT_PREFIX, getPrefix } = require("../database");
 const { loadTranslations, translate: translateRaw } = require("../translate");
 const { checkSpam } = require("../spam");
-const { log, error, matchPrefix } = require("../utils");
+const { log, error, matchPrefix, paint } = require("../utils");
 
 const ball8 = require("../commands/8ball");
 const clima = require("../commands/clima");
@@ -29,12 +31,57 @@ const client = new Client({
 client.once("clientReady", async () => {
     client.user.setActivity({ name: "pls macaco" });
     loadTranslations(); // Carregar traduções ao iniciar o bot
-    log(null, `Servidores em que estou:`);
-    Array.from(client.guilds.cache.values()).forEach((guild, index) => {
-        log(null, `${index + 1}. ${guild.name}`);
-    });
-    log(null, `${client.user.tag} está online`);
+    log(null, `${client.user.tag} está online!`);
 });
+
+client.on("guildCreate", (guild) => {
+    log(null, `Entrei num servidor novo: ${guild.name} (${guild.memberCount} membros)!`);
+});
+
+client.on("guildDelete", (guild) => {
+    // Stubs "unavailable" do READY: guilds de que o bot já saiu, reanunciadas pelo Discord a cada conexão
+    if (!guild.available) return;
+    log(null, `Saí do servidor: ${guild.name}`);
+});
+
+// Comandos digitados no console (terminal local ou painel do host)
+const GUILD_SORTS = {
+    joined: (a, b) => a.joinedTimestamp - b.joinedTimestamp, // ordem em que o bot entrou
+    name: (a, b) => a.name.localeCompare(b.name),
+    members: (a, b) => b.memberCount - a.memberCount,
+};
+
+function listGuilds(args) {
+    const sortKey = args[0];
+    if (sortKey && !GUILD_SORTS[sortKey]) return log(null, `Ordenação desconhecida: "${sortKey}" (opções: ${Object.keys(GUILD_SORTS).join(", ")})`);
+    if (!client.isReady()) return log(null, `O bot ainda não está online`);
+    const guilds = Array.from(client.guilds.cache.values());
+    if (sortKey) guilds.sort(GUILD_SORTS[sortKey]); // Sem flag, mantém a ordem em que o Discord enviou
+    guilds.forEach((guild, index) => {
+        const detail = sortKey === "joined"
+            ? new Date(guild.joinedTimestamp).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" })
+            : `${guild.memberCount} membros`;
+        log(null, `${paint("dim", `${index + 1}.`)} ${guild.name} ${paint("dim", `(${detail})`)}`);
+    });
+    if (sortKey === "members") {
+        const total = guilds.reduce((sum, guild) => sum + guild.memberCount, 0);
+        log(null, `Total: ${total} membros em ${guilds.length} servidores`);
+    }
+}
+
+const consoleCommands = {
+    guilds: listGuilds,
+    help: () => log(null, `Comandos de console: guilds [${Object.keys(GUILD_SORTS).join("|")}], help`),
+};
+
+readline.createInterface({ input: process.stdin }).on("line", (line) => {
+    const [command, ...args] = line.trim().toLowerCase().split(/\s+/);
+    if (!command) return;
+    const fn = consoleCommands[command];
+    if (fn) fn(args);
+    else log(null, `Comando de console desconhecido: "${command}" (digite "help")`);
+});
+process.stdin.on("error", () => {}); // Alguns hosts fecham o stdin; ignorar
 
 client.on("messageCreate", async (message) => {
     if (process.env.DEV_MODE === 'true') { // Verificar se o modo de desenvolvimento está ativado

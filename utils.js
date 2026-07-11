@@ -63,4 +63,7 @@ function matchPrefix(content, prefix) {
     return rest.trim();
 }
 
-module.exports = { log, error, matchPrefix };
+// Para colorir trechos de um log fora do utils (segue o mesmo isTTY do stdout)
+const paint = makePaint(process.stdout);
+
+module.exports = { log, error, matchPrefix, paint };
