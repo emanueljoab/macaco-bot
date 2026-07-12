@@ -1,5 +1,5 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
-const { log, error } = require("../utils");
+const { log, warn, error } = require("../utils");
 
 const BOT_ID = "1243673463902834809";
 const Z = 1.96; // 95% de confiança
@@ -118,7 +118,7 @@ async function execute(message, args, db, translate) {
                         await reply.edit({ components: [] });
                     } catch (err) {
                         if (err.code !== 10008) {
-                            error(message, `Erro ao remover os botões do rank: ${err.message}`);
+                            warn(message, `Não foi possível remover os botões do rank: ${err.message}`);
                         }
                     }
                 });

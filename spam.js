@@ -1,5 +1,5 @@
 const { PermissionsBitField, EmbedBuilder } = require("discord.js");
-const { log, error } = require("./utils");
+const { log, warn, error } = require("./utils");
 
 // Map: userId -> [{ content, channelId, timestamp, message }]
 const recentMessages = new Map();
@@ -60,7 +60,7 @@ async function checkSpam(message, translate) {
     // Check if the bot has permission to timeout members
     const me = message.guild.members.me;
     if (!me || !me.permissions.has(PermissionsBitField.Flags.ModerateMembers)) {
-        error(message, `Sem permissão para aplicar timeout`);
+        warn(message, `Sem permissão para aplicar timeout`);
         return;
     }
 
@@ -68,7 +68,7 @@ async function checkSpam(message, translate) {
     const member = message.guild.members.cache.get(userId);
     if (!member) return;
     if (!member.moderatable) {
-        error(message, `Não foi possível moderar (cargo superior ou admin)`);
+        log(message, `Não foi possível moderar (cargo superior ou admin)`);
         return;
     }
 

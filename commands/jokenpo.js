@@ -1,5 +1,5 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
-const { log, error } = require("../utils");
+const { log, warn, error } = require("../utils");
 
 const CHOICE_IDS = {
     ROCK: "rock",
@@ -195,7 +195,7 @@ async function execute(message, args, db, translate) {
                                     await reply.edit({ components: [] });
                                 } catch (err) {
                                     if (err.code !== 10008) {
-                                        error(message, `Erro ao remover botão de revanche: ${err.message}`);
+                                        warn(message, `Não foi possível remover o botão de revanche: ${err.message}`);
                                     }
                                 }
                             }

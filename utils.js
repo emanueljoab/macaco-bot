@@ -47,6 +47,12 @@ function log(message, text) {
     emit(console.log, process.stdout, message, text, null);
 }
 
+// Condição adversa prevista e tratada (permissão faltando, falha externa com retry) — não pede investigação no código
+function warn(message, text) {
+    emit(console.warn, process.stderr, message, text, "yellow");
+}
+
+// Falha inesperada que pede investigação (exceção não prevista, banco de dados, etc.)
 function error(message, text) {
     emit(console.error, process.stderr, message, text, "red");
 }
@@ -66,4 +72,4 @@ function matchPrefix(content, prefix) {
 // Para colorir trechos de um log fora do utils (segue o mesmo isTTY do stdout)
 const paint = makePaint(process.stdout);
 
-module.exports = { log, error, matchPrefix, paint };
+module.exports = { log, warn, error, matchPrefix, paint };

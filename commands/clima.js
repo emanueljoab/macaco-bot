@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
 const { getLanguagePreference } = require("../database");
-const { log, error } = require("../utils");
+const { log, warn, error } = require("../utils");
 
 let fetch;
 async function loadFetch() {
@@ -60,7 +60,7 @@ async function execute(message, args, _db, translate) {
         const currentWeatherData = await currentWeatherResponse.json();
 
         if (String(currentWeatherData.cod) !== "200") {
-            error(message, `Erro ao obter dados do clima para "${city}": ${currentWeatherData.message}`);
+            warn(message, `Não foi possível obter dados do clima para "${city}": ${currentWeatherData.message}`);
             return replyEmbed(message, await translate("clima", "error 200", city));
         }
 
@@ -69,7 +69,7 @@ async function execute(message, args, _db, translate) {
         const forecastData = await forecastResponse.json();
 
         if (String(forecastData.cod) !== "200") {
-            error(message, `Erro ao obter dados da previsão para "${city}": ${forecastData.message}`);
+            warn(message, `Não foi possível obter dados da previsão para "${city}": ${forecastData.message}`);
             return replyEmbed(message, await translate("clima", "error not 200", city));
         }
 

@@ -1,6 +1,6 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle, ComponentType, PermissionsBitField } = require("discord.js");
 const { db, DEFAULT_PREFIX, getPrefix, getLanguagePreference } = require("../database");
-const { log, error } = require("../utils");
+const { log, warn, error } = require("../utils");
 
 async function execute(message, _args, _db, translate) {
     // Verificar se o usuário tem permissão de administrador
@@ -98,7 +98,7 @@ async function execute(message, _args, _db, translate) {
 
             langCollector.on("end", (collected, reason) => {
                 if (reason === "time") {
-                    reply.edit({ components: [] }).catch(e => error(message, e));
+                    reply.edit({ components: [] }).catch(e => warn(message, `Não foi possível remover os componentes do config: ${e.message}`));
                 }
             });
 
@@ -155,14 +155,14 @@ async function execute(message, _args, _db, translate) {
                     }
                 );
             } catch (e) {
-                await reply.edit({ components: [] }).catch(e2 => error(message, e2));
+                await reply.edit({ components: [] }).catch(e2 => warn(message, `Não foi possível remover os componentes do config: ${e2.message}`));
             }
         }
     });
 
     collector.on("end", (collected, reason) => {
         if (reason === "time") {
-            reply.edit({ components: [] }).catch(e => error(message, e));
+            reply.edit({ components: [] }).catch(e => warn(message, `Não foi possível remover os componentes do config: ${e.message}`));
         }
     });
 }

@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const { getLanguagePreference } = require("../database");
 const { EmbedBuilder, AttachmentBuilder } = require("discord.js");
-const { log, error } = require("../utils");
+const { log, warn, error } = require("../utils");
 
 const familiasSimiiformes = ["Cebidae", "Cercopithecidae", "Hominidae", "Hylobatidae", "Pitheciidae", "Aotidae", "Atelidae", "Callitrichidae"];
 
@@ -91,7 +91,7 @@ async function fetchVernacularNames(speciesKey, message) {
             }
             return await response.json();
         } catch (err) {
-            error(message, `Erro ao buscar nomes vernaculares para a espécie com chave ${speciesKey}: ${err.message}`);
+            warn(message, `Não foi possível buscar nomes vernaculares para a espécie com chave ${speciesKey}: ${err.message}`);
             retryCount--;
             if (retryCount > 0) {
                 log(message, `Tentando novamente... Restam ${retryCount} tentativas`);
@@ -210,7 +210,7 @@ async function execute(message, _args, _db, translate) {
                 });
 
                 if (!imageResponse.ok) {
-                    error(message, `Erro ao baixar a imagem: ${imageResponse.statusText} — tentando outra imagem`);
+                    warn(message, `Não foi possível baixar a imagem: ${imageResponse.statusText} — tentando outra imagem`);
                     if (speciesKey) {
                         imagem = await fetchImage(speciesKey);
                         if (!imagem) break;

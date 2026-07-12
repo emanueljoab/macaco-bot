@@ -6,7 +6,7 @@ const { Client, GatewayIntentBits, EmbedBuilder } = require("discord.js");
 const { db, DEFAULT_PREFIX, getPrefix } = require("../database");
 const { loadTranslations, translate: translateRaw } = require("../translate");
 const { checkSpam } = require("../spam");
-const { log, error, matchPrefix, paint } = require("../utils");
+const { log, warn, error, matchPrefix, paint } = require("../utils");
 
 const ball8 = require("../commands/8ball");
 const clima = require("../commands/clima");
@@ -57,16 +57,14 @@ function listGuilds(args) {
     if (!client.isReady()) return log(null, `O bot ainda não está online`);
     const guilds = Array.from(client.guilds.cache.values());
     if (sortKey) guilds.sort(GUILD_SORTS[sortKey]); // Sem flag, mantém a ordem em que o Discord enviou
-    guilds.forEach((guild, index) => {
+    for (const guild of guilds) {
         const detail = sortKey === "joined"
             ? new Date(guild.joinedTimestamp).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" })
             : `${guild.memberCount} membros`;
-        log(null, `${paint("dim", `${index + 1}.`)} ${guild.name} ${paint("dim", `(${detail})`)}`);
-    });
-    if (sortKey === "members") {
-        const total = guilds.reduce((sum, guild) => sum + guild.memberCount, 0);
-        log(null, `Total: ${total} membros em ${guilds.length} servidores`);
+        log(null, `${guild.name} ${paint("dim", `(${detail})`)}`);
     }
+    const total = guilds.reduce((sum, guild) => sum + guild.memberCount, 0);
+    log(null, `Total: ${total} membros em ${guilds.length} servidores`);
 }
 
 const consoleCommands = {
@@ -84,6 +82,8 @@ readline.createInterface({ input: process.stdin }).on("line", (line) => {
 process.stdin.on("error", () => {}); // Alguns hosts fecham o stdin; ignorar
 
 client.on("messageCreate", async (message) => {
+    if (message.system) return; // Mensagens de sistema (criação de tópico, boost, etc.) não aceitam reply
+
     if (process.env.DEV_MODE === 'true') { // Verificar se o modo de desenvolvimento está ativado
         if (message.channelId !== process.env.DEV_CHANNEL_ID) return;
 
@@ -190,5 +190,6 @@ process.on("unhandledRejection", (err) => {
 });
 
 client.on("error", (err) => {
-    error(null, `Client error: ${err.message}`);
+    // Falha de websocket; o client reconecta sozinho
+    warn(null, `Falha de conexão do client: ${err.message}`);
 });
