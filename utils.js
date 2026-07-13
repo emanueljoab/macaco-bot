@@ -26,7 +26,7 @@ function format(message, text, paint) {
     // Sem guild e sem usuário → log de sistema
     const context = (guild || user)
         ? `[${paint("cyan", guild ?? "DM")}] [${paint("magenta", getFile())}] [${paint("green", user ?? "?")}]`
-        : `[${paint("magenta", getFile())}] [${paint("yellow", "SYSTEM")}]`;
+        : `[${paint("yellow", "SYSTEM")}] [${paint("magenta", getFile())}]`;
     return `${paint("dim", `[${timestamp()}]`)} ${context} [${text}]`;
 }
 

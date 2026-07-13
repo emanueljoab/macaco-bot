@@ -2,27 +2,27 @@ const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("
 const { log, warn, error } = require("../utils");
 
 const BOT_ID = "1243673463902834809";
-const Z = 1.96; // 95% de confiança
 
-// Limite inferior do intervalo de Wilson: ordenar por vitórias "confiáveis", não só pela taxa bruta
-function wilsonScore(wins, losses) {
-    const n = wins + losses;
-    if (n === 0) return 0;
-
-    const phat = wins / n;
-    const z2 = Z * Z;
-
-    return (phat + z2 / (2 * n) - Z * Math.sqrt((phat * (1 - phat) + z2 / (4 * n)) / n)) / (1 + z2 / n);
-}
+// Modos que leem recordes da tabela user_records (o modo wins lê de jokenpo_rank)
+const RECORD_COLUMNS = {
+    pp: "max_pp",
+    howgay: "max_howgay",
+    simp: "max_simp",
+    stank: "max_stank",
+};
 
 function sortRows(rows, mode) {
-    const sorted = [...rows];
-    if (mode === "best") {
-        sorted.sort((a, b) => wilsonScore(b.wins, b.losses) - wilsonScore(a.wins, a.losses));
-    } else {
-        sorted.sort((a, b) => b.wins - a.wins || a.losses - b.losses);
+    const column = RECORD_COLUMNS[mode];
+    if (column) {
+        return rows
+            .filter((row) => row[column] != null)
+            .sort((a, b) => b[column] - a[column])
+            .slice(0, 10);
     }
-    return sorted.slice(0, 10);
+
+    return [...rows]
+        .sort((a, b) => b.wins - a.wins || a.losses - b.losses)
+        .slice(0, 10);
 }
 
 async function buildRankEmbed(rows, mode, message, translate) {
@@ -35,8 +35,9 @@ async function buildRankEmbed(rows, mode, message, translate) {
             const username = row.username || (user ? escapeMarkdown(user.displayName) : await translate("rank", "unknown user"));
             const prefix = medals[index] ?? `${index + 1}.`;
 
-            if (mode === "best") {
-                return await translate("rank", "entry best", prefix, username, row.wins, row.losses);
+            const column = RECORD_COLUMNS[mode];
+            if (column) {
+                return await translate("rank", mode === "pp" ? "entry pp" : "entry percent", prefix, username, row[column]);
             }
 
             const total = row.wins + row.losses;
@@ -45,85 +46,88 @@ async function buildRankEmbed(rows, mode, message, translate) {
         })
     );
 
-    const embed = new EmbedBuilder()
-        .setTitle(await translate("rank", mode === "best" ? "title best" : "title wins"))
+    return new EmbedBuilder()
+        .setTitle(await translate("rank", `title ${mode}`))
         .setDescription(rankings.join("\n") || (await translate("rank", "empty")));
-
-    if (mode === "best") {
-        embed.setFooter({ text: await translate("rank", "footer best") });
-    }
-
-    return embed;
 }
 
-async function buildRankRow(mode, translate) {
-    return new ActionRowBuilder().addComponents(
+async function buildRankRows(mode, translate) {
+    // O botão do rank exibido fica azul (Primary) e desabilitado; os demais, cinza
+    const buildButton = async (key) =>
         new ButtonBuilder()
-            .setCustomId("rank_best")
-            .setLabel(await translate("rank", "button best"))
-            .setStyle(ButtonStyle.Primary)
-            .setDisabled(mode === "best"),
-        new ButtonBuilder()
-            .setCustomId("rank_wins")
-            .setLabel(await translate("rank", "button wins"))
-            .setStyle(ButtonStyle.Secondary)
-            .setDisabled(mode === "wins")
+            .setCustomId(`rank_${key}`)
+            .setLabel(await translate("rank", `button ${key}`))
+            .setStyle(mode === key ? ButtonStyle.Primary : ButtonStyle.Secondary)
+            .setDisabled(mode === key);
+
+    const row = new ActionRowBuilder().addComponents(
+        await Promise.all(["wins", ...Object.keys(RECORD_COLUMNS)].map(buildButton))
     );
+
+    return [row];
+}
+
+function queryAll(db, sql, params) {
+    return new Promise((resolve, reject) => {
+        db.all(sql, params, (err, rows) => (err ? reject(err) : resolve(rows)));
+    });
 }
 
 async function execute(message, args, db, translate) {
     try {
         const guildId = message.guild.id;
 
-        db.all(
-            "SELECT user_id, username, wins, losses FROM jokenpo_rank WHERE guild_id = ? AND user_id != ?",
-            [guildId, BOT_ID],
-            async (err, rows) => {
-                if (err) {
-                    error(message, `Erro ao obter o ranking do banco de dados: ${err.message}`);
-                    const rankErrEmbed = new EmbedBuilder().setDescription(await translate("rank", "error"));
-                    return message.reply({ embeds: [rankErrEmbed] });
+        let jokenpoRows, recordRows;
+        try {
+            [jokenpoRows, recordRows] = await Promise.all([
+                queryAll(db, "SELECT user_id, username, wins, losses FROM jokenpo_rank WHERE guild_id = ? AND user_id != ?", [guildId, BOT_ID]),
+                queryAll(db, "SELECT user_id, username, max_pp, max_howgay, max_simp, max_stank FROM user_records WHERE guild_id = ?", [guildId]),
+            ]);
+        } catch (err) {
+            error(message, `Erro ao obter o ranking do banco de dados: ${err.message}`);
+            const rankErrEmbed = new EmbedBuilder().setDescription(await translate("rank", "error"));
+            return message.reply({ embeds: [rankErrEmbed] });
+        }
+
+        const rowsFor = (m) => (RECORD_COLUMNS[m] ? recordRows : jokenpoRows);
+
+        let mode = "wins";
+        const embed = await buildRankEmbed(rowsFor(mode), mode, message, translate);
+        const components = await buildRankRows(mode, translate);
+
+        const reply = await message.reply({ embeds: [embed], components });
+        log(message, `Ranking exibido`);
+
+        const collector = reply.createMessageComponentCollector({
+            filter: (interaction) => interaction.isButton() && interaction.customId.startsWith("rank_"),
+            time: 300000,
+        });
+
+        collector.on("collect", async (interaction) => {
+            try {
+                const newMode = interaction.customId.slice("rank_".length);
+                if (newMode === mode) return interaction.deferUpdate();
+
+                mode = newMode;
+                const newEmbed = await buildRankEmbed(rowsFor(mode), mode, message, translate);
+                const newComponents = await buildRankRows(mode, translate);
+                await interaction.update({ embeds: [newEmbed], components: newComponents });
+            } catch (err) {
+                if (err.code !== 10062) {
+                    error(message, `Erro no collector do rank: ${err.message}`);
                 }
-
-                let mode = "best";
-                const embed = await buildRankEmbed(rows, mode, message, translate);
-                const row = await buildRankRow(mode, translate);
-
-                const reply = await message.reply({ embeds: [embed], components: [row] });
-                log(message, `Ranking exibido`);
-
-                const collector = reply.createMessageComponentCollector({
-                    filter: (interaction) => interaction.isButton() && ["rank_wins", "rank_best"].includes(interaction.customId),
-                    time: 300000,
-                });
-
-                collector.on("collect", async (interaction) => {
-                    try {
-                        const newMode = interaction.customId === "rank_best" ? "best" : "wins";
-                        if (newMode === mode) return interaction.deferUpdate();
-
-                        mode = newMode;
-                        const newEmbed = await buildRankEmbed(rows, mode, message, translate);
-                        const newRow = await buildRankRow(mode, translate);
-                        await interaction.update({ embeds: [newEmbed], components: [newRow] });
-                    } catch (err) {
-                        if (err.code !== 10062) {
-                            error(message, `Erro no collector do rank: ${err.message}`);
-                        }
-                    }
-                });
-
-                collector.on("end", async () => {
-                    try {
-                        await reply.edit({ components: [] });
-                    } catch (err) {
-                        if (err.code !== 10008) {
-                            warn(message, `Não foi possível remover os botões do rank: ${err.message}`);
-                        }
-                    }
-                });
             }
-        );
+        });
+
+        collector.on("end", async () => {
+            try {
+                await reply.edit({ components: [] });
+            } catch (err) {
+                if (err.code !== 10008) {
+                    warn(message, `Não foi possível remover os botões do rank: ${err.message}`);
+                }
+            }
+        });
     } catch (err) {
         error(message, `Erro ao executar o comando rank: ${err.message}`);
     }

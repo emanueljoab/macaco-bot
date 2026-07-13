@@ -98,14 +98,20 @@
     "rank": {
         "error": "An error occurred while retrieving the ranking",
         "title wins": "Rock Paper Scissors Wins Ranking",
-        "title best": "Best Rock Paper Scissors Players",
         "unknown user": "Unknown user",
         "entry": "{0} **{1}** — {2}W · {3}L · {4}%",
-        "entry best": "{0} **{1}** — {2}W · {3}L",
         "empty": "No ranking data found.",
-        "button wins": "🏆 Wins",
-        "button best": "📊 Best Players",
-        "footer best": "Takes into account not just the win rate, but also how many games were played."
+        "button wins": "✂️ RPS",
+        "title pp": "Biggest Peepees Ranking",
+        "title howgay": "Gayest Users Ranking",
+        "title simp": "Biggest Simps Ranking",
+        "title stank": "Stankiest Users Ranking",
+        "entry pp": "{0} **{1}** — {2} cm",
+        "entry percent": "{0} **{1}** — {2}%",
+        "button pp": "🍌 Peepee",
+        "button howgay": "🏳️‍🌈 Gay",
+        "button simp": "🥺 Simp",
+        "button stank": "👃 Stank"
     },
     "jokenpo": {
         "jokenpo": "Rock Paper Scissors",
@@ -164,14 +170,14 @@
     "user": {
         "error": "An error occurred while trying to get the user information.",
         "member not found": "That user is not a member of this server.",
-        "setDescription": "Joined server at {0}.",
+        "setDescription": "Joined the server on {0}.",
         "record howgay": "🏳️‍🌈 Highest howgay",
         "record pp": "🍌 Longest pp",
         "record simp": "🥺 Highest simp",
         "record stank": "👃 Highest stank",
-        "jokenpo field name": "⚔️ Rock Paper Scissors",
+        "jokenpo field name": "✂️ Rock Paper Scissors",
         "jokenpo field value": "{0}W · {1}L · {2}%",
-        "biggest rival name": "🗡️ Rival",
+        "biggest rival name": "⚔️ Rival",
         "biggest rival winning": "{3} {1}-{2} {0}",
         "biggest rival losing": "{3} {1}-{2} {0}",
         "biggest rival tied": "{3} {1}-{2} {0}"

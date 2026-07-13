@@ -46,14 +46,11 @@ async function execute(message, _args, db, translate) {
         const timeZone = languagePreference === "english" ? "UTC" : "America/Sao_Paulo";
         const options = {
             timeZone: timeZone,
-            timeZoneName: "short",
-            weekday: "long",
             day: "2-digit",
             month: "long",
             year: "numeric",
             hour: "numeric",
             minute: "numeric",
-            second: "numeric",
         };
         const joinedAt = member.joinedAt.toLocaleString(await translate("server", "toLocaleString"), options);
         const dash = "—";
