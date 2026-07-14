@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const readline = require("readline");
 
-const { Client, GatewayIntentBits, EmbedBuilder } = require("discord.js");
+const { Client, GatewayIntentBits, EmbedBuilder, ActivityType } = require("discord.js");
 const { db, DEFAULT_PREFIX, getPrefix } = require("../database");
 const { loadTranslations, translate: translateRaw } = require("../translate");
 const { checkSpam } = require("../spam");
@@ -29,7 +29,7 @@ const client = new Client({
 });
 
 client.once("clientReady", async () => {
-    client.user.setActivity({ name: "pls macaco" });
+    client.user.setActivity({ name: "custom", state: "pls help", type: ActivityType.Custom });
     loadTranslations(); // Carregar traduções ao iniciar o bot
     log(null, `${client.user.tag} está online!`);
 });
