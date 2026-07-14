@@ -14,9 +14,17 @@ const RECORD_COLUMNS = {
 function sortRows(rows, mode) {
     const column = RECORD_COLUMNS[mode];
     if (column) {
+        // Desempate: quem atingiu o valor primeiro; recordes sem timestamp
+        // (anteriores à migração) ficam por último até carimbarem a data
+        const atColumn = `${column}_at`;
         return rows
             .filter((row) => row[column] != null)
-            .sort((a, b) => b[column] - a[column])
+            .sort((a, b) => {
+                if (b[column] !== a[column]) return b[column] - a[column];
+                if (a[atColumn] == null) return b[atColumn] == null ? 0 : 1;
+                if (b[atColumn] == null) return -1;
+                return a[atColumn] - b[atColumn];
+            })
             .slice(0, 10);
     }
 
@@ -37,7 +45,10 @@ async function buildRankEmbed(rows, mode, message, translate) {
 
             const column = RECORD_COLUMNS[mode];
             if (column) {
-                return await translate("rank", mode === "pp" ? "entry pp" : "entry percent", prefix, username, row[column]);
+                const entry = await translate("rank", mode === "pp" ? "entry pp" : "entry percent", prefix, username, row[column]);
+                // <t:...:R> renderiza como data relativa no idioma/fuso de cada leitor
+                const at = row[`${column}_at`];
+                return at != null ? `${entry} · <t:${Math.floor(at / 1000)}:R>` : entry;
             }
 
             const total = row.wins + row.losses;
@@ -81,7 +92,7 @@ async function execute(message, args, db, translate) {
         try {
             [jokenpoRows, recordRows] = await Promise.all([
                 queryAll(db, "SELECT user_id, username, wins, losses FROM jokenpo_rank WHERE guild_id = ? AND user_id != ?", [guildId, BOT_ID]),
-                queryAll(db, "SELECT user_id, username, max_pp, max_howgay, max_simp, max_stank FROM user_records WHERE guild_id = ?", [guildId]),
+                queryAll(db, "SELECT user_id, username, max_pp, max_pp_at, max_howgay, max_howgay_at, max_simp, max_simp_at, max_stank, max_stank_at FROM user_records WHERE guild_id = ?", [guildId]),
             ]);
         } catch (err) {
             error(message, `Erro ao obter o ranking do banco de dados: ${err.message}`);
@@ -133,7 +144,7 @@ async function execute(message, args, db, translate) {
     }
 }
 
-module.exports = { execute };
+module.exports = { execute, sortRows, buildRankEmbed };
 
 function escapeMarkdown(text) {
     return text.replace(/([\\*_`~])/g, "\\$1");

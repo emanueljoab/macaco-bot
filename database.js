@@ -68,10 +68,13 @@ db.all("SELECT name FROM sqlite_master WHERE type='table'", [], (err, rows) => {
         user_id TEXT,
         username TEXT,
         max_howgay INTEGER,
+        max_howgay_at INTEGER,
         max_pp INTEGER,
-        max_pp_string TEXT,
+        max_pp_at INTEGER,
         max_simp INTEGER,
+        max_simp_at INTEGER,
         max_stank INTEGER,
+        max_stank_at INTEGER,
         PRIMARY KEY (guild_id, user_id)
     )`,
         (err) => {
@@ -79,6 +82,20 @@ db.all("SELECT name FROM sqlite_master WHERE type='table'", [], (err, rows) => {
             else if (!existing.has("user_records")) log(null, `Tabela criada: user_records`);
         }
     );
+
+    // Migração: colunas de timestamp (ms) de quando cada recorde foi atingido
+    for (const col of ["max_howgay_at", "max_pp_at", "max_simp_at", "max_stank_at"]) {
+        db.run(`ALTER TABLE user_records ADD COLUMN ${col} INTEGER`, (err) => {
+            if (err && !/duplicate column/i.test(err.message)) error(null, `Erro ao adicionar coluna ${col}: ${err.message}`);
+            else if (!err) log(null, `Coluna criada: user_records.${col}`);
+        });
+    }
+
+    // Migração: max_pp_string era write-only e derivável de max_pp
+    db.run(`ALTER TABLE user_records DROP COLUMN max_pp_string`, (err) => {
+        if (err && !/no such column/i.test(err.message)) error(null, `Erro ao remover coluna max_pp_string: ${err.message}`);
+        else if (!err) log(null, `Coluna removida: user_records.max_pp_string`);
+    });
     });
 });
 
@@ -115,14 +132,7 @@ function getPrefix(guildId) {
     });
 }
 
-function updateRecord(guildId, guildName, userId, username, column, value, extras = {}) {
-    const extraKeys = Object.keys(extras);
-    const extraVals = Object.values(extras);
-    const extraSets = extraKeys.map((k) => `${k} = ?`).join(", ");
-    const setSql = extraKeys.length > 0
-        ? `guild_name = ?, username = ?, ${column} = ?, ${extraSets}`
-        : `guild_name = ?, username = ?, ${column} = ?`;
-
+function updateRecord(guildId, guildName, userId, username, column, value) {
     // serialize: garante que o INSERT rode antes do UPDATE
     db.serialize(() => {
         db.run(
@@ -130,9 +140,13 @@ function updateRecord(guildId, guildName, userId, username, column, value, extra
             [guildId, guildName, userId, username],
             (err) => { if (err) error(null, `Erro ao inserir user_records (${userId}): ${err.message}`); }
         );
+        // Empatar com o próprio recorde só grava quando ainda não há timestamp
+        // (recordes anteriores à migração podem "carimbar" a data repetindo o valor)
         db.run(
-            `UPDATE user_records SET ${setSql} WHERE guild_id = ? AND user_id = ? AND (${column} IS NULL OR ${column} < ?)`,
-            [guildName, username, value, ...extraVals, guildId, userId, value],
+            `UPDATE user_records SET guild_name = ?, username = ?, ${column} = ?, ${column}_at = ?
+             WHERE guild_id = ? AND user_id = ?
+             AND (${column} IS NULL OR ${column} < ? OR (${column} = ? AND ${column}_at IS NULL))`,
+            [guildName, username, value, Date.now(), guildId, userId, value, value],
             (err) => { if (err) error(null, `Erro ao atualizar user_records ${column} (${userId}): ${err.message}`); }
         );
     });

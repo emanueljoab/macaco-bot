@@ -14,7 +14,7 @@ async function execute(message, _args, _db, translate) {
             .setFooter({ text: `${tamanho} cm` });
         await message.reply({ embeds: [embed] });
         log(message, `Pipi de ${user.username} ${pp} ${tamanho} cm`);
-        updateRecord(message.guild.id, message.guild.name, user.id, user.username, "max_pp", tamanho, { max_pp_string: pp });
+        updateRecord(message.guild.id, message.guild.name, user.id, user.username, "max_pp", tamanho);
     } catch (err) {
         const embed = new EmbedBuilder()
             .setDescription(await translate("pp", "error"))
