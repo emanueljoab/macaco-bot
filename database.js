@@ -4,6 +4,15 @@ const db = new sqlite3.Database("./macaco.db");
 
 const DEFAULT_PREFIX = "pls";
 
+// Valor máximo possível de cada recorde; atingi-lo incrementa o contador
+// usado como critério de desempate no rank
+const RECORD_MAX = {
+    max_pp: 20,
+    max_howgay: 100,
+    max_simp: 100,
+    max_stank: 100,
+};
+
 // Criar tabelas se não existirem
 db.all("SELECT name FROM sqlite_master WHERE type='table'", [], (err, rows) => {
     const existing = new Set(err ? [] : rows.map(r => r.name));
@@ -69,12 +78,16 @@ db.all("SELECT name FROM sqlite_master WHERE type='table'", [], (err, rows) => {
         username TEXT,
         max_howgay INTEGER,
         max_howgay_at INTEGER,
+        max_howgay_count INTEGER,
         max_pp INTEGER,
         max_pp_at INTEGER,
+        max_pp_count INTEGER,
         max_simp INTEGER,
         max_simp_at INTEGER,
+        max_simp_count INTEGER,
         max_stank INTEGER,
         max_stank_at INTEGER,
+        max_stank_count INTEGER,
         PRIMARY KEY (guild_id, user_id)
     )`,
         (err) => {
@@ -82,6 +95,14 @@ db.all("SELECT name FROM sqlite_master WHERE type='table'", [], (err, rows) => {
             else if (!existing.has("user_records")) log(null, `Tabela criada: user_records`);
         }
     );
+
+    // Migração: colunas de contagem de quantas vezes o valor máximo foi atingido
+    for (const col of ["max_howgay_count", "max_pp_count", "max_simp_count", "max_stank_count"]) {
+        db.run(`ALTER TABLE user_records ADD COLUMN ${col} INTEGER`, (err) => {
+            if (err && !/duplicate column/i.test(err.message)) error(null, `Erro ao adicionar coluna ${col}: ${err.message}`);
+            else if (!err) log(null, `Coluna criada: user_records.${col}`);
+        });
+    }
 
     // Migração: colunas de timestamp (ms) de quando cada recorde foi atingido
     for (const col of ["max_howgay_at", "max_pp_at", "max_simp_at", "max_stank_at"]) {
@@ -149,6 +170,15 @@ function updateRecord(guildId, guildName, userId, username, column, value) {
             [guildName, username, value, Date.now(), guildId, userId, value, value],
             (err) => { if (err) error(null, `Erro ao atualizar user_records ${column} (${userId}): ${err.message}`); }
         );
+        // Atingir o valor máximo conta mesmo quando o recorde não muda
+        if (value === RECORD_MAX[column]) {
+            db.run(
+                `UPDATE user_records SET ${column}_count = COALESCE(${column}_count, 0) + 1
+                 WHERE guild_id = ? AND user_id = ?`,
+                [guildId, userId],
+                (err) => { if (err) error(null, `Erro ao incrementar user_records ${column}_count (${userId}): ${err.message}`); }
+            );
+        }
     });
 }
 
@@ -168,6 +198,7 @@ function getUserRecords(guildId, userId) {
 module.exports = {
     db,
     DEFAULT_PREFIX,
+    RECORD_MAX,
     getLanguagePreference,
     getPrefix,
     updateRecord,

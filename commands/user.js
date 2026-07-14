@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
-const { getLanguagePreference, getUserRecords } = require("../database");
+const { getLanguagePreference, getUserRecords, RECORD_MAX } = require("../database");
 const { log, error } = require("../utils");
 
 async function execute(message, _args, db, translate) {
@@ -54,11 +54,19 @@ async function execute(message, _args, db, translate) {
         };
         const joinedAt = member.joinedAt.toLocaleString(await translate("server", "toLocaleString"), options);
         const dash = "—";
+        // Mesma regra do rank: (Nx) quando atingiu o valor máximo mais de uma vez
+        const recordValue = (column, suffix) => {
+            if (records?.[column] == null) return dash;
+            let value = `${records[column]}${suffix}`;
+            const count = records[`${column}_count`] || 0;
+            if (records[column] === RECORD_MAX[column] && count > 1) value += ` (${count}x)`;
+            return value;
+        };
         const fields = [
-            { name: await translate("user", "record pp"),     value: records?.max_pp     != null ? `${records.max_pp} cm` : dash, inline: true },
-            { name: await translate("user", "record howgay"), value: records?.max_howgay != null ? `${records.max_howgay}%` : dash, inline: true },
-            { name: await translate("user", "record simp"),   value: records?.max_simp   != null ? `${records.max_simp}%`   : dash, inline: true },
-            { name: await translate("user", "record stank"),  value: records?.max_stank  != null ? `${records.max_stank}%`  : dash, inline: true },
+            { name: await translate("user", "record pp"),     value: recordValue("max_pp", " cm"), inline: true },
+            { name: await translate("user", "record howgay"), value: recordValue("max_howgay", "%"), inline: true },
+            { name: await translate("user", "record simp"),   value: recordValue("max_simp", "%"), inline: true },
+            { name: await translate("user", "record stank"),  value: recordValue("max_stank", "%"), inline: true },
         ];
 
         let jokenpoValue;
