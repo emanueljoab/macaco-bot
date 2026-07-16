@@ -1,3 +1,25 @@
+const { EmbedBuilder } = require("discord.js");
+
+// GIFs de macacos exibidos aleatoriamente nos embeds de erro/aviso (hospedados no imgur)
+const THUMBNAILS = [
+    "https://i.imgur.com/trPOuZj.gif", // helpmonkey: macaco levado pelos paramédicos
+    "https://i.imgur.com/zcm0OkH.gif", // worriedmonkey: macaco com as mãos na cabeça
+    "https://i.imgur.com/Lr3LW45.gif", // stopmonkey: macaco mandando parar
+    "https://i.imgur.com/nrwYG9k.gif", // sadmonkey: macaquinho triste
+];
+
+function randomThumbnail() {
+    return THUMBNAILS[Math.floor(Math.random() * THUMBNAILS.length)];
+}
+
+// O ​ (zero-width space) impede o Discord de cortar a primeira linha vazia,
+// empurrando o texto pra baixo pra alinhar com o thumbnail
+function monkeyEmbed(text) {
+    return new EmbedBuilder()
+        .setDescription(`​\n${text}`)
+        .setThumbnail(randomThumbnail());
+}
+
 function timestamp() {
     return new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" }).replace(",", "");
 }
@@ -72,4 +94,4 @@ function matchPrefix(content, prefix) {
 // Para colorir trechos de um log fora do utils (segue o mesmo isTTY do stdout)
 const paint = makePaint(process.stdout);
 
-module.exports = { log, warn, error, matchPrefix, paint };
+module.exports = { log, warn, error, matchPrefix, paint, monkeyEmbed, randomThumbnail };

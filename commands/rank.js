@@ -1,5 +1,5 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
-const { log, warn, error } = require("../utils");
+const { log, warn, error, monkeyEmbed } = require("../utils");
 const { RECORD_MAX } = require("../database");
 
 const BOT_ID = "1243673463902834809";
@@ -116,7 +116,7 @@ async function execute(message, args, db, translate) {
             ]);
         } catch (err) {
             error(message, `Erro ao obter o ranking do banco de dados: ${err.message}`);
-            const rankErrEmbed = new EmbedBuilder().setDescription(await translate("rank", "error"));
+            const rankErrEmbed = monkeyEmbed(await translate("rank", "error"));
             return message.reply({ embeds: [rankErrEmbed] });
         }
 

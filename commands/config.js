@@ -1,11 +1,11 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle, ComponentType, PermissionsBitField } = require("discord.js");
 const { db, DEFAULT_PREFIX, getPrefix, getLanguagePreference } = require("../database");
-const { log, warn, error } = require("../utils");
+const { log, warn, error, monkeyEmbed, randomThumbnail } = require("../utils");
 
 async function execute(message, _args, _db, translate) {
     // Verificar se o usuário tem permissão de administrador
     if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
-        const permEmbed = new EmbedBuilder().setDescription(await translate("config", "permission"));
+        const permEmbed = monkeyEmbed(await translate("config", "permission"));
         return message.reply({ embeds: [permEmbed] });
     }
 
@@ -82,7 +82,7 @@ async function execute(message, _args, _db, translate) {
                         try {
                             if (err) {
                                 error(message, `Erro ao atualizar o idioma: ${err}`);
-                                languageEmbed.setFields({ name: "​", value: await translate("config", "error") });
+                                languageEmbed.setFields({ name: "​", value: await translate("config", "error") }).setThumbnail(randomThumbnail());
                                 await langInteraction.update({ embeds: [languageEmbed], components: [] });
                             } else {
                                 languageEmbed.setFields({ name: "​", value: await translate("config", "success", selectedLanguage) });
@@ -128,7 +128,8 @@ async function execute(message, _args, _db, translate) {
                     const invalidEmbed = new EmbedBuilder()
                         .setTitle(await translate("config", "setTitle"))
                         .setDescription(" ")
-                        .setFields({ name: "​", value: await translate("config", "prefixInvalid") });
+                        .setFields({ name: "​", value: await translate("config", "prefixInvalid") })
+                        .setThumbnail(randomThumbnail());
                     await modalSubmit.update({ embeds: [invalidEmbed], components: [] });
                     return;
                 }
@@ -143,7 +144,7 @@ async function execute(message, _args, _db, translate) {
                                 .setDescription(" ");
                             if (err) {
                                 error(message, `Erro ao atualizar o prefixo: ${err}`);
-                                resultEmbed.setFields({ name: "​", value: await translate("config", "error") });
+                                resultEmbed.setFields({ name: "​", value: await translate("config", "error") }).setThumbnail(randomThumbnail());
                             } else {
                                 resultEmbed.setFields({ name: "​", value: await translate("config", "prefixSuccess", newPrefix) });
                                 log(message, `Prefixo alterado para "${newPrefix}"`);

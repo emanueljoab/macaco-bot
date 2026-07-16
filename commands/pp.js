@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
-const { log, error } = require("../utils");
+const { log, error, monkeyEmbed } = require("../utils");
 const { updateRecord } = require("../database");
 
 async function execute(message, _args, _db, translate) {
@@ -16,8 +16,7 @@ async function execute(message, _args, _db, translate) {
         log(message, `Pipi de ${user.username} ${pp} ${tamanho} cm`);
         updateRecord(message.guild.id, message.guild.name, user.id, user.username, "max_pp", tamanho);
     } catch (err) {
-        const embed = new EmbedBuilder()
-            .setDescription(await translate("pp", "error"))
+        const embed = monkeyEmbed(await translate("pp", "error"));
         await message.reply({ embeds: [embed] });
         error(message, `Erro ao executar comando: ${err.message}`);
     }

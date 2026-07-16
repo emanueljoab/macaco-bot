@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
-const { log, error } = require("../utils");
+const { log, error, monkeyEmbed } = require("../utils");
 const { updateRecord } = require("../database");
 
 async function execute(message, _args, _db, translate) {
@@ -22,9 +22,8 @@ async function execute(message, _args, _db, translate) {
         updateRecord(message.guild.id, message.guild.name, user.id, user.username, "max_simp", simp);
     } catch (err) {
         error(message, `Erro ao executar comando: ${err.message}`);
-        const errorEmbed = new EmbedBuilder()
-            .setDescription(await translate("simp", "error"));
-        await message.reply({ embeds: [errorEmbed] });
+        const errEmbed = monkeyEmbed(await translate("simp", "error"));
+        await message.reply({ embeds: [errEmbed] });
     }
 }
 

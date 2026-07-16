@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
-const { log, error } = require("../utils");
+const { log, error, monkeyEmbed } = require("../utils");
 
 async function execute(message, _args, _db, translate) {
     try {
@@ -13,7 +13,7 @@ async function execute(message, _args, _db, translate) {
         log(message, `Pong! Latência ${latency} ms`);
     } catch (err) {
         error(message, `Erro ao executar ping: ${err.message}`);
-        const errEmbed = new EmbedBuilder().setDescription(await translate("ping", "error"));
+        const errEmbed = monkeyEmbed(await translate("ping", "error"));
         await message.reply({ embeds: [errEmbed] });
     }
 }

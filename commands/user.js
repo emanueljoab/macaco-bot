@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
 const { getLanguagePreference, getUserRecords, RECORD_MAX } = require("../database");
-const { log, error } = require("../utils");
+const { log, error, monkeyEmbed } = require("../utils");
 
 async function execute(message, _args, db, translate) {
     try {
@@ -10,9 +10,8 @@ async function execute(message, _args, db, translate) {
             try {
                 member = await message.guild.members.fetch(user.id);
             } catch {
-                const errorEmbed = new EmbedBuilder()
-                    .setDescription(await translate("user", "member not found"));
-                return message.reply({ embeds: [errorEmbed] });
+                const notFound = monkeyEmbed(await translate("user", "member not found"));
+                return message.reply({ embeds: [notFound] });
             }
         }
         const guildId = message.guild.id;
@@ -104,9 +103,8 @@ async function execute(message, _args, db, translate) {
         log(message, `Perfil de ${user.username} exibido`);
     } catch (err) {
         error(message, `Erro ao executar comando: ${err.message}`);
-        const errorEmbed = new EmbedBuilder()
-            .setDescription(await translate("user", "error"));
-        await message.reply({ embeds: [errorEmbed] });
+        const errEmbed = monkeyEmbed(await translate("user", "error"));
+        await message.reply({ embeds: [errEmbed] });
     }
 }
 

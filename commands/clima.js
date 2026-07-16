@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
 const { getLanguagePreference } = require("../database");
-const { log, warn, error } = require("../utils");
+const { log, warn, error, monkeyEmbed } = require("../utils");
 
 let fetch;
 async function loadFetch() {
@@ -31,17 +31,12 @@ const weatherIcons = {
     "50n": "🌫️",
 };
 
-async function replyEmbed(message, text) {
-    const embed = new EmbedBuilder().setDescription(text);
-    return message.reply({ embeds: [embed] });
-}
-
 async function execute(message, args, _db, translate) {
     await loadFetch();
 
     if (!args.length) {
         log(message, `Usuário não forneceu o nome da cidade`);
-        return replyEmbed(message, await translate("clima", "no args"));
+        return message.reply({ embeds: [monkeyEmbed(await translate("clima", "no args"))] });
     }
 
     const apiKey = process.env.OPENWEATHERMAP_API_KEY;
@@ -61,7 +56,7 @@ async function execute(message, args, _db, translate) {
 
         if (String(currentWeatherData.cod) !== "200") {
             warn(message, `Não foi possível obter dados do clima para "${city}": ${currentWeatherData.message}`);
-            return replyEmbed(message, await translate("clima", "error 200", city));
+            return message.reply({ embeds: [monkeyEmbed(await translate("clima", "error 200", city))] });
         }
 
         // Obter dados da previsão
@@ -70,7 +65,7 @@ async function execute(message, args, _db, translate) {
 
         if (String(forecastData.cod) !== "200") {
             warn(message, `Não foi possível obter dados da previsão para "${city}": ${forecastData.message}`);
-            return replyEmbed(message, await translate("clima", "error not 200", city));
+            return message.reply({ embeds: [monkeyEmbed(await translate("clima", "error not 200", city))] });
         }
 
         // Processar dados do clima atual
@@ -118,7 +113,7 @@ async function execute(message, args, _db, translate) {
         log(message, `Informações de clima para "${cityName}, ${country}" obtidas`);
     } catch (err) {
         error(message, `Erro ao obter clima: ${err.message}`);
-        replyEmbed(message, await translate("clima", "message reply error"));
+        message.reply({ embeds: [monkeyEmbed(await translate("clima", "message reply error"))] });
     }
 }
 

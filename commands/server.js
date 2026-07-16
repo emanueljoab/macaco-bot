@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
-const { log, error } = require("../utils");
+const { log, error, monkeyEmbed } = require("../utils");
 
 async function execute(message, _args, _db, translate) {
     try {
@@ -12,9 +12,8 @@ async function execute(message, _args, _db, translate) {
         log(message, `Comando executado`);
     } catch (err) {
         error(message, `Erro ao executar comando: ${err.message}`);
-        const errorEmbed = new EmbedBuilder()
-            .setDescription(await translate("server", "error"));
-        await message.reply({ embeds: [errorEmbed] });
+        const errEmbed = monkeyEmbed(await translate("server", "error"));
+        await message.reply({ embeds: [errEmbed] });
     }
 }
 

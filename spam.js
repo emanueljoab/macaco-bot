@@ -1,5 +1,5 @@
 const { PermissionsBitField, EmbedBuilder } = require("discord.js");
-const { log, warn, error } = require("./utils");
+const { log, warn, error, randomThumbnail } = require("./utils");
 
 // Map: userId -> [{ content, channelId, timestamp, message }]
 const recentMessages = new Map();
@@ -87,7 +87,8 @@ async function checkSpam(message, translate) {
         // Notify the channel where spam was detected
         const embed = new EmbedBuilder()
             .setTitle(await translate("spam", "setTitle"))
-            .setDescription(await translate("spam", "detected", `<@${userId}>`));
+            .setDescription(await translate("spam", "detected", `<@${userId}>`))
+            .setThumbnail(randomThumbnail());
 
         await message.channel.send({ embeds: [embed] });
     } catch (err) {

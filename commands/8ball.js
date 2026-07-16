@@ -1,10 +1,9 @@
 const { EmbedBuilder } = require("discord.js");
-const { log, error } = require("../utils");
+const { log, error, monkeyEmbed } = require("../utils");
 
 async function execute(message, args, _db, translate) {
     if (args.length === 0) {
-        const embed = new EmbedBuilder()
-            .setDescription(await translate("8ball", "no question"))
+        const embed = monkeyEmbed(await translate("8ball", "no question"))
             .setFooter({ text: await translate("8ball", "setFooter") })
         log(message, `Usuário não introduziu uma pergunta`);    
         return message.reply({ embeds: [embed] });

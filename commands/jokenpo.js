@@ -1,5 +1,5 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
-const { log, warn, error } = require("../utils");
+const { log, warn, error, monkeyEmbed } = require("../utils");
 
 const CHOICE_IDS = {
     ROCK: "rock",
@@ -23,7 +23,7 @@ async function execute(message, args, db, translate) {
             }
             
             if (player1.id === player2.id) {
-                const yourselfEmbed = new EmbedBuilder().setDescription(await translate("jokenpo", "yourself"));
+                const yourselfEmbed = monkeyEmbed(await translate("jokenpo", "yourself"));
                 return message.reply({ embeds: [yourselfEmbed] });
             }
 
@@ -283,7 +283,7 @@ async function execute(message, args, db, translate) {
             }
     } catch (err) {
         error(message, `Ocorreu um erro ao executar o comando jokenpo: ${err.message}`);
-        const errEmbed = new EmbedBuilder().setDescription(await translate("jokenpo", "error jokenpo"));
+        const errEmbed = monkeyEmbed(await translate("jokenpo", "error jokenpo"));
         message.reply({ embeds: [errEmbed] });
     }
 }

@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const { getLanguagePreference } = require("../database");
 const { EmbedBuilder, AttachmentBuilder } = require("discord.js");
-const { log, warn, error } = require("../utils");
+const { log, warn, error, monkeyEmbed, randomThumbnail } = require("../utils");
 
 const familiasSimiiformes = ["Cebidae", "Cercopithecidae", "Hominidae", "Hylobatidae", "Pitheciidae", "Aotidae", "Atelidae", "Callitrichidae"];
 
@@ -171,7 +171,8 @@ async function execute(message, _args, _db, translate) {
     let reply;
     try {
         const loadingEmbed = new EmbedBuilder()
-            .setDescription(await translate("macaco", "searching"));
+            .setDescription(`​\n${await translate("macaco", "searching")}`)
+            .setThumbnail(randomThumbnail());
 
         reply = await message.reply({ embeds: [loadingEmbed] });
 
@@ -245,7 +246,7 @@ async function execute(message, _args, _db, translate) {
         }
     } catch (err) {
         error(message, `Erro ao gerar macaco: ${err.message}`);
-        const errEmbed = new EmbedBuilder().setDescription(await translate("macaco", "no monkey found"));
+        const errEmbed = monkeyEmbed(await translate("macaco", "no monkey found"));
         if (reply) {
             await reply.edit({ embeds: [errEmbed], files: [] });
         } else {
