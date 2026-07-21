@@ -2,4 +2,4 @@
 cd "$(dirname "$0")"
 git pull
 npm install
-exec node src/index.js
+pm2 restart macaco || pm2 start src/index.js --name macaco
